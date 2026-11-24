@@ -32,6 +32,7 @@
   .videos li { margin:0; padding:2px 0; }
   .videos a { display:inline-block; padding:8px 0; text-decoration:none; }
   .videos a:hover { text-decoration:underline; }
+  .duration { color:var(--muted); font-size:.85rem; margin-inline-start:6px; }
 </style>
 </head>
 <body>
@@ -139,33 +140,34 @@
   };
 
   // "Doukkany on PC" YouTube playlist, in its order. Each link opens the video inside the playlist.
+  // Row: [video id, Arabic title, French title, English title, length in seconds].
   var PLAYLIST_ID = 'PLATmdIDov8C4';
   var VIDEOS = [
-    ['l487p3PcKrs', 'أول تشغيل لدكّاني على الحاسوب', 'Premier lancement de Doukkany sur PC', 'First start of Doukkany on PC'],
-    ['knj8FTLcriI', 'الإضافة السريعة للسلعة', 'Ajout rapide d’un produit', 'Quick add of a product'],
-    ['hwXBqgD0qFU', 'إضافة سلعة بالتفصيل', 'Ajouter un produit en détail', 'Add a product in detail'],
-    ['UiLl3WZe_iM', 'ترتيب السلع في فئات', 'Classer les produits par catégories', 'Sort products into categories'],
-    ['HBxeKBFIpbY', 'البيع خطوة بخطوة', 'Vendre étape par étape', 'Selling step by step'],
-    ['USUIhjNc9wo', 'البيع بالدَّين', 'Vendre à crédit', 'Selling on credit'],
-    ['cWWeTfazA_Y', 'البيع بتخفيض', 'Vendre avec une remise', 'Selling with a discount'],
-    ['BecQxkCCNUo', 'البيع بقارئ الباركود', 'Vendre avec le lecteur de code-barres', 'Selling with a barcode scanner'],
-    ['GYOgSPXsGNA', 'اختصارات لوحة المفاتيح', 'Raccourcis clavier', 'Keyboard shortcuts'],
-    ['Qfl7T7-zdTM', 'عدة زبائن في وقت واحد', 'Plusieurs clients en même temps', 'Several customers at once'],
-    ['nX568wrdneU', 'طابعة الإيصالات', 'Imprimante de tickets', 'Receipt printer'],
-    ['oJIMUt0StMM', 'دفتر الدَّين', 'Carnet de crédit', 'Credit book'],
-    ['MtRhQZSqdRw', 'إضافة عامل وصلاحياته', 'Ajouter un employé et ses droits', 'Add a staff member and their permissions'],
-    ['SzjTHiWUKCY', 'الصندوق: الفتح والإغلاق', 'La caisse : ouverture et fermeture', 'Cash drawer: opening and closing'],
-    ['zj5Wp16lGYE', 'حاسوب ثانٍ وهاتف في المحل', 'Un 2e ordinateur et un téléphone dans le magasin', 'A second computer and a phone in the shop'],
-    ['bxlT8DnAFWY', 'التقارير والربح', 'Rapports et bénéfice', 'Reports and profit'],
-    ['qDGltZh8WuM', 'تسجيل وصول السلعة', 'Enregistrer l’arrivée de marchandise', 'Recording new stock'],
-    ['vgzS9v2wLVw', 'تنبيهات المخزون والصلاحية', 'Alertes de stock et de péremption', 'Stock and expiry alerts'],
-    ['IXEpl-ptxuE', 'إرجاع سلعة', 'Retour d’un produit', 'Returning a product'],
-    ['NriEqQDR_D8', 'طباعة الملصقات', 'Impression d’étiquettes', 'Printing labels'],
-    ['C_tN8K8XnAc', 'استيراد السلع من Excel', 'Importer les produits depuis Excel', 'Import products from Excel'],
-    ['EH5Sdd2-Ueg', 'سعر التجزئة وسعر الجملة', 'Prix de détail et prix de gros', 'Retail and wholesale prices'],
-    ['sFtffw9oHFw', 'التصليحات والخدمات', 'Réparations et services', 'Repairs and services'],
-    ['h4q0r4vEIJg', 'نقاط الوفاء والعروض', 'Points de fidélité et offres', 'Loyalty points and offers'],
-    ['72vZnHe9ay4', 'النسخة الاحتياطية', 'Sauvegarde', 'Backup']
+    ['l487p3PcKrs', 'أول تشغيل لدكّاني على الحاسوب', 'Premier lancement de Doukkany sur PC', 'First start of Doukkany on PC', 56],
+    ['knj8FTLcriI', 'الإضافة السريعة للسلعة', 'Ajout rapide d’un produit', 'Quick add of a product', 50],
+    ['hwXBqgD0qFU', 'إضافة سلعة بالتفصيل', 'Ajouter un produit en détail', 'Add a product in detail', 61],
+    ['UiLl3WZe_iM', 'ترتيب السلع في فئات', 'Classer les produits par catégories', 'Sort products into categories', 46],
+    ['HBxeKBFIpbY', 'البيع خطوة بخطوة', 'Vendre étape par étape', 'Selling step by step', 46],
+    ['USUIhjNc9wo', 'البيع بالدَّين', 'Vendre à crédit', 'Selling on credit', 49],
+    ['cWWeTfazA_Y', 'البيع بتخفيض', 'Vendre avec une remise', 'Selling with a discount', 49],
+    ['BecQxkCCNUo', 'البيع بقارئ الباركود', 'Vendre avec le lecteur de code-barres', 'Selling with a barcode scanner', 45],
+    ['GYOgSPXsGNA', 'اختصارات لوحة المفاتيح', 'Raccourcis clavier', 'Keyboard shortcuts', 46],
+    ['Qfl7T7-zdTM', 'عدة زبائن في وقت واحد', 'Plusieurs clients en même temps', 'Several customers at once', 45],
+    ['nX568wrdneU', 'طابعة الإيصالات', 'Imprimante de tickets', 'Receipt printer', 45],
+    ['oJIMUt0StMM', 'دفتر الدَّين', 'Carnet de crédit', 'Credit book', 45],
+    ['MtRhQZSqdRw', 'إضافة عامل وصلاحياته', 'Ajouter un employé et ses droits', 'Add a staff member and their permissions', 48],
+    ['SzjTHiWUKCY', 'الصندوق: الفتح والإغلاق', 'La caisse : ouverture et fermeture', 'Cash drawer: opening and closing', 48],
+    ['zj5Wp16lGYE', 'حاسوب ثانٍ وهاتف في المحل', 'Un 2e ordinateur et un téléphone dans le magasin', 'A second computer and a phone in the shop', 52],
+    ['bxlT8DnAFWY', 'التقارير والربح', 'Rapports et bénéfice', 'Reports and profit', 45],
+    ['qDGltZh8WuM', 'تسجيل وصول السلعة', 'Enregistrer l’arrivée de marchandise', 'Recording new stock', 42],
+    ['vgzS9v2wLVw', 'تنبيهات المخزون والصلاحية', 'Alertes de stock et de péremption', 'Stock and expiry alerts', 52],
+    ['IXEpl-ptxuE', 'إرجاع سلعة', 'Retour d’un produit', 'Returning a product', 45],
+    ['NriEqQDR_D8', 'طباعة الملصقات', 'Impression d’étiquettes', 'Printing labels', 41],
+    ['C_tN8K8XnAc', 'استيراد السلع من Excel', 'Importer les produits depuis Excel', 'Import products from Excel', 37],
+    ['EH5Sdd2-Ueg', 'سعر التجزئة وسعر الجملة', 'Prix de détail et prix de gros', 'Retail and wholesale prices', 34],
+    ['sFtffw9oHFw', 'التصليحات والخدمات', 'Réparations et services', 'Repairs and services', 39],
+    ['h4q0r4vEIJg', 'نقاط الوفاء والعروض', 'Points de fidélité et offres', 'Loyalty points and offers', 38],
+    ['72vZnHe9ay4', 'النسخة الاحتياطية', 'Sauvegarde', 'Backup', 48]
   ];
 
   function renderVideos() {
@@ -180,6 +182,12 @@
       a.textContent = v[col];
       var li = document.createElement('li');
       li.appendChild(a);
+      var time = document.createElement('bdi');
+      time.className = 'duration';
+      time.dir = 'ltr';
+      time.textContent = Math.floor(v[4] / 60) + ':' + ('0' + (v[4] % 60)).slice(-2);
+      li.appendChild(document.createTextNode(' '));
+      li.appendChild(time);
       list.appendChild(li);
     });
   }
