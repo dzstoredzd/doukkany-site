@@ -27,6 +27,10 @@
   .email-row .btn { margin:0; }
   .error { color:var(--error); }
   .error:empty { display:none; }
+  .videos { margin:8px 0 12px; padding-inline-start:28px; }
+  .videos li { margin:0; padding:2px 0; }
+  .videos a { display:inline-block; padding:8px 0; text-decoration:none; }
+  .videos a:hover { text-decoration:underline; }
 </style>
 </head>
 <body>
@@ -38,14 +42,13 @@
   </nav>
 
   <h1>Doukkany</h1>
-  <p class="muted" data-t="tagline">برنامج بيع وتسيير للمحلات الصغيرة. يعمل دون إنترنت.</p>
+  <p class="muted" data-t="tagline">برنامج بيع وتسيير للمحلات. يعمل دون إنترنت.</p>
 
   <section class="card">
     <h2 data-t="winTitle">الحاسوب: Windows 10 وما بعده (64 بت)</h2>
     <a class="btn" id="win-btn" href="https://github.com/dzstoredzd/doukkany-releases/releases/latest" data-t="winBtn">تنزيل لـ Windows</a>
     <div class="muted small"><span class="version" id="version"></span></div>
     <p class="muted small status" id="status" role="status"></p>
-    <p class="muted small" data-t="winWarn">قد يظهر تحذير من Windows عند فتح الملف: اضغط «مزيد من المعلومات» ثم «تشغيل على أي حال».</p>
   </section>
 
   <section class="card">
@@ -55,7 +58,7 @@
 
   <section class="card">
     <h2 data-t="emailTitle">أرسل الروابط إلى بريدك</h2>
-    <p class="muted small" data-t="emailHelp">مثلًا لتفتحها لاحقًا على الحاسوب. سيفتح تطبيق البريد لديك لترسل الرسالة بنفسك؛ لا نحتفظ ببريدك.</p>
+    <p class="muted small" data-t="emailHelp">لتفتحها لاحقًا على الحاسوب.</p>
     <form class="email-row" id="email-form" novalidate>
       <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="name@example.com" aria-label="Email" data-t-aria="emailLabel">
       <button class="btn" type="submit" data-t="emailBtn">أرسل الروابط</button>
@@ -63,75 +66,119 @@
     <p class="small error" id="email-error" role="alert"></p>
   </section>
 
-  <p class="muted">
-    <a href="../" data-t="home">الصفحة الرئيسية</a>
-    &nbsp;|&nbsp;
-    <a href="../privacy.html" data-t="privacy">سياسة الخصوصية</a>
-    &nbsp;|&nbsp;
-    <a href="../terms.html" data-t="terms">شروط الاستخدام</a>
-  </p>
+  <section class="card">
+    <h2 data-t="tutorialTitle">دورة تعليمية سريعة</h2>
+    <ol class="videos" id="videos"></ol>
+    <a class="small" href="https://www.youtube.com/playlist?list=PLATmdIDov8C4" data-t="tutorialAll">مشاهدة القائمة كاملة على YouTube</a>
+  </section>
 </main>
 <script>
 (function () {
   var TEXT = {
     ar: {
       title: 'تنزيل دكّاني · Doukkany',
-      tagline: 'برنامج بيع وتسيير للمحلات الصغيرة. يعمل دون إنترنت.',
+      tagline: 'برنامج بيع وتسيير للمحلات. يعمل دون إنترنت.',
       winTitle: 'الحاسوب: Windows 10 وما بعده (64 بت)',
       winBtn: 'تنزيل لـ Windows',
       version: 'الإصدار ',
       starting: 'سيبدأ التنزيل بعد لحظات…',
-      winWarn: 'قد يظهر تحذير من Windows عند فتح الملف: اضغط «مزيد من المعلومات» ثم «تشغيل على أي حال».',
       androidTitle: 'الهاتف: Android',
       androidBtn: 'التحميل من Google Play',
       emailTitle: 'أرسل الروابط إلى بريدك',
-      emailHelp: 'مثلًا لتفتحها لاحقًا على الحاسوب. سيفتح تطبيق البريد لديك لترسل الرسالة بنفسك؛ لا نحتفظ ببريدك.',
+      emailHelp: 'لتفتحها لاحقًا على الحاسوب.',
       emailLabel: 'البريد الإلكتروني',
       emailBtn: 'أرسل الروابط',
       emailBad: 'هذا البريد غير صحيح. تحقّق منه.',
       mailSubject: 'روابط تنزيل دكّاني',
       mailBody: 'روابط تنزيل دكّاني (أحدث إصدار دائمًا):\n\nالحاسوب (Windows 10 وما بعده):\n{win}\n\nالهاتف (Android):\n{play}\n\nصفحة التنزيل:\n{page}\n',
-      home: 'الصفحة الرئيسية', privacy: 'سياسة الخصوصية', terms: 'شروط الاستخدام'
+      tutorialTitle: 'دورة تعليمية سريعة',
+      tutorialAll: 'مشاهدة القائمة كاملة على YouTube'
     },
     fr: {
       title: 'Télécharger Doukkany',
-      tagline: 'Caisse et gestion pour les petits magasins. Fonctionne sans internet.',
+      tagline: 'Caisse et gestion pour les magasins. Fonctionne sans internet.',
       winTitle: 'Ordinateur : Windows 10 et plus (64 bits)',
       winBtn: 'Télécharger pour Windows',
       version: 'Version ',
       starting: 'Le téléchargement va commencer…',
-      winWarn: 'Windows peut afficher un avertissement à l’ouverture du fichier : cliquez sur « Plus d’infos », puis « Exécuter quand même ».',
       androidTitle: 'Téléphone : Android',
       androidBtn: 'Disponible sur Google Play',
       emailTitle: 'Envoyer les liens par e-mail',
-      emailHelp: 'Par exemple pour les ouvrir plus tard sur l’ordinateur. Votre application e-mail s’ouvre et vous envoyez le message vous-même ; nous ne gardons pas votre adresse.',
+      emailHelp: 'Pour les ouvrir plus tard sur l’ordinateur.',
       emailLabel: 'Adresse e-mail',
       emailBtn: 'Envoyer les liens',
       emailBad: 'Cette adresse e-mail n’est pas valide. Vérifiez-la.',
       mailSubject: 'Liens de téléchargement Doukkany',
       mailBody: 'Liens de téléchargement Doukkany (toujours la dernière version) :\n\nOrdinateur (Windows 10 et plus) :\n{win}\n\nTéléphone (Android) :\n{play}\n\nPage de téléchargement :\n{page}\n',
-      home: 'Accueil', privacy: 'Confidentialité', terms: 'Conditions'
+      tutorialTitle: 'Formation rapide',
+      tutorialAll: 'Voir toute la liste sur YouTube'
     },
     en: {
       title: 'Download Doukkany',
-      tagline: 'Point of sale and shop management for small shops. Works without internet.',
+      tagline: 'Point of sale and shop management for shops. Works without internet.',
       winTitle: 'Computer: Windows 10 and newer (64-bit)',
       winBtn: 'Download for Windows',
       version: 'Version ',
       starting: 'Your download will start in a moment…',
-      winWarn: 'Windows may show a warning when you open the file: click “More info”, then “Run anyway”.',
       androidTitle: 'Phone: Android',
       androidBtn: 'Get it on Google Play',
       emailTitle: 'Send the links to your email',
-      emailHelp: 'For example, to open them later on your computer. Your email app opens and you send the message yourself; we do not keep your email.',
+      emailHelp: 'To open them later on your computer.',
       emailLabel: 'Email address',
       emailBtn: 'Send the links',
       emailBad: 'This email address is not valid. Please check it.',
       mailSubject: 'Doukkany download links',
       mailBody: 'Doukkany download links (always the latest version):\n\nComputer (Windows 10 and newer):\n{win}\n\nPhone (Android):\n{play}\n\nDownload page:\n{page}\n',
-      home: 'Home', privacy: 'Privacy', terms: 'Terms'
+      tutorialTitle: 'Quick tutorial',
+      tutorialAll: 'See the full list on YouTube'
     }
   };
+
+  // "Doukkany on PC" YouTube playlist, in its order. Each link opens the video inside the playlist.
+  var PLAYLIST_ID = 'PLATmdIDov8C4';
+  var VIDEOS = [
+    ['l487p3PcKrs', 'أول تشغيل لدكّاني على الحاسوب', 'Premier lancement de Doukkany sur PC', 'First start of Doukkany on PC'],
+    ['knj8FTLcriI', 'الإضافة السريعة للسلعة', 'Ajout rapide d’un produit', 'Quick add of a product'],
+    ['hwXBqgD0qFU', 'إضافة سلعة بالتفصيل', 'Ajouter un produit en détail', 'Add a product in detail'],
+    ['UiLl3WZe_iM', 'ترتيب السلع في فئات', 'Classer les produits par catégories', 'Sort products into categories'],
+    ['HBxeKBFIpbY', 'البيع خطوة بخطوة', 'Vendre étape par étape', 'Selling step by step'],
+    ['USUIhjNc9wo', 'البيع بالدَّين', 'Vendre à crédit', 'Selling on credit'],
+    ['cWWeTfazA_Y', 'البيع بتخفيض', 'Vendre avec une remise', 'Selling with a discount'],
+    ['BecQxkCCNUo', 'البيع بقارئ الباركود', 'Vendre avec le lecteur de code-barres', 'Selling with a barcode scanner'],
+    ['GYOgSPXsGNA', 'اختصارات لوحة المفاتيح', 'Raccourcis clavier', 'Keyboard shortcuts'],
+    ['Qfl7T7-zdTM', 'عدة زبائن في وقت واحد', 'Plusieurs clients en même temps', 'Several customers at once'],
+    ['nX568wrdneU', 'طابعة الإيصالات', 'Imprimante de tickets', 'Receipt printer'],
+    ['oJIMUt0StMM', 'دفتر الدَّين', 'Carnet de crédit', 'Credit book'],
+    ['MtRhQZSqdRw', 'إضافة عامل وصلاحياته', 'Ajouter un employé et ses droits', 'Add a staff member and their permissions'],
+    ['SzjTHiWUKCY', 'الصندوق: الفتح والإغلاق', 'La caisse : ouverture et fermeture', 'Cash drawer: opening and closing'],
+    ['zj5Wp16lGYE', 'حاسوب ثانٍ وهاتف في المحل', 'Un 2e ordinateur et un téléphone dans le magasin', 'A second computer and a phone in the shop'],
+    ['bxlT8DnAFWY', 'التقارير والربح', 'Rapports et bénéfice', 'Reports and profit'],
+    ['qDGltZh8WuM', 'تسجيل وصول السلعة', 'Enregistrer l’arrivée de marchandise', 'Recording new stock'],
+    ['vgzS9v2wLVw', 'تنبيهات المخزون والصلاحية', 'Alertes de stock et de péremption', 'Stock and expiry alerts'],
+    ['IXEpl-ptxuE', 'إرجاع سلعة', 'Retour d’un produit', 'Returning a product'],
+    ['NriEqQDR_D8', 'طباعة الملصقات', 'Impression d’étiquettes', 'Printing labels'],
+    ['C_tN8K8XnAc', 'استيراد السلع من Excel', 'Importer les produits depuis Excel', 'Import products from Excel'],
+    ['EH5Sdd2-Ueg', 'سعر التجزئة وسعر الجملة', 'Prix de détail et prix de gros', 'Retail and wholesale prices'],
+    ['sFtffw9oHFw', 'التصليحات والخدمات', 'Réparations et services', 'Repairs and services'],
+    ['h4q0r4vEIJg', 'نقاط الوفاء والعروض', 'Points de fidélité et offres', 'Loyalty points and offers'],
+    ['72vZnHe9ay4', 'النسخة الاحتياطية', 'Sauvegarde', 'Backup']
+  ];
+
+  function renderVideos() {
+    var col = { ar: 1, fr: 2, en: 3 }[lang];
+    var list = document.getElementById('videos');
+    list.textContent = '';
+    VIDEOS.forEach(function (v, i) {
+      var a = document.createElement('a');
+      a.href = 'https://www.youtube.com/watch?v=' + v[0] + '&list=' + PLAYLIST_ID + '&index=' + (i + 1);
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = v[col];
+      var li = document.createElement('li');
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+  }
 
   var PLAY_URL = 'https://play.google.com/store/apps/details?id=com.yousoft.doukkany';
   var RELEASE_PAGE = 'https://github.com/dzstoredzd/doukkany-releases/releases/latest';
@@ -148,8 +195,7 @@
     var asked = params.get('lang');
     if (TEXT[asked]) return asked;
     try { var saved = localStorage.getItem('doukkany-lang'); if (TEXT[saved]) return saved; } catch (e) {}
-    var nav = (navigator.language || '').slice(0, 2).toLowerCase();
-    return TEXT[nav] ? nav : 'ar';
+    return 'ar'; // Arabic by default; the browser language is not used.
   }
 
   function setLang(next) {
@@ -164,6 +210,7 @@
       b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang));
     });
     showVersion();
+    renderVideos();
     var status = document.getElementById('status');
     if (status.textContent) status.textContent = t.starting;
     var err = document.getElementById('email-error');
