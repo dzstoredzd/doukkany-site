@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تنزيل دكّاني · Doukkany</title>
+<meta name="description" content="Download Doukkany: point of sale and shop management for Windows and Android. Always the latest version.">
+<style>
+  :root { --green:#1f8a4c; --ink:#1d2421; --muted:#5d6a63; --bg:#f6f8f7; --card:#ffffff; --line:#dfe5e2; --error:#b3261e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: system-ui, "Segoe UI", Tahoma, Arial, sans-serif; background:var(--bg); color:var(--ink); line-height:1.6; }
+  main { max-width:720px; margin:0 auto; padding:16px 16px 40px; }
+  .langs { display:flex; justify-content:flex-end; gap:6px; margin-bottom:24px; }
+  .langs button { font:inherit; background:transparent; border:1px solid var(--line); color:var(--ink); border-radius:999px; padding:8px 14px; min-height:44px; cursor:pointer; }
+  .langs button[aria-pressed="true"] { background:var(--green); border-color:var(--green); color:#fff; }
+  h1 { color:var(--green); margin:0 0 4px; font-size:2.2rem; }
+  h2 { font-size:1.15rem; margin:0 0 6px; }
+  a { color:var(--green); }
+  .card { background:var(--card); border-radius:16px; padding:20px; margin:16px 0; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .btn { display:inline-block; font:inherit; font-weight:600; background:var(--green); color:#fff; text-decoration:none; padding:12px 20px; border-radius:12px; margin:6px 0; min-height:48px; border:0; cursor:pointer; }
+  .btn.outline { background:transparent; color:var(--green); border:2px solid var(--green); padding:10px 18px; }
+  .muted { color:var(--muted); }
+  .small { font-size:.9rem; }
+  .version:empty, .status:empty { display:none; }
+  .email-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .email-row input { flex:1 1 220px; font:inherit; padding:11px 12px; min-height:48px; border:1px solid var(--line); border-radius:12px; direction:ltr; }
+  .email-row .btn { margin:0; }
+  .error { color:var(--error); }
+  .error:empty { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <nav class="langs" aria-label="Language">
+    <button type="button" data-lang="ar" lang="ar">العربية</button>
+    <button type="button" data-lang="fr" lang="fr">Français</button>
+    <button type="button" data-lang="en" lang="en">English</button>
+  </nav>
+
+  <h1>Doukkany</h1>
+  <p class="muted" data-t="tagline">برنامج بيع وتسيير للمحلات الصغيرة. يعمل دون إنترنت.</p>
+
+  <section class="card">
+    <h2 data-t="winTitle">الحاسوب: Windows 10 وما بعده (64 بت)</h2>
+    <a class="btn" id="win-btn" href="https://github.com/dzstoredzd/doukkany-releases/releases/latest" data-t="winBtn">تنزيل لـ Windows</a>
+    <div class="muted small"><span class="version" id="version"></span></div>
+    <p class="muted small status" id="status" role="status"></p>
+    <p class="muted small" data-t="winWarn">قد يظهر تحذير من Windows عند فتح الملف: اضغط «مزيد من المعلومات» ثم «تشغيل على أي حال».</p>
+  </section>
+
+  <section class="card">
+    <h2 data-t="androidTitle">الهاتف: Android</h2>
+    <a class="btn outline" href="https://play.google.com/store/apps/details?id=com.yousoft.doukkany" data-t="androidBtn">التحميل من Google Play</a>
+  </section>
+
+  <section class="card">
+    <h2 data-t="emailTitle">أرسل الروابط إلى بريدك</h2>
+    <p class="muted small" data-t="emailHelp">مثلًا لتفتحها لاحقًا على الحاسوب. سيفتح تطبيق البريد لديك لترسل الرسالة بنفسك؛ لا نحتفظ ببريدك.</p>
+    <form class="email-row" id="email-form" novalidate>
+      <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="name@example.com" aria-label="Email" data-t-aria="emailLabel">
+      <button class="btn" type="submit" data-t="emailBtn">أرسل الروابط</button>
+    </form>
+    <p class="small error" id="email-error" role="alert"></p>
+  </section>
+
+  <p class="muted">
+    <a href="../" data-t="home">الصفحة الرئيسية</a>
+    &nbsp;|&nbsp;
+    <a href="../privacy.html" data-t="privacy">سياسة الخصوصية</a>
+    &nbsp;|&nbsp;
+    <a href="../terms.html" data-t="terms">شروط الاستخدام</a>
+  </p>
+</main>
+<script>
+(function () {
+  var TEXT = {
+    ar: {
+      title: 'تنزيل دكّاني · Doukkany',
+      tagline: 'برنامج بيع وتسيير للمحلات الصغيرة. يعمل دون إنترنت.',
+      winTitle: 'الحاسوب: Windows 10 وما بعده (64 بت)',
+      winBtn: 'تنزيل لـ Windows',
+      version: 'الإصدار ',
+      starting: 'سيبدأ التنزيل بعد لحظات…',
+      winWarn: 'قد يظهر تحذير من Windows عند فتح الملف: اضغط «مزيد من المعلومات» ثم «تشغيل على أي حال».',
+      androidTitle: 'الهاتف: Android',
+      androidBtn: 'التحميل من Google Play',
+      emailTitle: 'أرسل الروابط إلى بريدك',
+      emailHelp: 'مثلًا لتفتحها لاحقًا على الحاسوب. سيفتح تطبيق البريد لديك لترسل الرسالة بنفسك؛ لا نحتفظ ببريدك.',
+      emailLabel: 'البريد الإلكتروني',
+      emailBtn: 'أرسل الروابط',
+      emailBad: 'هذا البريد غير صحيح. تحقّق منه.',
+      mailSubject: 'روابط تنزيل دكّاني',
+      mailBody: 'روابط تنزيل دكّاني (أحدث إصدار دائمًا):\n\nالحاسوب (Windows 10 وما بعده):\n{win}\n\nالهاتف (Android):\n{play}\n\nصفحة التنزيل:\n{page}\n',
+      home: 'الصفحة الرئيسية', privacy: 'سياسة الخصوصية', terms: 'شروط الاستخدام'
+    },
+    fr: {
+      title: 'Télécharger Doukkany',
+      tagline: 'Caisse et gestion pour les petits magasins. Fonctionne sans internet.',
+      winTitle: 'Ordinateur : Windows 10 et plus (64 bits)',
+      winBtn: 'Télécharger pour Windows',
+      version: 'Version ',
+      starting: 'Le téléchargement va commencer…',
+      winWarn: 'Windows peut afficher un avertissement à l’ouverture du fichier : cliquez sur « Plus d’infos », puis « Exécuter quand même ».',
+      androidTitle: 'Téléphone : Android',
+      androidBtn: 'Disponible sur Google Play',
+      emailTitle: 'Envoyer les liens par e-mail',
+      emailHelp: 'Par exemple pour les ouvrir plus tard sur l’ordinateur. Votre application e-mail s’ouvre et vous envoyez le message vous-même ; nous ne gardons pas votre adresse.',
+      emailLabel: 'Adresse e-mail',
+      emailBtn: 'Envoyer les liens',
+      emailBad: 'Cette adresse e-mail n’est pas valide. Vérifiez-la.',
+      mailSubject: 'Liens de téléchargement Doukkany',
+      mailBody: 'Liens de téléchargement Doukkany (toujours la dernière version) :\n\nOrdinateur (Windows 10 et plus) :\n{win}\n\nTéléphone (Android) :\n{play}\n\nPage de téléchargement :\n{page}\n',
+      home: 'Accueil', privacy: 'Confidentialité', terms: 'Conditions'
+    },
+    en: {
+      title: 'Download Doukkany',
+      tagline: 'Point of sale and shop management for small shops. Works without internet.',
+      winTitle: 'Computer: Windows 10 and newer (64-bit)',
+      winBtn: 'Download for Windows',
+      version: 'Version ',
+      starting: 'Your download will start in a moment…',
+      winWarn: 'Windows may show a warning when you open the file: click “More info”, then “Run anyway”.',
+      androidTitle: 'Phone: Android',
+      androidBtn: 'Get it on Google Play',
+      emailTitle: 'Send the links to your email',
+      emailHelp: 'For example, to open them later on your computer. Your email app opens and you send the message yourself; we do not keep your email.',
+      emailLabel: 'Email address',
+      emailBtn: 'Send the links',
+      emailBad: 'This email address is not valid. Please check it.',
+      mailSubject: 'Doukkany download links',
+      mailBody: 'Doukkany download links (always the latest version):\n\nComputer (Windows 10 and newer):\n{win}\n\nPhone (Android):\n{play}\n\nDownload page:\n{page}\n',
+      home: 'Home', privacy: 'Privacy', terms: 'Terms'
+    }
+  };
+
+  var PLAY_URL = 'https://play.google.com/store/apps/details?id=com.yousoft.doukkany';
+  var RELEASE_PAGE = 'https://github.com/dzstoredzd/doukkany-releases/releases/latest';
+  // Same "latest Windows version" file the app's auto-update reads.
+  var FEED_URL = 'https://raw.githubusercontent.com/dzstoredzd/doukkany-releases/main/doukkany/stable/latest.json';
+  var API_URL = 'https://api.github.com/repos/dzstoredzd/doukkany-releases/releases/latest';
+
+  var params = new URLSearchParams(location.search);
+  var lang = 'ar';
+  var latest = null; // { url, label }
+
+  // ---- Language ----
+  function pickLang() {
+    var asked = params.get('lang');
+    if (TEXT[asked]) return asked;
+    try { var saved = localStorage.getItem('doukkany-lang'); if (TEXT[saved]) return saved; } catch (e) {}
+    var nav = (navigator.language || '').slice(0, 2).toLowerCase();
+    return TEXT[nav] ? nav : 'ar';
+  }
+
+  function setLang(next) {
+    lang = next;
+    var t = TEXT[lang];
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.title = t.title;
+    document.querySelectorAll('[data-t]').forEach(function (el) { el.textContent = t[el.getAttribute('data-t')]; });
+    document.querySelectorAll('[data-t-aria]').forEach(function (el) { el.setAttribute('aria-label', t[el.getAttribute('data-t-aria')]); });
+    document.querySelectorAll('.langs button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang));
+    });
+    showVersion();
+    var status = document.getElementById('status');
+    if (status.textContent) status.textContent = t.starting;
+    var err = document.getElementById('email-error');
+    if (err.textContent) err.textContent = t.emailBad;
+    try { localStorage.setItem('doukkany-lang', lang); } catch (e) {}
+  }
+
+  document.querySelectorAll('.langs button').forEach(function (b) {
+    b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); });
+  });
+
+  // ---- Latest Windows installer ----
+  function fromFeed() {
+    return fetch(FEED_URL, { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error('feed ' + r.status); return r.json(); })
+      .then(function (f) {
+        if (!f.downloadUrl || !/\.exe$/i.test(f.downloadUrl)) throw new Error('feed has no installer');
+        return { url: f.downloadUrl, label: f.version + ' (' + f.build + ')' };
+      });
+  }
+
+  function fromApi() {
+    return fetch(API_URL, { headers: { 'Accept': 'application/vnd.github+json' } })
+      .then(function (r) { if (!r.ok) throw new Error('api ' + r.status); return r.json(); })
+      .then(function (rel) {
+        var exe = (rel.assets || []).filter(function (a) { return /^Doukkany-.*\.exe$/i.test(a.name); })[0];
+        if (!exe) throw new Error('release has no installer');
+        var m = /^v?(\d+\.\d+\.\d+)-(\d+)$/.exec(rel.tag_name || '');
+        return { url: exe.browser_download_url, label: m ? m[1] + ' (' + m[2] + ')' : rel.tag_name };
+      });
+  }
+
+  // Resolved once; every click and ?get=windows waits for the same answer.
+  var latestPromise = fromFeed().catch(fromApi).then(function (found) {
+    latest = found;
+    document.getElementById('win-btn').href = found.url;
+    showVersion();
+    return found;
+  }).catch(function () { return null; });
+
+  function showVersion() {
+    var v = document.getElementById('version');
+    v.textContent = latest && latest.label ? TEXT[lang].version + latest.label : '';
+  }
+
+  function startDownload() {
+    document.getElementById('status').textContent = TEXT[lang].starting;
+    latestPromise.then(function (found) {
+      // If GitHub could not be reached, open the latest release page instead.
+      location.href = found ? found.url : RELEASE_PAGE;
+    });
+  }
+
+  document.getElementById('win-btn').addEventListener('click', function (e) {
+    if (latest) return; // the link already points to the newest installer
+    e.preventDefault();
+    startDownload();
+  });
+
+  // ---- Send links by email (opens the visitor's own email app) ----
+  function pageUrl() { return location.origin + location.pathname; }
+
+  document.getElementById('email-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var t = TEXT[lang];
+    var input = document.getElementById('email');
+    var to = input.value.trim();
+    var err = document.getElementById('email-error');
+    if (to && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+      err.textContent = t.emailBad;
+      input.focus();
+      return;
+    }
+    err.textContent = '';
+    var body = t.mailBody
+      .replace('{win}', pageUrl() + '?get=windows&lang=' + lang)
+      .replace('{play}', PLAY_URL)
+      .replace('{page}', pageUrl() + '?lang=' + lang);
+    location.href = 'mailto:' + encodeURIComponent(to).replace('%40', '@') +
+      '?subject=' + encodeURIComponent(t.mailSubject) +
+      '&body=' + encodeURIComponent(body);
+  });
+
+  setLang(pickLang());
+  // A shared link like .../download/?get=windows starts the newest installer download.
+  if (params.get('get') === 'windows') startDownload();
+})();
+</script>
+</body>
+</html>
