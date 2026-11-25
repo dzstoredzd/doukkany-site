@@ -84,6 +84,9 @@
     security_storage: 'granted'
   });
   gtag('set', 'ads_data_redaction', true);
+  // GA4 "Internal traffic" filter. A gtag 'set' reaches every GA4 hit, including Google's
+  // automatic page_view; settings on the GTM Google tag did not (checked live 2026-11-25).
+  if (!isProduction || internal) gtag('set', { traffic_type: 'internal' });
 
   w.dataLayer.push({
     dk_env: isProduction ? 'production' : 'development',
