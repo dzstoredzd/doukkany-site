@@ -4,7 +4,8 @@
  * Rules (see DOUKKANY-MARKETING/TRACKING_SETUP.md in the app repo):
  * - Nothing leaves the browser before the visitor accepts. Google Tag Manager is the only
  *   third-party script this file loads, and only after "Accept" or "Statistics only".
- * - GA4, the Meta Pixel and Microsoft Clarity live inside the GTM container, never here.
+ * - GA4 and the Meta Pixel live inside the GTM container, never here. If Microsoft Clarity
+ *   is added later: add it to the banner text and privacy.html, and raise consentVersion.
  * - Events never carry an email, a phone number or a name: dkTrack() keeps only the
  *   parameters listed in PARAMS and drops values that look like an email or a phone.
  * - With an empty gtmId nothing is loaded and no banner is shown.
@@ -19,7 +20,7 @@
   // ---------------------------------------------------------------------------------
   var CONFIG = {
     // Google Tag Manager web container, for example 'GTM-ABC1234'. Empty = no tracking.
-    gtmId: '',
+    gtmId: 'GTM-K5D2KFV3',
     // Hosts that count as the real website. Any other host is development traffic:
     // GTM loads there only with ?dk_debug=1, and every event is marked internal.
     productionHosts: ['yousoft.site'],
@@ -210,8 +211,8 @@
   var PARAMS = [
     'event_id', 'platform', 'page_language', 'tutorial_id', 'tutorial_category',
     'tutorial_position', 'app_version', 'link_type', 'download_trigger', 'method',
-    'from_language', 'to_language', 'arrived_via', 'campaign_source', 'campaign_medium',
-    'campaign_name', 'campaign_content', 'campaign_term'
+    'from_language', 'to_language', 'arrived_via', 'ad_source', 'ad_medium',
+    'ad_campaign', 'ad_content', 'ad_term'
   ];
 
   function newEventId() {
@@ -231,12 +232,15 @@
     out.event_id = newEventId();
     out.page_language = d.documentElement.lang || undefined;
     out.arrived_via = arrivedVia;
+    // Not named campaign_*: GA4 reserves those names and would turn them into the
+    // session's traffic source instead of event details. GA4 still reads utm_* from the
+    // page address by itself.
     if (campaign) {
-      out.campaign_source = campaign.utm_source;
-      out.campaign_medium = campaign.utm_medium;
-      out.campaign_name = campaign.utm_campaign;
-      out.campaign_content = campaign.utm_content;
-      out.campaign_term = campaign.utm_term;
+      out.ad_source = campaign.utm_source;
+      out.ad_medium = campaign.utm_medium;
+      out.ad_campaign = campaign.utm_campaign;
+      out.ad_content = campaign.utm_content;
+      out.ad_term = campaign.utm_term;
     }
     params = params || {};
     PARAMS.forEach(function (k) {
@@ -320,21 +324,21 @@
   // ---------------------------------------------------------------------------------
   var TEXT = {
     ar: {
-      text: 'نستعمل أداتَي القياس Google Analytics و Microsoft Clarity لنفهم كيف تُستعمل هذه الصفحة، وأداة Meta لقياس إعلاناتنا على فيسبوك وإنستغرام. لا تعمل إلا بموافقتك، ولا تجمع بريدك ولا رقم هاتفك.',
+      text: 'نستعمل أداة القياس Google Analytics لنفهم كيف تُستعمل هذه الصفحة، وأداة Meta لقياس إعلاناتنا على فيسبوك وإنستغرام. لا تعملان إلا بموافقتك، ولا تجمعان بريدك ولا رقم هاتفك.',
       accept: 'موافق',
       stats: 'الإحصاءات فقط',
       refuse: 'رفض',
       more: 'التفاصيل'
     },
     fr: {
-      text: 'Nous utilisons des outils de mesure (Google Analytics et Microsoft Clarity) pour comprendre l’usage de cette page, et l’outil de Meta pour mesurer nos publicités sur Facebook et Instagram. Ils ne fonctionnent qu’avec votre accord et ne collectent ni votre e-mail ni votre téléphone.',
+      text: 'Nous utilisons Google Analytics pour comprendre l’usage de cette page, et l’outil de Meta pour mesurer nos publicités sur Facebook et Instagram. Ils ne fonctionnent qu’avec votre accord et ne collectent ni votre e-mail ni votre téléphone.',
       accept: 'Accepter',
       stats: 'Statistiques seulement',
       refuse: 'Refuser',
       more: 'En savoir plus'
     },
     en: {
-      text: 'We use measurement tools (Google Analytics and Microsoft Clarity) to understand how this page is used, and Meta’s tool to measure our ads on Facebook and Instagram. They only run if you agree, and they never collect your email or phone number.',
+      text: 'We use Google Analytics to understand how this page is used, and Meta’s tool to measure our ads on Facebook and Instagram. They only run if you agree, and they never collect your email or phone number.',
       accept: 'Accept',
       stats: 'Statistics only',
       refuse: 'Refuse',
