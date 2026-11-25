@@ -72,6 +72,9 @@
   .trial-num { font-size: 2.1rem; font-weight: 700; line-height: 1.1; }
   .trial-word { font-size: 1.2rem; font-weight: 700; }
   .trial-sub { font-size: 1.05rem; font-weight: 600; color: var(--ink); }
+  /* Hero button: only scrolls to the download card for this device, never downloads. */
+  .hero-cta { margin-top: 18px; min-width: 260px; }
+  .dl-card { scroll-margin-top: 84px; }
   .chips { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
   .chips li { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px 4px 10px; font-size: .92rem; font-weight: 600; }
   .chips .ic { color: var(--green); width: 18px; height: 18px; }
@@ -260,7 +263,6 @@
     .dl-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (min-width: 768px) {
-    .wa-float { display: none; }
     footer.room { padding-bottom: 28px; }
     .cats { grid-template-columns: 1fr 1fr; align-items: start; }
     .duo { grid-template-columns: 1fr 1fr; align-items: stretch; }
@@ -290,19 +292,29 @@
     .kicker { font-size: .82rem; padding: 2px 10px; }
     h1 { margin-top: 8px; }
     .sub { margin-top: 4px; }
-    .trial { margin-top: 12px; }
-    .trial-num { font-size: 1.8rem; }
-    .trial-word { font-size: 1.1rem; }
-    .chips { margin-top: 12px; gap: 6px; }
-    .chips li { padding: 3px 10px 3px 8px; font-size: .85rem; }
-    .devices { max-width: 300px; }
-    .downloads { padding-top: 14px; }
+    .trial { margin-top: 10px; }
+    .trial-badge { padding: 2px 14px 4px; }
+    .trial-num { font-size: 1.7rem; }
+    .trial-word { font-size: 1.05rem; }
+    .hero-cta { display: flex; width: 100%; margin-top: 12px; min-height: 52px; }
+    .chips { margin-top: 10px; gap: 6px; }
+    .chips li { padding: 2px 10px 2px 8px; font-size: .84rem; }
+    .devices { max-width: 270px; padding-bottom: 10px; }
+    .demo-note { font-size: .7rem; }
+    .hero { padding-bottom: 4px; }
+    .downloads { padding-top: 12px; }
+  }
+  /* Tablets and small laptops: no room beside the content, so no floating button. Wide screens
+     (1320px and more) show it in the empty margin beside the 1180px content. */
+  @media (min-width: 768px) and (max-width: 1319px) {
+    .wa-float { display: none; }
   }
   @media (max-width: 380px) {
     .langs button { padding: 6px 8px; min-width: 40px; font-size: .85rem; }
     .logo img { height: 34px; }
     .chips li { font-size: .82rem; }
-    .devices { max-width: 250px; }
+    .devices { max-width: 205px; }
+    .hero-cta { font-size: 1.05rem; padding: 10px 16px; }
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -367,6 +379,7 @@
           <span class="trial-badge"><span class="trial-num ltr">14</span><span class="trial-word" data-t="trialWord">يوم مجانا</span></span>
           <span class="trial-sub" data-t="trialSub">جرّب، ومن بعد قرّر.</span>
         </div>
+        <a class="btn hero-cta" id="hero-cta" href="#download"><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg><span data-t="heroCta">حمّل دكّاني مجانا</span></a>
         <ul class="chips">
           <li><svg class="ic" aria-hidden="true"><use href="#i-wifioff"/></svg><span data-t="chipOffline">يخدم بلا أنترنت</span></li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-devices"/></svg><span data-t="chipDevices">للحاسوب والهاتف</span></li>
@@ -519,7 +532,7 @@
       kicker: 'برنامج تسيير المحلات',
       h1a: 'حانوتك كامل،', h1b: 'في بلاصة وحدة.',
       heroSub: 'المبيعات، الكريدي، المخزون والأرباح.',
-      trialWord: 'يوم مجانا', trialSub: 'جرّب، ومن بعد قرّر.',
+      trialWord: 'يوم مجانا', trialSub: 'جرّب، ومن بعد قرّر.', heroCta: 'حمّل دكّاني مجانا',
       chipOffline: 'يخدم بلا أنترنت', chipDevices: 'للحاسوب والهاتف', chipOnce: 'بلا اشتراك شهري',
       altPc: 'شاشة البيع في دكّاني على حاسوب Windows', altPhone: 'شاشة البيع في دكّاني على هاتف Android', demo: 'بيانات تجريبية',
       dlTitle: 'حمّل دكّاني', mine: 'مناسب لجهازك',
@@ -568,7 +581,7 @@
       kicker: 'Logiciel de gestion de magasin',
       h1a: 'Tout votre magasin,', h1b: 'au même endroit.',
       heroSub: 'Ventes, crédit clients, stock et bénéfices.',
-      trialWord: 'jours gratuits', trialSub: 'Essayez, puis décidez.',
+      trialWord: 'jours gratuits', trialSub: 'Essayez, puis décidez.', heroCta: 'Télécharger gratuitement',
       chipOffline: 'Marche sans internet', chipDevices: 'PC et téléphone', chipOnce: 'Sans abonnement mensuel',
       altPc: 'Écran de vente de Doukkany sur un PC Windows', altPhone: 'Écran de vente de Doukkany sur un téléphone Android', demo: 'Données de démonstration',
       dlTitle: 'Télécharger Doukkany', mine: 'Pour votre appareil',
@@ -617,7 +630,7 @@
       kicker: 'Shop management software',
       h1a: 'Your whole shop,', h1b: 'in one place.',
       heroSub: 'Sales, customer credit, stock and profit.',
-      trialWord: 'days free', trialSub: 'Try it first, then decide.',
+      trialWord: 'days free', trialSub: 'Try it first, then decide.', heroCta: 'Download Doukkany for free',
       chipOffline: 'Works without internet', chipDevices: 'PC and phone', chipOnce: 'No monthly subscription',
       altPc: 'Doukkany sales screen on a Windows PC', altPhone: 'Doukkany sales screen on an Android phone', demo: 'Demo data',
       dlTitle: 'Download Doukkany', mine: 'For your device',
@@ -880,6 +893,17 @@
     track('google_play_clicked', { platform: 'android', link_type: 'play_store' });
   });
 
+  // Hero button: scrolls to the card for this device (both cards stay), then puts the keyboard
+  // focus on its download button. It never starts a download by itself.
+  $('hero-cta').addEventListener('click', function (e) {
+    e.preventDefault();
+    var card = DEVICE === 'android' ? 'card-and' : DEVICE === 'windows' ? 'card-win' : 'download';
+    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $(card).scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+    var target = DEVICE === 'android' ? $('play-btn') : DEVICE === 'windows' ? $('win-btn') : null;
+    if (target) try { target.focus({ preventScroll: true }); } catch (err) {}
+  });
+
   // ---- Send the PC link to yourself: copy, share sheet, WhatsApp, email ----
   function say(id, text, ok) { var m = $(id); m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
 
@@ -1058,16 +1082,17 @@
     });
   });
 
-  // Floating WhatsApp (phones only; CSS hides it from 768px). It shows after the download
-  // cards scrolled away, only after scrolling up (it hides while scrolling down), and never
-  // near the support box or while the consent banner is open.
+  // Floating WhatsApp (phones, and screens of 1320px and more where it sits beside the content;
+  // CSS hides it in between). It shows after the download cards scrolled away and never near the
+  // support box or while the consent banner is open. On phones it also hides while scrolling down.
   if ('IntersectionObserver' in window) {
     var past = false, nearSupport = false, goingDown = false, lastY = window.scrollY, fl = $('wa-float');
     var upd = function () {
       var y = window.scrollY;
       if (Math.abs(y - lastY) > 6) { goingDown = y > lastY; lastY = y; }
       var banner = document.querySelector('.dk-consent');
-      var on = past && !goingDown && !nearSupport && !(banner && banner.offsetParent !== null);
+      var phone = window.innerWidth < 768;
+      var on = past && !(phone && goingDown) && !nearSupport && !(banner && banner.offsetParent !== null);
       fl.classList.toggle('on', on); fl.tabIndex = on ? 0 : -1;
       $('footer').classList.toggle('room', on);
     };
