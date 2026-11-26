@@ -8,22 +8,22 @@
 (function (root) {
   'use strict';
 
-  // Shop types: id -> icon, the 4-6 features shown first, and the lessons (index in
+  // Shop types: id -> colour and icon (the shop type list), the 4-6 features shown first, and the lessons (index in
   // js/lessons.js videos, in watching order).
   var ACTIVITIES = [
-    { id: 'grocery',    icon: 'i-basket', features: ['barcode', 'credit', 'stock', 'lowstock', 'expiry', 'profit'], lessons: [1, 7, 16, 17, 11] },
-    { id: 'clothes',    icon: 'i-shirt',  features: ['categories', 'stock', 'discount', 'labels', 'profit'],        lessons: [3, 1, 6, 19, 15] },
-    { id: 'phones',     icon: 'i-phone',  features: ['repairs', 'barcode', 'stock', 'credit', 'profit'],            lessons: [22, 1, 7, 11, 15] },
-    { id: 'cosmetics',  icon: 'i-spark',  features: ['stock', 'expiry', 'barcode', 'profit', 'loyalty'],            lessons: [1, 7, 17, 23, 15] },
-    { id: 'autoparts',  icon: 'i-car',    features: ['search', 'stock', 'credit', 'suppliers', 'profit'],           lessons: [20, 7, 16, 11, 15] },
-    { id: 'building',   icon: 'i-brick',  features: ['prices', 'units', 'weight', 'credit', 'suppliers', 'stock'],  lessons: [2, 21, 11, 16, 15] },
-    { id: 'household',  icon: 'i-home',   features: ['categories', 'barcode', 'stock', 'discount', 'profit'],       lessons: [3, 1, 7, 6, 15] },
-    { id: 'stationery', icon: 'i-book',   features: ['barcode', 'excel', 'categories', 'stock', 'profit'],          lessons: [20, 3, 7, 16, 15] },
-    { id: 'wholesale',  icon: 'i-truck',  features: ['prices', 'units', 'credit', 'suppliers', 'stock', 'profit'],  lessons: [2, 21, 5, 11, 16] },
-    { id: 'produce',    icon: 'i-apple',  features: ['weight', 'cash', 'credit', 'profit'],                         lessons: [2, 4, 13, 11, 15] },
-    { id: 'bakery',     icon: 'i-cake',   features: ['cash', 'expiry', 'credit', 'profit'],                         lessons: [1, 4, 13, 17, 15] },
-    { id: 'services',   icon: 'i-tool',   features: ['services', 'repairs', 'credit', 'cash', 'profit'],            lessons: [22, 11, 13, 15] },
-    { id: 'other',      icon: 'i-dots',   features: ['barcode', 'credit', 'stock', 'cash', 'profit'],               lessons: [1, 4, 11, 15] }
+    { id: 'grocery',    color: '#16A34A', icon: 'i-basket', features: ['barcode', 'credit', 'stock', 'lowstock', 'expiry', 'profit'], lessons: [1, 7, 16, 17, 11] },
+    { id: 'clothes',    color: '#7C3AED', icon: 'i-shirt',  features: ['categories', 'stock', 'discount', 'labels', 'profit'],        lessons: [3, 1, 6, 19, 15] },
+    { id: 'phones',     color: '#2563EB', icon: 'i-phone',  features: ['repairs', 'barcode', 'stock', 'credit', 'profit'],            lessons: [22, 1, 7, 11, 15] },
+    { id: 'cosmetics',  color: '#DB2777', icon: 'i-spark',  features: ['stock', 'expiry', 'barcode', 'profit', 'loyalty'],            lessons: [1, 7, 17, 23, 15] },
+    { id: 'autoparts',  color: '#475569', icon: 'i-car',    features: ['search', 'stock', 'credit', 'suppliers', 'profit'],           lessons: [20, 7, 16, 11, 15] },
+    { id: 'building',   color: '#EA580C', icon: 'i-brick',  features: ['prices', 'units', 'weight', 'credit', 'suppliers', 'stock'],  lessons: [2, 21, 11, 16, 15] },
+    { id: 'household',  color: '#0D9488', icon: 'i-home',   features: ['categories', 'barcode', 'stock', 'discount', 'profit'],       lessons: [3, 1, 7, 6, 15] },
+    { id: 'stationery', color: '#4F46E5', icon: 'i-book',   features: ['barcode', 'excel', 'categories', 'stock', 'profit'],          lessons: [20, 3, 7, 16, 15] },
+    { id: 'wholesale',  color: '#B45309', icon: 'i-truck',  features: ['prices', 'units', 'credit', 'suppliers', 'stock', 'profit'],  lessons: [2, 21, 5, 11, 16] },
+    { id: 'produce',    color: '#DC2626', icon: 'i-apple',  features: ['weight', 'cash', 'credit', 'profit'],                         lessons: [2, 4, 13, 11, 15] },
+    { id: 'bakery',     color: '#D97706', icon: 'i-cake',   features: ['cash', 'expiry', 'credit', 'profit'],                         lessons: [1, 4, 13, 17, 15] },
+    { id: 'services',   color: '#0891B2', icon: 'i-tool',   features: ['services', 'repairs', 'credit', 'cash', 'profit'],            lessons: [22, 11, 13, 15] },
+    { id: 'other',      color: '#6B7280', icon: 'i-dots',   features: ['barcode', 'credit', 'stock', 'cash', 'profit'],               lessons: [1, 4, 11, 15] }
   ];
 
   // Feature -> app screen shown next to it (start/assets/<img>-<lang>.webp). null = no screen.
@@ -34,17 +34,29 @@
     repairs: null, services: 'cart', loyalty: 'cart', search: 'stock'
   };
 
+  // Feature -> its own icon and colour in the features list (owner, 2026-11-26: "colored
+  // meaningful icons in all the screens").
+  var FEATURE_ICON = {
+    barcode: ['i-barcode', '#2563EB'], credit: ['i-book', '#D97706'], stock: ['i-box', '#EA580C'],
+    lowstock: ['i-warn', '#DC2626'], expiry: ['i-clock', '#DB2777'], profit: ['i-chart', '#16A34A'],
+    cash: ['i-cash', '#0D9488'], categories: ['i-grid', '#7C3AED'], discount: ['i-percent', '#DC2626'],
+    labels: ['i-tag', '#4F46E5'], prices: ['i-tag', '#0891B2'], units: ['i-box', '#B45309'],
+    weight: ['i-scale', '#475569'], suppliers: ['i-truck', '#0D9488'], excel: ['i-grid', '#16A34A'],
+    repairs: ['i-tool', '#475569'], services: ['i-tool', '#0891B2'], loyalty: ['i-heart', '#DB2777'],
+    search: ['i-search', '#2563EB']
+  };
+
   // "What bothers you most?" answers. `features`: the tool that fixes it, best first; the first
   // one the shop type already lists wins, else the first one here. `only`: shown only to shop
   // types that list one of these features (expiry dates mean nothing in a clothes shop).
   var PAINS = [
-    { id: 'credit',   icon: 'i-book',   features: ['credit'] },
-    { id: 'profit',   icon: 'i-chart',  features: ['profit'] },
-    { id: 'stockout', icon: 'i-box',    features: ['lowstock', 'stock'] },
-    { id: 'expiry',   icon: 'i-clock',  features: ['expiry'], only: true },
-    { id: 'slow',     icon: 'i-bolt',   features: ['barcode', 'search', 'weight'] },
-    { id: 'cash',     icon: 'i-cash',   features: ['cash'] },
-    { id: 'repairs',  icon: 'i-tool',   features: ['repairs'], only: true }
+    { id: 'credit',   icon: 'i-book',   color: '#D97706', features: ['credit'] },
+    { id: 'profit',   icon: 'i-chart',  color: '#16A34A', features: ['profit'] },
+    { id: 'stockout', icon: 'i-box',    color: '#EA580C', features: ['lowstock', 'stock'] },
+    { id: 'expiry',   icon: 'i-clock',  color: '#DB2777', features: ['expiry'], only: true },
+    { id: 'slow',     icon: 'i-bolt',   color: '#CA8A04', features: ['barcode', 'search', 'weight'] },
+    { id: 'cash',     icon: 'i-cash',   color: '#0D9488', features: ['cash'] },
+    { id: 'repairs',  icon: 'i-tool',   color: '#475569', features: ['repairs'], only: true }
   ];
   var MAX_FEATURES = 6;
 
@@ -54,6 +66,8 @@
   // 'pc' and 'both' = the One PC offer (its phone is free); 'two' = the shop pack.
   // ('several', with counts and add-ons, was removed; old saved answers with it ask again.)
   var MODES = ['pc', 'both', 'phone', 'two'];
+  // "I want to buy" shows only these three (owner 2026-11-26): computer, computer + phone, phone.
+  var BUY_MODES = ['pc', 'both', 'phone'];
   var INTENTS = ['trial', 'buy'];
 
   function activity(id) {
@@ -146,11 +160,19 @@
   // Steps in order. 'trial' and 'order' are the end.
   // 'pain' can be skipped, so later steps never wait for it.
   var PROGRESS = ['welcome', 'activity', 'pain', 'devices', 'features', 'price', 'course', 'final'];
+  // "I want to buy" (owner 2026-11-26): shop type, devices, then the order. No problems,
+  // features, price or lessons screens.
+  var PROGRESS_BUY = ['welcome', 'activity', 'devices', 'final'];
   var STEPS = ['welcome', 'activity', 'pain', 'devices', 'features', 'price', 'course', 'trial', 'order', 'prices'];
 
-  function progressIndex(step) {
-    if (step === 'trial' || step === 'order') return PROGRESS.indexOf('final');
-    return PROGRESS.indexOf(step);
+  function isBuy(state) { return !!state && state.intent === 'buy'; }
+  function progressFor(state) { return isBuy(state) ? PROGRESS_BUY : PROGRESS; }
+
+  // The step's place in the bar for this visitor (-1: not in the bar).
+  function progressIndex(step, state) {
+    var list = progressFor(state);
+    if (step === 'trial' || step === 'order') return list.indexOf('final');
+    return list.indexOf(step);
   }
 
   // The first step whose answer is missing before `step` can be shown, or `step` itself.
@@ -168,18 +190,19 @@
     switch (step) {
       case 'activity': return 'welcome';
       case 'pain': return 'activity';
-      case 'devices': return 'pain';
+      case 'devices': return isBuy(state) ? 'activity' : 'pain';
       case 'features': return 'devices';
       case 'price': return 'features';
       case 'course': return 'price';
       case 'trial': return 'course';
-      case 'order': return 'price'; // buying skips the lessons (they come on the USB key)
+      case 'order': return isBuy(state) ? 'devices' : 'price'; // buying skips the lessons (they come on the USB key)
       default: return 'welcome';
     }
   }
 
   var FUNNEL = {
-    ACTIVITIES: ACTIVITIES, FEATURE_IMG: FEATURE_IMG, PAINS: PAINS, PROGRESS: PROGRESS, STEPS: STEPS,
+    ACTIVITIES: ACTIVITIES, FEATURE_IMG: FEATURE_IMG, FEATURE_ICON: FEATURE_ICON, PAINS: PAINS, PROGRESS: PROGRESS, PROGRESS_BUY: PROGRESS_BUY,
+    STEPS: STEPS, BUY_MODES: BUY_MODES, isBuy: isBuy, progressFor: progressFor,
     activity: activity, pain: pain, painsFor: painsFor, painFeature: painFeature, featuresFor: featuresFor, devices: devices, lessonsFor: lessonsFor, cleanState: cleanState,
     progressIndex: progressIndex, allowedStep: allowedStep, previousStep: previousStep
   };

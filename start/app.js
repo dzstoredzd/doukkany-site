@@ -31,8 +31,6 @@
   var t = TEXT.ar;
   var current = null;
   var depth = 0;          // our own history entries above the first one
-  var selectedFeature = null;
-  var unsureOpen = false;   // devices screen: the "not sure yet" helper is open
 
   // ---------------------------------------------------------------------------------
   // Saved answers
@@ -153,6 +151,8 @@
   var firstRender = true;
   function render(step, focus) {
     current = step;
+    // The first page is a normal page, so Chrome's slide-down refresh works there (owner).
+    document.documentElement.classList.toggle('at-welcome', step === 'welcome');
     var html = SCREENS[step]();
     view.innerHTML = '<section class="step" data-step="' + step + '"><div class="scroll">' + html + '</div></section>';
     shapeScreen(step);
@@ -184,11 +184,11 @@
   }
 
   function renderProgress(step) {
-    var i = F.progressIndex(step);
+    var i = F.progressIndex(step, state);
     var show = step !== 'welcome';
     $('prog').hidden = !show;
     if (!show) return;
-    var total = F.PROGRESS.length;
+    var total = F.progressFor(state).length;
     var n = i < 0 ? 0 : i + 1;
     var seg = '';
     if (i >= 0) for (var k = 1; k <= total; k++) seg += '<i' + (k <= n ? ' class="on"' : '') + '></i>'; // none on the prices page
@@ -197,12 +197,18 @@
     $('back-txt').textContent = t.back;
   }
 
+  // A coloured icon: its colour says what it is (owner, 2026-11-26).
+  function cic(id, color, cls) { return '<svg class="ic' + (cls ? ' ' + cls : '') + '" style="color:' + color + '" aria-hidden="true"><use href="#' + id + '"/></svg>'; }
+  var C = { win: '#0078D4', android: '#16A34A', both: '#7C3AED', blue: '#2563EB', green: '#16A34A',
+    orange: '#EA580C', teal: '#0D9488', slate: '#475569', pink: '#DB2777', amber: '#D97706' };
+
   function choice(act, icon, title, desc, opts) {
     opts = opts || {};
     return '<button type="button" class="choice' + (opts.cls ? ' ' + opts.cls : '') + '" data-act="' + act + '"' +
+      (opts.color ? ' style="--c:' + opts.color + '"' : '') +
       (opts.pressed != null ? ' aria-pressed="' + opts.pressed + '"' : '') + '>' +
       '<span class="ci">' + ic(icon, opts.fillIcon ? 'f' : '') + '</span>' +
-      '<span class="ct"><b>' + esc(title) + '</b><span class="cd">' + esc(desc) + '</span>' + (opts.tag ? '<span class="tag">' + esc(opts.tag) + '</span>' : '') + '</span>' +
+      '<span class="ct"><b>' + esc(title) + '</b>' + (desc ? '<span class="cd">' + esc(desc) + '</span>' : '') + (opts.tag ? '<span class="tag">' + esc(opts.tag) + '</span>' : '') + '</span>' +
       '<span class="go">' + ic('i-next', 'flip') + '</span></button>';
   }
 
@@ -214,26 +220,32 @@
           '<button type="button" class="btn soft" data-act="resume">' + esc(t.resumeBtn) + '</button>' +
           '<button type="button" class="link" data-act="restart">' + esc(t.restartBtn) + '</button></div>';
       }
-      return '<h1>' + esc(t.wTitle) + '</h1><p class="lead">' + esc(t.wSub) + '</p>' + resume +
-        '<div class="choices two">' +
-        choice('intent:trial', 'i-play-c', t.trialT, t.trialD, { cls: 'hero primary' }) +
-        choice('intent:buy', 'i-bag', t.buyT, t.buyD, { cls: 'hero' }) +
+      // Title on top, pills and the prices link in the middle, the two big choices at the
+      // bottom within thumb reach (owner, 2026-11-26).
+      function pick(act, icon, title, cls, color) {
+        return '<button type="button" class="pick ' + cls + '" data-act="' + act + '"' + (color ? ' style="--c:' + color + '"' : '') + '>' +
+          '<span class="pv">' + ic(icon) + '</span>' +
+          '<span class="pl"><b>' + esc(title) + '</b>' + ic('i-next', 'flip') + '</span></button>';
+      }
+      return '<h1>' + esc(t.wTitle) + '</h1><p class="lead">' + esc(t.wSub) + '</p>' +
+        '<div class="mid">' + resume +
+        '<ul class="facts"><li>' + cic('i-cloudoff', C.blue) + esc(t.factOffline) + '</li><li>' + cic('i-check', C.green) + esc(t.factOnce) + '</li><li>' + cic('i-devices', C.both) + esc(t.factDevices) + '</li></ul>' +
         '</div>' +
-        '<div class="actions"><div class="row"><button type="button" class="link" data-act="go:prices">' + ic('i-tag') + esc(t.pricesLink) + '</button></div></div>' +
-        '<ul class="facts"><li>' + ic('i-cloudoff') + esc(t.factOffline) + '</li><li>' + ic('i-check') + esc(t.factOnce) + '</li><li>' + ic('i-devices') + esc(t.factDevices) + '</li></ul>';
+        '<div class="dock picks">' + pick('intent:trial', 'i-play-c', t.trialT, 'primary') + pick('intent:buy', 'i-bag', t.buyT, '', C.blue) + '</div>';
     },
 
     activity: function () {
+      // One shop type per row, each with its own colour (owner, 2026-11-26).
       var tiles = F.ACTIVITIES.map(function (a) {
-        return '<button type="button" class="tile" data-act="activity:' + a.id + '" aria-pressed="' + (state.activity === a.id) + '">' +
-          '<span class="ci">' + ic(a.icon) + '</span><span>' + esc(t.act[a.id]) + '</span></button>';
+        return '<button type="button" class="tile" style="--c:' + a.color + '" data-act="activity:' + a.id + '" aria-pressed="' + (state.activity === a.id) + '">' +
+          '<span class="ci">' + ic(a.icon) + '</span><span class="tl">' + esc(t.act[a.id]) + '</span>' + ic('i-next', 'flip go') + '</button>';
       }).join('');
       var other = state.activity === 'other' ?
         '<div class="field"><label for="other">' + esc(t.otherLabel) + '</label>' +
         '<input id="other" type="text" maxlength="60" autocomplete="off" placeholder="' + esc(t.otherPh) + '" value="' + esc(state.other) + '">' +
-        '<small>' + esc(t.otherHint) + '</small></div>' +
-        '<div class="dock"><button type="button" class="btn block" data-act="go:pain">' + esc(t.next) + '</button></div>' : '';
-      return '<h1>' + esc(t.aTitle) + '</h1><p class="q-sub">' + esc(t.aSub) + '</p><div class="tiles">' + tiles + '</div>' + other;
+        '</div>' +
+        '<div class="dock"><button type="button" class="btn block" data-act="go:' + (F.isBuy(state) ? 'devices' : 'pain') + '">' + esc(t.next) + '</button></div>' : '';
+      return '<h1>' + esc(t.aTitle) + '</h1><p class="q-sub">' + esc(t.aSub) + '</p><div class="tiles list">' + tiles + '</div>' + other;
     },
 
     // "What bothers you most?": several answers or none. A chosen answer shows its fix at once.
@@ -244,13 +256,12 @@
       var tiles = shown.map(function (p) {
         var on = state.pains.indexOf(p.id) !== -1;
         if (on) chosen += 1;
-        return '<button type="button" class="tile pain" data-act="pain:' + p.id + '" aria-pressed="' + on + '">' +
+        return '<button type="button" class="tile pain" style="--c:' + p.color + '" data-act="pain:' + p.id + '" aria-pressed="' + on + '">' +
           '<span class="ci">' + ic(p.icon) + '</span><span>' + esc(t.pain[p.id]) + '</span>' +
           (on ? '<span class="fix">' + ic('i-check') + esc(fill(t.painFix, { feature: t.feat[F.painFeature(p, a)][0] })) + '</span>' : '') +
           '</button>';
       }).join('');
-      return '<h1>' + esc(t.painTitle) + '</h1><p class="q-sub">' + esc(t.painSub) + '</p>' +
-        '<p class="chip">' + ic(a.icon) + esc(fill(t.painIntro, { n: a.features.length, activity: activityName() })) + '</p>' +
+      return '<h1>' + esc(t.painTitle) + '</h1>' +
         '<div class="tiles">' + tiles + '</div>' +
         '<div class="dock"><button type="button" class="btn block" data-act="go:devices">' + esc(chosen ? t.next : t.painSkip) + '</button></div>';
     },
@@ -260,39 +271,29 @@
         if ((m === 'pc' && DEVICE === 'windows') || (m === 'phone' && DEVICE === 'android')) return t.here;
         return null;
       };
-      var devName = DEVICE === 'android' ? t.devAndroid : DEVICE === 'windows' ? t.devWindows : t.devOther;
+      // Three choices only, for buying and trying (owner, 2026-11-26): computer, phone,
+      // computer + phone. Two PCs (shop pack) and "not sure" are no longer on this screen.
       return '<h1>' + esc(t.dTitle) + '</h1><p class="q-sub">' + esc(t.dSub) + '</p>' +
-        '<div class="choices four">' +
-        choice('mode:pc', 'i-win', t.modePcT, t.modePcD, { pressed: state.mode === 'pc', tag: hereTag('pc'), fillIcon: true }) +
-        choice('mode:both', 'i-pcphone', t.modeBothT, t.modeBothD, { pressed: state.mode === 'both' }) +
-        choice('mode:phone', 'i-phone', t.modePhoneT, t.modePhoneD, { pressed: state.mode === 'phone', tag: hereTag('phone') }) +
-        choice('mode:two', 'i-devices', t.modeTwoT, t.modeTwoD, { pressed: state.mode === 'two' }) +
-        '</div>' +
-        '<div class="choices">' + choice('unsure', 'i-help', t.modeUnsureT, t.modeUnsureD, { pressed: unsureOpen }) + '</div>' +
-        (unsureOpen ? '<div class="note block" id="unsure"><b>' + esc(t.unsureQ) + '</b><div class="seg">' +
-          choice('mode:pc', 'i-win', t.unsurePcT, t.unsurePcD, { fillIcon: true }) +
-          choice('mode:phone', 'i-phone', t.unsurePhoneT, t.unsurePhoneD) +
-          '</div><p class="q-sub">' + esc(t.unsureNote) + '</p></div>' : '') +
-        (DEVICE !== 'other' && DEVICE !== 'ios' ? '<p class="q-sub block">' + esc(fill(t.hereNote, { device: devName })) + '</p>' : '') +
-        // More than the shop pack: no add-ons on the website any more, we talk with the shop.
-        '<p class="q-sub block">' + esc(t.moreQ) + ' <a class="link" data-wa="more" href="' + esc(waLink(t.waMore)) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.helpBtn) + '</a></p>';
+        '<div class="choices">' +
+        choice('mode:pc', 'i-win', t.modePcT, t.modePcD, { pressed: state.mode === 'pc', tag: hereTag('pc'), fillIcon: true, color: C.win }) +
+        choice('mode:phone', 'i-phone', t.modePhoneT, t.modePhoneD, { pressed: state.mode === 'phone', tag: hereTag('phone'), color: C.android }) +
+        choice('mode:both', 'i-pcphone', t.modeBothT, t.modeBothD, { pressed: state.mode === 'both', color: C.both }) +
+        '</div>';
     },
 
     features: function () {
       var a = F.activity(state.activity);
       var ff = F.featuresFor(state);
-      if (!selectedFeature || ff.list.indexOf(selectedFeature) === -1) selectedFeature = ff.list[0];
+      // A plain list, no app screenshots (owner, 2026-11-26).
       var list = ff.list.map(function (f) {
         var because = ff.why[f] ? '<span class="why-tag">' + esc(fill(t.becauseTag, { pain: t.pain[ff.why[f]] })) + '</span>' : '';
-        return '<li><button type="button" class="feat" data-act="feat:' + f + '" aria-pressed="' + (f === selectedFeature) + '">' +
-          '<span class="ok">' + ic('i-check') + '</span><span><b>' + esc(t.feat[f][0]) + '</b><span class="fd">' + esc(t.feat[f][1]) + '</span>' + because + '</span></button>' +
-          '<div class="ishot">' + (f === selectedFeature ? inlineShot(f) : '') + '</div></li>';
+        return '<li><div class="feat">' +
+          '<span class="ok" style="--c:' + F.FEATURE_ICON[f][1] + '">' + ic(F.FEATURE_ICON[f][0]) + '</span><span><b>' + esc(t.feat[f][0]) + '</b><span class="fd">' + esc(t.feat[f][1]) + '</span>' + because + '</span></div></li>';
       }).join('');
       return '<h1>' + esc(t.fTitle) + '</h1><span class="chip">' + ic(a.icon) + esc(activityName()) + '</span>' +
-        '<div class="feat-grid"><div><p class="q-sub">' + esc(t.fSub) + ' <span class="sr">' + esc(t.fTap) + '</span></p>' +
-        '<ul class="feats block" style="margin-top:8px">' + list + '</ul>' +
-        '<ul class="facts"><li>' + ic('i-cloudoff') + esc(t.factOffline) + '</li><li>' + ic('i-check') + esc(t.factOnce) + '</li></ul></div>' +
-        '<div class="shot"><div class="phn"><div class="scr" id="shot">' + shotHtml(selectedFeature) + '</div></div></div></div>' +
+        '<p class="q-sub block">' + esc(t.fSub) + '</p>' +
+        '<ul class="feats" style="margin-top:8px">' + list + '</ul>' +
+        '<ul class="facts"><li>' + cic('i-cloudoff', C.blue) + esc(t.factOffline) + '</li><li>' + cic('i-check', C.green) + esc(t.factOnce) + '</li></ul>' +
         '<div class="dock"><button type="button" class="btn block" data-act="go:price">' + esc(t.toPrice) + '</button></div>';
     },
 
@@ -312,14 +313,13 @@
         '<div class="offer"><span class="ribbon">' + esc(t.recTag) + '</span>' +
         '<h2>' + esc(offerName(r)) + '</h2><p class="od">' + esc(desc) + '</p>' +
         '<div class="price"><span class="amt">' + money(r.total) + '</span><span class="cur">' + esc(t.da) + '</span><span class="once">' + esc(t.once) + '</span></div>' +
-        '<ul class="incl"><li>' + ic('i-devices') + '<span>' + esc(fill(t.worksOn, { devices: devicesText(r.includes) })) + '</span></li>' +
-        '<li>' + ic('i-check') + '<span>' + esc(t.inclAll) + '</span></li>' +
-        '<li>' + ic('i-check') + '<span>' + esc(t.inclOffline) + '</span></li>' +
-        '<li>' + ic('i-check') + '<span>' + esc(t.inclNoSub) + '</span></li>' +
-        '<li>' + ic('i-check') + '<span>' + esc(t.inclTrial) + '</span></li></ul></div>' +
+        '<ul class="incl"><li>' + cic('i-devices', C.both) + '<span>' + esc(fill(t.worksOn, { devices: devicesText(r.includes) })) + '</span></li>' +
+        '<li>' + cic('i-check', C.green) + '<span>' + esc(t.inclAll) + '</span></li>' +
+        '<li>' + cic('i-cloudoff', C.blue) + '<span>' + esc(t.inclOffline) + '</span></li>' +
+        '<li>' + cic('i-cash', C.teal) + '<span>' + esc(t.inclNoSub) + '</span></li>' +
+        '<li>' + cic('i-gift', C.pink) + '<span>' + esc(t.inclTrial) + '</span></li></ul></div>' +
         whyHtml(r, d) +
         extra +
-        '<details class="cmp"><summary>' + esc(t.compare) + '</summary><div class="plans">' + plansHtml(r) + '<p class="q-sub">' + esc(t.moreQ) + '</p></div></details>' +
         '<div class="dock">' + primary + '<button type="button" class="link" data-act="go:devices">' + esc(t.changeDevices) + '</button></div></div>';
     },
 
@@ -327,10 +327,11 @@
       return '<h1>' + esc(t.pricesTitle) + '</h1><p class="lead">' + esc(t.pricesSub) + '</p>' +
         '<p class="block"><span class="trial-tag"><span class="n ltr">' + OFFER.trialDays + '</span>' + esc(t.vTrial.replace(/^\d+\s*/, '')) + '</span></p>' +
         '<div class="plans block">' + plansHtml(null) + '</div>' +
-        '<p class="q-sub block">' + esc(t.moreQ) + ' <a class="link" data-wa="more" href="' + esc(waLink(t.waMore)) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.helpBtn) + '</a></p>' +
-        '<ul class="incl block"><li>' + ic('i-check') + '<span>' + esc(t.inclAll) + '</span></li><li>' + ic('i-check') + '<span>' + esc(t.inclOffline) + '</span></li><li>' + ic('i-check') + '<span>' + esc(t.inclNoSub) + '</span></li></ul>' +
-        '<div class="dock"><button type="button" class="btn block" data-act="help-choose">' + esc(t.pricesHelp) + '</button>' +
-        '<div class="row"><button type="button" class="link" data-act="try-from-prices">' + esc(t.pricesTry) + '</button><a class="link" href="../download/">' + esc(t.fDownload) + '</a></div></div>';
+        '<ul class="incl block"><li>' + cic('i-check', C.green) + '<span>' + esc(t.inclAll) + '</span></li><li>' + cic('i-cloudoff', C.blue) + '<span>' + esc(t.inclOffline) + '</span></li><li>' + cic('i-cash', C.teal) + '<span>' + esc(t.inclNoSub) + '</span></li></ul>' +
+        // "I want to try it" starts the trial path (owner, 2026-11-26).
+        '<div class="dock"><button type="button" class="btn block" data-act="try-from-prices">' + esc(t.trialT) + '</button>' +
+        // "Talk to us on WhatsApp" under it, where "Download" was (owner, 2026-11-26).
+        '<div class="row"><a class="link" data-wa="help" href="' + esc(waLink(t.waHelp)) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.helpBtn) + '</a></div></div>';
     },
 
     course: function () {
@@ -341,7 +342,7 @@
         (seen ? '<p class="chip">' + ic('i-check') + esc(fill(t.seenCount, { n: seen, t: ids.length })) + '</p>' : '') +
         '<ol class="lessons">' + ids.map(function (i, k) { return lessonHtml(i, k === 0); }).join('') + '</ol>' +
         (d && d.pcs === 0 ? '<p class="q-sub block">' + esc(t.phoneLessonsNote) + '</p>' : '') +
-        '<p class="block"><a class="link" href="../learn/">' + esc(t.allLessons) + '</a></p>' +
+        '<p class="block">' + ytAll() + '</p>' +
         '<div class="dock"><button type="button" class="btn block" data-act="finish">' + esc(state.intent === 'buy' ? t.skipBuy : t.skipTrial) + '</button></div>';
     },
 
@@ -363,10 +364,10 @@
         sumRow(t.kTrial, t.vTrial) +
         sumRow(t.kOffer, offerName(r) + ' · ' + num(r.total) + ' ' + t.da) +
         '</ul>' +
-        '<div class="card"><h2>' + ic('i-dl') + esc(t.dlTitle) + '</h2>' + blocks + '</div>' +
+        '<div class="card"><h2>' + cic('i-dl', C.blue) + esc(t.dlTitle) + '</h2>' + blocks + '</div>' +
         '<div class="final-grid"><div class="card"><h2>' + esc(t.installTitle) + '</h2>' + inst + '</div>' +
         '<div class="card"><h2>' + esc(t.tLessons) + '</h2><ol class="lessons">' + ids.map(function (i, k) { return lessonHtml(i, k === 0); }).join('') + '</ol>' +
-        '<p class="block"><a class="link" href="../learn/">' + esc(t.moreLessons) + '</a></p></div></div>' +
+        '<p class="block">' + ytAll() + '</p></div></div>' +
         '<div class="help"><h2>' + esc(t.helpTitle) + '</h2><p>' + esc(t.helpText) + '</p>' +
         '<a class="btn wa" data-wa="trial" href="' + esc(waLink(fill(t.waTrial, { activity: activityName(), devices: devicesText() }))) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.helpBtn) + '</a></div>' +
         '<div class="actions"><div class="row">' + buyLink('link', t.buyNow) + '</div></div>';
@@ -392,6 +393,13 @@
           '<div class="dock"><a class="btn wa block" id="order-btn" data-wa="order" href="' + esc(waLink(phoneOrderMessage())) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.buyWa) + '</a>' + dockEnd;
       }
 
+      // A "pay at delivery" order that reached us: say so, and what happens next.
+      if (codOrder.state === 'done') {
+        return '<h1>' + esc(t.codDoneT) + '</h1><p class="lead">' + esc(fill(t.codDoneD, { phone: codOrder.phone })) + '</p>' + sum +
+          '<div class="card"><h2>' + esc(t.nextTitle) + '</h2><ol class="steps-list">' + t.nextStepsCod.slice(1).map(function (s) { return '<li><span>' + esc(s) + '</span></li>'; }).join('') + '</ol></div>' +
+          '<div class="dock"><button type="button" class="btn block soft" data-act="path:trial">' + esc(t.codDoneTry) + '</button></div>';
+      }
+
       // PC offers: Windows check, the USB key, where to send it, how to pay.
       loadPlaces();
       var win = '<div class="card"><h2>' + ic('i-win', 'f') + esc(t.winQ) + '</h2><div class="pills">' +
@@ -404,22 +412,34 @@
         return '<h1>' + esc(t.oTitle) + '</h1><p class="lead">' + esc(t.oSub) + '</p>' + win + sum +
           '<div class="dock"><button type="button" class="btn block" data-act="tophone">' + esc(t.toPhoneOffer) + '</button>' + dockEnd;
       }
-      var usb = '<div class="card"><h2>' + ic('i-usb') + esc(t.usbTitle) + '</h2><ul class="incl">' +
+      var usb = '<div class="card"><h2>' + cic('i-usb', C.slate) + esc(t.usbTitle) + '</h2><ul class="incl">' +
         t.usbItems.map(function (s) { return '<li>' + ic('i-check') + '<span>' + esc(s) + '</span></li>'; }).join('') + '</ul>' +
         '<p class="q-sub block">' + esc(t.usbPhone) + ' ' + esc(t.usbNote) + '</p></div>';
-      var details = '<div class="card"><h2>' + ic('i-home') + esc(t.detailsTitle) + '</h2>' +
+      var details = '<div class="card"><h2>' + cic('i-home', C.orange) + esc(t.detailsTitle) + '</h2>' +
+        // A trap for robots: people never see this field (CSS .hp), robots fill it.
+        '<input id="b-website" class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">' +
         field('b-name', t.fName, '<input id="b-name" type="text" maxlength="60" autocomplete="name" value="' + esc(buyer.name) + '">') +
         field('b-phone', t.fPhone, '<input id="b-phone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" dir="ltr" placeholder="' + esc(t.fPhonePh) + '" value="' + esc(buyer.phone) + '">') +
         placeFields() + '</div>';
-      var pay = '<div class="card"><h2>' + ic('i-cash') + esc(t.payTitle) + '</h2><div class="seg">' +
-        choice('pay:prepaid', 'i-cash', t.payPreT, t.payPreD, { pressed: buyer.pay === 'prepaid', tag: fill(t.youSave, { discount: num(OFFER.prepaidDiscount) }) }) +
-        choice('pay:cod', 'i-home', t.payCodT, t.payCodD, { pressed: buyer.pay === 'cod' }) + '</div>' +
+      var pay = '<div class="card"><h2>' + cic('i-cash', C.teal) + esc(t.payTitle) + '</h2><div class="seg">' +
+        choice('pay:prepaid', 'i-cash', t.payPreT, t.payPreD, { pressed: buyer.pay === 'prepaid', tag: fill(t.youSave, { discount: num(OFFER.prepaidDiscount) }), color: C.blue }) +
+        choice('pay:cod', 'i-home', t.payCodT, t.payCodD, { pressed: buyer.pay === 'cod', color: C.orange }) + '</div>' +
         '<p class="warn block">' + esc(t.paySafe) + '</p></div>';
-      return '<h1>' + esc(t.oTitle) + '</h1><p class="lead">' + esc(t.oSub) + '</p>' +
+      // Pay at delivery: the order goes straight to us (Admin CRM), no WhatsApp. Paying first
+      // (BaridiMob / CCP): the WhatsApp message, as before (owner, 2026-11-26).
+      var cod = buyer.pay === 'cod';
+      var steps = cod ? t.nextStepsCod : t.nextSteps;
+      var sending = codOrder.state === 'sending';
+      var send = cod ?
+        '<button type="button" class="btn block" id="cod-btn" data-act="cod-send"' + (sending ? ' disabled' : '') + '>' + esc(sending ? t.codSending : t.codBtn) + '</button>' +
+          (codOrder.state === 'failed' ? '<p class="msg bad" role="alert">' + esc(t.codFail) + ' <a class="link" data-wa="order" href="' + esc(waLink(pcOrderMessage())) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.codFailWa) + '</a></p>' : '') :
+        '<a class="btn wa block" id="order-btn" data-wa="order" href="' + esc(waLink(pcOrderMessage())) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.sendOrder) + '</a>';
+      return '<h1>' + esc(t.oTitle) + '</h1><p class="lead">' + esc(cod ? t.oSubCod : t.oSub) + '</p>' +
         sum + win + usb + details + pay +
-        '<div class="card"><h2>' + esc(t.nextTitle) + '</h2><ol class="steps-list">' + t.nextSteps.map(function (s) { return '<li><span>' + esc(s) + '</span></li>'; }).join('') + '</ol></div>' +
-        '<p class="q-sub block">' + esc(t.noData) + '</p>' +
-        '<div class="dock"><a class="btn wa block" id="order-btn" data-wa="order" href="' + esc(waLink(pcOrderMessage())) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.sendOrder) + '</a>' + dockEnd;
+        '<div class="card"><h2>' + esc(t.nextTitle) + '</h2><ol class="steps-list">' + steps.map(function (s) { return '<li><span>' + esc(s) + '</span></li>'; }).join('') + '</ol></div>' +
+        (cod ? '<p class="q-sub block">' + esc(t.noDataCod) + ' <a class="link" href="../privacy.html#start-orders-' + lang + '" target="_blank" rel="noopener">' + esc(t.privacyLink) + '</a></p>'
+          : '<p class="q-sub block">' + esc(t.noData) + '</p>') +
+        '<div class="dock">' + send + dockEnd;
     }
   };
 
@@ -437,7 +457,7 @@
     var ff = F.featuresFor(state);
     var fixed = ff.list.filter(function (f) { return ff.why[f]; }).map(function (f) { return t.feat[f][0]; });
     if (fixed.length) why.push(fill(t.whyPains, { features: fixed.join(t.sep) }));
-    return '<div class="why block"><h2>' + ic('i-help') + esc(t.whyTitle) + '</h2>' +
+    return '<div class="why block"><h2>' + cic('i-help', C.blue) + esc(t.whyTitle) + '</h2>' +
       '<p class="q-sub">' + esc(fill(t.whyFrom, { activity: activityName(), devices: devicesText(d) })) + '</p>' +
       '<ul>' + why.map(function (s) { return '<li>' + ic('i-next', 'flip') + '<span>' + esc(s) + '</span></li>'; }).join('') + '</ul></div>';
   }
@@ -451,15 +471,12 @@
     }).join('');
   }
 
-  function shotHtml(f) {
-    var img = F.FEATURE_IMG[f];
-    if (!img) return '<div class="none">' + esc(t.fNoShot) + '</div>';
-    return '<img src="assets/' + img + '-' + lang + '.webp" width="360" height="640" alt="' + esc(fill(t.fAlt, { feature: t.feat[f][0] })) + '">';
+
+  // "Watch all the episodes on YouTube": the whole playlist (owner, 2026-11-26).
+  function ytAll() {
+    return '<a class="link yt-all" data-yt-all href="https://www.youtube.com/playlist?list=' + LESSONS.playlistId + '" target="_blank" rel="noopener">' +
+      ic('i-yt', 'f') + esc(t.ytAll) + '</a>';
   }
-
-  // Phones: the screen of the tapped feature, right under it (the side phone is for wide screens).
-  function inlineShot(f) { return '<div class="phn"><div class="scr">' + shotHtml(f) + '</div></div>'; }
-
   function lessonTitle(i) { return LESSONS.videos[i][{ ar: 1, fr: 2, en: 3 }[lang]]; }
   function mmss(sec) { return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
   function videoUrl(i) { return 'https://www.youtube.com/watch?v=' + LESSONS.videos[i][0] + '&list=' + LESSONS.playlistId + '&index=' + (i + 1); }
@@ -474,7 +491,7 @@
   }
 
   function pcBlock() {
-    var head = '<h3 class="block" style="font-size:1.05rem">' + ic('i-win', 'f') + ' ' + esc(t.pcBlock) + ' <small class="q-sub">· ' + esc(t.pcReq) + '</small></h3>';
+    var head = '<h3 class="block" style="font-size:1.05rem">' + cic('i-win', C.win, 'f') + ' ' + esc(t.pcBlock) + ' <small class="q-sub">· ' + esc(t.pcReq) + '</small></h3>';
     if (IS_PHONE) {
       return head + '<div class="get"><p>' + esc(t.onPhonePc) + '</p><div class="share-row">' +
         (navigator.share ? '<button type="button" class="btn soft" data-act="share-pc">' + ic('i-share') + esc(t.shareBtn) + '</button>' : '') +
@@ -489,7 +506,7 @@
   }
 
   function phoneBlock() {
-    var head = '<h3 class="block" style="font-size:1.05rem">' + ic('i-phone') + ' ' + esc(t.phoneBlock) + ' <small class="q-sub">· ' + esc(t.phoneReq) + '</small></h3>';
+    var head = '<h3 class="block" style="font-size:1.05rem">' + cic('i-phone', C.android) + ' ' + esc(t.phoneBlock) + ' <small class="q-sub">· ' + esc(t.phoneReq) + '</small></h3>';
     var badge = '<a class="play-badge" id="play-btn" href="' + esc(playUrl()) + '" target="_blank" rel="noopener"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/' + lang + '_badge_web_generic.png" width="646" height="250" alt="' + esc(t.playAlt) + '"></a>';
     if (DEVICE === 'ios') return head + '<p class="warn">' + esc(t.iosNote) + '</p>';
     if (IS_PHONE) return head + '<div class="get">' + badge + '</div>';
@@ -540,10 +557,14 @@
       name: txt(raw.name, 60), phone: txt(raw.phone, 20),
       wilaya: (raw.wilaya | 0) >= 1 && (raw.wilaya | 0) <= 99 ? raw.wilaya | 0 : 0, wilayaTxt: txt(raw.wilayaTxt, 60),
       commune: txt(raw.commune, 60), communeOther: txt(raw.communeOther, 60),
-      pay: ['prepaid', 'cod'].indexOf(raw.pay) !== -1 ? raw.pay : ''
+      pay: ['prepaid', 'cod'].indexOf(raw.pay) !== -1 ? raw.pay : '',
+      requestId: typeof raw.requestId === 'string' && /^[0-9a-f-]{36}$/.test(raw.requestId) ? raw.requestId : ''
     };
   })();
   function saveBuyer() { try { sessionStorage.setItem(BUYER_KEY, JSON.stringify(buyer)); } catch (e) {} }
+  // The buyer changed the order: a new send is a new order (else, if an earlier send reached us
+  // but its answer was lost, the server would keep the old details and drop the new ones).
+  function buyerEdited() { buyer.requestId = ''; saveBuyer(); }
 
   // Wilayas and communes (../js/dz-places.json), loaded only when the order form is shown.
   var places = null, placesState = 'idle';
@@ -590,6 +611,62 @@
       activity: activityAr()
     });
   }
+  // ---- "Pay at delivery": the order goes to the Doukkany server (Edge Function site-order),
+  // which adds it to the Admin CRM. Only on the real site; elsewhere (local checks) nothing is
+  // sent: the body is kept in window.__dkOrderSent and ?dk_order=fail shows the error. ----
+  var ORDER_URL = 'https://clseghjxpmlutwrrvmrf.supabase.co/functions/v1/site-order';
+  var ORDER_LIVE = location.hostname === 'yousoft.site';
+  var codOrder = { state: 'idle', phone: '' }; // idle | sending | failed | done
+  function newRequestId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    var b = new Uint8Array(16);
+    window.crypto.getRandomValues(b);
+    b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
+    var h = Array.prototype.map.call(b, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    return h.slice(0, 8) + '-' + h.slice(8, 12) + '-' + h.slice(12, 16) + '-' + h.slice(16, 20) + '-' + h.slice(20);
+  }
+  function showMissing(miss) {
+    var om = $('order-msg');
+    if (om) { om.textContent = fill(t.fixMissing, { fields: miss.map(function (m) { return m[1]; }).join(t.sep) }); om.classList.add('bad'); }
+    var first = $(miss[0][0]) || view.querySelector('[data-act="' + miss[0][0] + '"]');
+    if (first) { first.scrollIntoView({ block: 'center' }); first.focus({ preventScroll: true }); }
+  }
+  function postOrder(body) {
+    if (!ORDER_LIVE) {
+      (window.__dkOrderSent = window.__dkOrderSent || []).push(body);
+      var fail = params.get('dk_order') === 'fail';
+      return new Promise(function (res) { setTimeout(function () { res(!fail); }, 400); });
+    }
+    return fetch(ORDER_URL, { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { return r.ok && j && j.ok === true; }, function () { return false; }); },
+        function () { return false; });
+  }
+  function sendCodOrder() {
+    if (codOrder.state === 'sending') return;
+    var miss = orderMissing();
+    if (miss.length) { showMissing(miss); return; }
+    var r = rec();
+    if (!buyer.requestId) { buyer.requestId = newRequestId(); saveBuyer(); }
+    var trap = $('b-website');
+    var body = {
+      request_id: buyer.requestId, name: buyer.name.trim(), phone: buyer.phone.trim(), shop_type: activityAr(),
+      offer: r.type, devices: state.mode, pay: 'cod', total_dzd: OFFER.orderTotal(r.type, 'cod'),
+      wilaya: wilayaText(), commune: communeText(), language: lang, website: trap ? trap.value : ''
+    };
+    codOrder.state = 'sending';
+    redrawOrder('cod-btn');
+    postOrder(body).then(function (ok) {
+      if (!ok) { codOrder.state = 'failed'; redrawOrder('cod-btn'); return; }
+      track('purchase_requested', eventParams('order'));
+      codOrder.state = 'done';
+      codOrder.phone = body.phone;
+      // The order is with us now: forget the buyer's details in this tab.
+      buyer.name = ''; buyer.phone = ''; buyer.wilaya = 0; buyer.wilayaTxt = ''; buyer.commune = '';
+      buyer.communeOther = ''; buyer.requestId = ''; saveBuyer();
+      render('order', true);
+    });
+  }
+
   function refreshOrderLink() { var a = $('order-btn'); if (a && rec().type !== 'phone') a.href = waLink(pcOrderMessage()); }
   function redrawOrder(focusId) {
     var old = view.querySelector('.scroll');
@@ -645,18 +722,18 @@
   function bindOrderForm() {
     function onInput(id, key) {
       var el = $(id);
-      if (el) el.addEventListener('input', function () { buyer[key] = el.value.replace(/[\u0000-\u001F<>]/g, ' ').slice(0, key === 'phone' ? 20 : 60); saveBuyer(); refreshOrderLink(); });
+      if (el) el.addEventListener('input', function () { buyer[key] = el.value.replace(/[\u0000-\u001F<>]/g, ' ').slice(0, key === 'phone' ? 20 : 60); buyerEdited(); refreshOrderLink(); });
     }
     onInput('b-name', 'name');
     onInput('b-phone', 'phone');
     onInput('b-wilaya-txt', 'wilayaTxt');
     onInput('b-commune-txt', 'communeOther');
     var ws = $('b-wilaya');
-    if (ws) ws.addEventListener('change', function () { buyer.wilaya = ws.value | 0; buyer.commune = ''; saveBuyer(); redrawOrder('b-commune'); });
+    if (ws) ws.addEventListener('change', function () { buyer.wilaya = ws.value | 0; buyer.commune = ''; buyerEdited(); redrawOrder('b-commune'); });
     var cs = $('b-commune');
     if (cs) cs.addEventListener('change', function () {
       var wasOther = buyer.commune === 'other';
-      buyer.commune = cs.value; saveBuyer();
+      buyer.commune = cs.value; buyerEdited();
       if (wasOther || buyer.commune === 'other') redrawOrder(buyer.commune === 'other' ? 'b-commune-txt' : 'b-commune');
       else refreshOrderLink();
     });
@@ -669,7 +746,7 @@
   function afterRender(step, viewed) {
     if (viewed) {
       // One event per screen shown, with its place in the bar: the drop-off chart.
-      var n = F.progressIndex(step);
+      var n = F.progressIndex(step, state);
       var p = eventParams(step);
       p.step_number = n < 0 ? undefined : n + 1;
       track('funnel_step_viewed', p);
@@ -743,6 +820,7 @@
   function finishStep() { go(state.intent === 'buy' ? 'order' : 'trial'); }
 
   document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('a[data-yt-all]')) { track('tutorial_clicked', { tutorial_id: 'playlist', tutorial_category: 'playlist' }); return; }
     var lessonA = e.target.closest && e.target.closest('a[data-v]');
     if (lessonA) { openLesson(e, lessonA); return; }
 
@@ -751,14 +829,7 @@
       // The PC order form: say what is missing instead of opening WhatsApp half empty.
       if (wa.id === 'order-btn' && current === 'order' && rec().type !== 'phone') {
         var miss = orderMissing();
-        if (miss.length) {
-          e.preventDefault();
-          var om = $('order-msg');
-          if (om) { om.textContent = fill(t.fixMissing, { fields: miss.map(function (m) { return m[1]; }).join(t.sep) }); om.classList.add('bad'); }
-          var first = $(miss[0][0]) || view.querySelector('[data-act="' + miss[0][0] + '"]');
-          if (first) { first.scrollIntoView({ block: 'center' }); first.focus({ preventScroll: true }); }
-          return;
-        }
+        if (miss.length) { e.preventDefault(); showMissing(miss); return; }
         refreshOrderLink();
       }
       if (wa.getAttribute('data-wa') === 'order' && state.intent !== 'buy') { state.intent = 'buy'; save(); }
@@ -783,7 +854,7 @@
     var parts = act.split(':');
     switch (parts[0]) {
       case 'go': e.preventDefault(); go(parts[1]); break;
-      case 'resume': go(F.allowedStep(state, 'price', OFFER)); break;
+      case 'resume': go(F.allowedStep(state, F.isBuy(state) ? 'order' : 'price', OFFER)); break;
       case 'restart': reset(); hadProgress = false; render('welcome', true); break;
       case 'intent':
         state.intent = parts[1]; save();
@@ -795,37 +866,20 @@
         state.activity = parts[1]; save();
         track('activity_selected', { activity: parts[1] });
         if (parts[1] === 'other') { render('activity', false); var inp = $('other'); if (inp) inp.focus(); }
-        else go('pain');
+        else go(F.isBuy(state) ? 'devices' : 'pain');
         break;
       case 'pain':
         var at = state.pains.indexOf(parts[1]);
         if (at === -1) state.pains.push(parts[1]); else state.pains.splice(at, 1);
         save();
-        selectedFeature = null; // the features screen then opens on the first fix
 
         track('pain_selected', { pain: parts[1], selected: at === -1 });
         rerenderKeepFocus(act);
         break;
-      case 'unsure':
-        unsureOpen = !unsureOpen;
-        if (unsureOpen) track('device_unsure_clicked', {});
-        rerenderKeepFocus(act);
-        if (unsureOpen && $('unsure')) $('unsure').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-        break;
       case 'mode':
-        unsureOpen = false;
         state.mode = parts[1]; save();
         track('device_selected', { platform: parts[1] });
-        go('features');
-        break;
-      case 'feat':
-        selectedFeature = parts[1];
-        view.querySelectorAll('.feat').forEach(function (b) {
-          var on = b.getAttribute('data-act') === act;
-          b.setAttribute('aria-pressed', String(on));
-          b.nextElementSibling.innerHTML = on ? inlineShot(selectedFeature) : '';
-        });
-        $('shot').innerHTML = shotHtml(selectedFeature);
+        go(F.isBuy(state) ? 'order' : 'features');
         break;
       case 'path':
         state.intent = parts[1]; save();
@@ -833,14 +887,14 @@
         // Buying goes straight to the order (the lessons come on the USB key); a trial shows them first.
         if (parts[1] === 'buy') go('order'); else go(current === 'price' ? 'course' : 'trial');
         break;
-      case 'win': buyer.win = parts[1]; saveBuyer(); redrawOrder(act); break;
-      case 'pay': buyer.pay = parts[1]; saveBuyer(); redrawOrder(act); break;
-      case 'tophone': state.mode = 'phone'; save(); go('price'); break;
+      case 'win': buyer.win = parts[1]; buyerEdited(); redrawOrder(act); break;
+      case 'pay': buyer.pay = parts[1]; buyerEdited(); redrawOrder(act); break;
+      case 'tophone': state.mode = 'phone'; save(); go(F.isBuy(state) ? 'order' : 'price'); break;
+      case 'cod-send': sendCodOrder(); break;
       case 'finish':
         track('quick_course_skipped', eventParams('course'));
         finishStep();
         break;
-      case 'help-choose': if (!state.intent) { state.intent = 'buy'; save(); } go('activity'); break;
       case 'try-from-prices': state.intent = 'trial'; save(); go('activity'); break;
       case 'share-pc':
         navigator.share({ title: 'Doukkany', text: t.shareText, url: winLink('share') }).then(function () {

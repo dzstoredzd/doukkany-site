@@ -209,3 +209,48 @@ test('back goes one step back', () => {
   assert.equal(F.previousStep(s, 'pain'), 'activity');
   assert.equal(F.previousStep(s, 'devices'), 'pain');
 });
+
+test('"I want to buy": shop type, devices (3 choices), order', () => {
+  const buy = { ...F.cleanState(null), intent: 'buy', activity: 'grocery', mode: 'both' };
+  assert.deepEqual(F.progressFor(buy), ['welcome', 'activity', 'devices', 'final']);
+  assert.equal(F.progressIndex('devices', buy), 2);
+  assert.equal(F.progressIndex('order', buy), 3);
+  assert.equal(F.progressIndex('pain', buy), -1, 'no problems screen when buying');
+  assert.equal(F.previousStep(buy, 'order'), 'devices');
+  assert.equal(F.previousStep(buy, 'devices'), 'activity');
+  assert.deepEqual(F.BUY_MODES, ['pc', 'both', 'phone']);
+  // Trying keeps the long path.
+  const trial = { ...buy, intent: 'trial' };
+  assert.equal(F.progressFor(trial).length, 8);
+  assert.equal(F.previousStep(trial, 'devices'), 'pain');
+  assert.equal(F.progressIndex('features', trial), 4);
+});
+
+test('texts: the pay-at-delivery order words exist in every language', () => {
+  const T = loadTexts();
+  for (const lang of ['ar', 'fr', 'en']) {
+    for (const k of ['oSubCod', 'codBtn', 'codSending', 'codFail', 'codFailWa', 'codDoneT', 'codDoneD', 'codDoneTry', 'noDataCod', 'privacyLink']) {
+      assert.ok(T[lang][k], lang + ' ' + k);
+    }
+    assert.equal(T[lang].nextStepsCod.length, 4, lang);
+    assert.ok(T[lang].codDoneD.includes('{phone}'), lang);
+  }
+});
+
+test('coloured icons: every feature and answer has one, and every icon is drawn in the page', () => {
+  const page = fs.readFileSync(path.join(__dirname, '../start/index.html'), 'utf8');
+  const color = /^#[0-9A-F]{6}$/i;
+  for (const f of Object.keys(F.FEATURE_IMG)) {
+    const [icon, c] = F.FEATURE_ICON[f] || [];
+    assert.ok(icon && page.includes(`<symbol id="${icon}"`), f + ' icon ' + icon);
+    assert.match(c, color, f);
+  }
+  for (const p of F.PAINS) {
+    assert.ok(page.includes(`<symbol id="${p.icon}"`), p.id);
+    assert.match(p.color, color, p.id);
+  }
+  for (const a of F.ACTIVITIES) {
+    assert.ok(page.includes(`<symbol id="${a.icon}"`), a.id);
+    assert.match(a.color, color, a.id);
+  }
+});

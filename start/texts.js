@@ -6,14 +6,12 @@ window.DK_START_TEXT = {
     title: 'ابدا مع دكّاني · Doukkany', home: 'دكّاني: صفحة التحميل',
     back: 'رجوع', stepOf: '{n} من {t}', next: 'كمّل', edit: 'بدّل', da: 'دج', sep: '، ',
     helpBtn: 'كلّمنا في واتساب',
-    fDownload: 'تحميل دكّاني',
     openYt: 'فتح على YouTube', close: 'غلق',
 
     wTitle: 'مرحبا بيك في دكّاني 👋',
     wSub: 'برنامج وتطبيق تسيير المحلات',
-    trialT: 'حاب نجرب البرنامج', trialD: 'جرّبو 14 يوم مجانا قبل ما تخلّص.',
-    buyT: 'حاب نشري البرنامج', buyD: 'شوف الأسعار واطلب تفعيل الرخصة.',
-    pricesLink: 'حاب غير نشوف الأسعار',
+    trialT: 'حاب نجرب البرنامج',
+    buyT: 'حاب نشري البرنامج',
     factOffline: 'يخدم بلا أنترنت', factOnce: 'تخلّص مرة وحدة', factDevices: 'Windows و Android',
     resumeTxt: 'بديت قبل. تحب تكمّل من وين حبست؟', resumeBtn: 'كمّل', restartBtn: 'ابدا من جديد',
 
@@ -25,31 +23,28 @@ window.DK_START_TEXT = {
       produce: 'خضر وفواكه', bakery: 'حلويات ومخابز', services: 'خدمات وتصليحات', other: 'نشاط آخر'
     },
     otherLabel: 'واش تبيع؟ (ماشي لازم)', otherPh: 'مثلا: لعب الأطفال',
-    otherHint: 'يبقى غير في هاتفك، ما يتبعث لحتى واحد.',
 
-    dTitle: 'حاب تخدم دكّاني في واش؟', dSub: 'اختار الأجهزة اللي تخدم بيهم في الحانوت.',
-    here: 'الجهاز اللي راك عليه', hereNote: 'راك تتصفح من {device}. هذا ماشي لازم يكون جهاز الحانوت.',
-    devAndroid: 'هاتف', devWindows: 'حاسوب Windows', devOther: 'جهاز آخر',
+    dTitle: 'وين حاب تخدم بالبرنامج؟', dSub: 'اختار الأجهزة اللي تخدم بيهم في الحانوت.',
+    here: 'الجهاز اللي راك عليه',
+
     modePcT: 'الحاسوب', modePcD: '⁦Windows 10⁩ وما بعده · 64 بت',
     modePhoneT: 'الهاتف أو الطابلات', modePhoneD: 'Android',
     modeBothT: 'الحاسوب والهاتف', modeBothD: 'تطبيق الهاتف مجاني مع الحاسوب، يخدمو على نفس السلع',
-    modeTwoT: 'زوج حواسيب', modeTwoD: 'الحاسوب الرئيسي + حاسوب ثاني، والهاتف مجاني',
-    moreQ: 'تحتاج أكثر من زوج حواسيب ولا أكثر من هاتف؟ كلّمنا.',
-    waMore: 'السلام عليكم، نحتاج دكّاني على أجهزة أكثر (أكثر من زوج حواسيب ولا أكثر من هاتف). واش العرض؟',
-    painTitle: 'واش اللي يتعبك أكثر في الحانوت؟', painSub: 'اختار واحد ولا أكثر. ماشي لازم.',
-    painIntro: 'دكّاني فيه {n} أدوات مختارة لـ: {activity}.',
+
+    painTitle: 'واش اللي يتعبك أكثر في الحانوت؟',
+
     pain: {
       credit: 'ننسى شكون عليه الكريدي وشحال', profit: 'ما نعرفش شحال نربح بالصح',
-      stockout: 'السلعة تكمّل وما نقيسش', expiry: 'السلعة تفوت صلاحيتها في الرف',
-      slow: 'البيع ثقيل والزبائن يستناو', cash: 'الصندوق ما يتلاقاش في العشية',
-      repairs: 'نتلف في التصليحات'
+      stockout: 'السلعة تكمل بلا منعرف', expiry: 'السلعة تفوت صلاحيتها وأنا لا خبر',
+      slow: 'البيع ثقيل والزبائن يستناو', cash: 'نلقى دراهم ناقصين من لاكاس',
+      repairs: 'صعيب نتابع كل تصليحات الأجهزة'
     },
     painFix: 'الحل: {feature}', painSkip: 'تجاوز', becauseTag: 'قلت: {pain}',
-    modeUnsureT: 'مازال ما عرفتش', modeUnsureD: 'نعاونوك تختار بسؤال واحد',
-    unsureQ: 'عندك حاسوب في الحانوت؟',
-    unsurePcT: 'إيه، عندي حاسوب', unsurePcD: '⁦Windows 10⁩ وما بعده',
-    unsurePhoneT: 'لا، غير الهاتف', unsurePhoneD: 'Android',
-    unsureNote: 'ماشي مشكل. هذا يبدّل غير العرض اللي نقترحوه، وتقدر تبدّلو قبل ما تخلّص.',
+
+
+
+
+
     whyTitle: 'علاش هذا العرض؟', whyFrom: 'من أجوبتك: {activity} · {devices}.',
     whyPc: 'اخترت حاسوب واحد: «{plan}» يكفيك، والهاتف مجاني معاه.',
     whyPhone: 'اخترت هاتف برك: «{plan}» يكفيك.',
@@ -59,8 +54,7 @@ window.DK_START_TEXT = {
     netTitle: 'كيفاش يتربطو؟',
     netNote: 'في شبكة الحانوت (Wi-Fi ولا كابل). الحاسوب الرئيسي فيه السلع والمبيعات ولازم يكون مشعول. ما كاش مزامنة عبر الأنترنت، والبيع ما يحتاجش أنترنت.',
 
-    fTitle: 'دكّاني مناسب لخدمة حانوتك', fSub: 'هذا واش يعاونك أكثر:', fTap: 'اضغط على ميزة باش تشوف الشاشة تاعها.',
-    fAlt: 'شاشة من تطبيق دكّاني: {feature}', fNoShot: 'متابعة التصليحات: رقم، قطع، حالة، وورقة تتطبع.',
+    fTitle: 'دكّاني مناسب لخدمة حانوتك', fSub: 'هذا واش يعاونك أكثر:',
     feat: {
       barcode: ['بيع سريع بالباركود', 'بالسكانير ولا بكاميرا الهاتف. السلعة تدخل للوصل في ثانية.'],
       credit: ['دفتر الكريدي', 'شكون عليه، شحال، ووقتاش. وتذكير في واتساب بضغطة.'],
@@ -68,7 +62,7 @@ window.DK_START_TEXT = {
       lowstock: ['تنبيه قبل ما تكمّل السلعة', 'يقولك واش قريب يخلاص باش تعاود تشري في الوقت.'],
       expiry: ['تنبيه الصلاحية', 'يقولك قبل ما تفوت صلاحية السلعة.'],
       profit: ['الربح الحقيقي', 'مبيعات وربح اليوم والشهر، محسوب بسعر الشراء الحقيقي.'],
-      cash: ['الصندوق بلا مفاجآت', 'تفتحو الصباح، تغلقو العشية، وتعرف إذا كاين نقص.'],
+      cash: ['متابعة الصندوق', 'تفتحو الصباح، تغلقو العشية، وتعرف إذا كاين نقص.'],
       categories: ['ترتيب السلع', 'فئات للسلع، باش تلقى كلش بالخف.'],
       discount: ['التخفيضات والعروض', 'تخفيض على الوصل، وعروض على السلع.'],
       labels: ['طباعة ملصقات الأسعار', 'ملصقات للسلع بالسعر والباركود.'],
@@ -100,13 +94,13 @@ window.DK_START_TEXT = {
     inclTrial: '14 يوم تجربة مجانية قبل ما تخلّص',
     trialRoom: 'في التجربة تقدر تربط حاسوب ثاني وهاتف بالحاسوب الرئيسي.',
     goTrial: 'كمّل وابدا التجربة', goBuy: 'كمّل الشراء', altBuy: 'حاب نشري دركا', altTrial: 'نجرب 14 يوم قبل',
-    changeDevices: 'بدّل الأجهزة', compare: 'قارن كل العروض',
+    changeDevices: 'بدّل الأجهزة',
 
     pricesTitle: 'أسعار دكّاني', pricesSub: 'تخلّص مرة وحدة، ويبقالك مدى الحياة. بلا اشتراك.',
-    pricesHelp: 'عاوني نختار العرض المناسب', pricesTry: 'جرّب 14 يوم مجانا',
+
 
     cTitle: 'تعلّم دكّاني في دقائق', cSub: 'فيديوهات قصار، أقل من دقيقة. مختارين لـ: {activity}.',
-    startHere: 'ابدا من هنا', seen: 'شفتو', allLessons: 'كل الدروس (25)',
+    startHere: 'ابدا من هنا', seen: 'شفتو', ytAll: 'شوف كل الحلقات في YouTube',
     seenCount: 'شفت {n} من {t}',
     skipTrial: 'تجاوز وابدا التجربة', skipBuy: 'تجاوز وكمّل الشراء',
     phoneLessonsNote: 'الفيديوهات مصوّرين على الحاسوب، والهاتف يخدم بنفس الطريقة.',
@@ -127,10 +121,10 @@ window.DK_START_TEXT = {
     playShareText: 'دكّاني على Google Play:',
     iosNote: 'تطبيق الهاتف كاين غير في Android حاليا.',
     installTitle: 'كيفاش تبدا',
-    instPc: ['حمّل الملف وافتحو.', 'إذا ظهرت رسالة حماية من Windows: «مزيد من المعلومات» ومن بعد «تشغيل على أي حال».', 'افتح دكّاني، اكتب اسم الحانوت، وزيد أول سلعة.', 'بيع أول بيعة.'],
-    instPhone: ['ثبّت دكّاني من Google Play.', 'افتحو واكتب اسم الحانوت.', 'زيد أول سلعة (ولا امسح الباركود تاعها).', 'بيع أول بيعة.'],
+    instPc: ['حمّل الملف وافتحو.', 'إذا ظهرت رسالة حماية من Windows: «مزيد من المعلومات» ومن بعد «تشغيل على أي حال».', 'تعلّم من الدروس القصار اللي تحت.', 'ابدا تبيع.'],
+    instPhone: ['ثبّت دكّاني من Google Play.', 'شوف الدروس باش تعرف كيفاش تستعملو.', 'زيد السلع تاعك.', 'ابدا تبيع.'],
     instLink: 'باش تربط الهاتف والحاسوب الثاني بالحاسوب الرئيسي، شوف الفيديو «حاسوب ثانٍ وهاتف في المحل».',
-    tLessons: 'دروس قصار للبداية', moreLessons: 'كل الدروس',
+    tLessons: 'دروس قصار للبداية',
     helpTitle: 'تحب نعاونوك تبدا؟',
     helpText: 'ابعثلنا في واتساب ونعاونوك في التثبيت وإدخال السلع. ما نعرفو رقمك غير إذا بعثتلنا أنت.',
     buyNow: 'حاب نشري دركا',
@@ -171,6 +165,15 @@ window.DK_START_TEXT = {
     paySafe: 'ما تبعث لحتى واحد الرقم السري ولا الكود تاع البطاقة. حنا ما نطلبوهمش.',
     nextTitle: 'واش يصرا من بعد',
     nextSteps: ['تبعث الطلب في واتساب (الرسالة مكتوبة، غير ابعثها).', 'نأكدو معاك الطلب.', 'إذا اخترت بريدي موب ولا CCP: تخلّص وتبعث صورة الوصل.', 'نبعثولك الفلاشة لدارك. إذا اخترت الدفع عند الاستلام، تخلّص كي توصلك.', 'تركّب دكّاني من الفلاشة وتفعّل الرخصة. يحتاج أنترنت مرة وحدة برك.'],
+    oSubCod: 'راجع الطلب، ومن بعد أكّدو هنا.',
+    codBtn: 'أكّد الطلب', codSending: 'راه يتبعث…',
+    codFail: 'ما قدرناش نبعثو الطلب. عاود، ولا ابعثو في واتساب.', codFailWa: 'ابعثو في واتساب',
+    codDoneT: 'طلبك وصلنا ✅',
+    codDoneD: 'نعيطولك على {phone} باش نأكدو الطلب، ومن بعد نبعثولك الفلاشة لدارك. تخلّص كي توصلك.',
+    codDoneTry: 'حتى توصلك الفلاشة، جرّب دكّاني مجانا',
+    nextStepsCod: ['تأكد الطلب هنا.', 'نعيطولك باش نأكدو معاك الطلب.', 'نبعثولك الفلاشة لدارك، وتخلّص كي توصلك.', 'تركّب دكّاني من الفلاشة وتفعّل الرخصة. يحتاج أنترنت مرة وحدة برك.'],
+    noDataCod: 'كي تأكد، الاسم والرقم والولاية والبلدية يوصلونا باش نعيطولك ونبعثولك الطلب. ما نستعملوهمش لحاجة أخرى.',
+    privacyLink: 'سياسة الخصوصية',
     sendOrder: 'أكد طلب الشراء في واتساب',
     orderOpened: 'تفتح واتساب برسالة الطلب. الطلب يوصلنا غير كي تبعث الرسالة.',
     tryFirst: 'حاب نجرب قبل؟ 14 يوم مجانا',
@@ -186,14 +189,12 @@ window.DK_START_TEXT = {
     title: 'Bien commencer avec Doukkany', home: 'Doukkany : page de téléchargement',
     back: 'Retour', stepOf: '{n} sur {t}', next: 'Continuer', edit: 'Modifier', da: 'DA', sep: ', ',
     helpBtn: 'Écrivez-nous sur WhatsApp',
-    fDownload: 'Télécharger Doukkany',
     openYt: 'Ouvrir sur YouTube', close: 'Fermer',
 
     wTitle: 'Bienvenue sur Doukkany 👋',
     wSub: 'Logiciel et application de gestion de magasin',
-    trialT: 'Je veux l’essayer', trialD: 'Essai gratuit de 14 jours avant de payer.',
-    buyT: 'Je veux l’acheter', buyD: 'Voir les tarifs et demander l’activation.',
-    pricesLink: 'Je veux juste voir les tarifs',
+    trialT: 'Je veux l’essayer',
+    buyT: 'Je veux l’acheter',
     factOffline: 'Marche sans internet', factOnce: 'Payé une seule fois', factDevices: 'Windows et Android',
     resumeTxt: 'Vous avez déjà commencé. Reprendre là où vous étiez ?', resumeBtn: 'Reprendre', restartBtn: 'Recommencer',
 
@@ -205,19 +206,16 @@ window.DK_START_TEXT = {
       produce: 'Fruits et légumes', bakery: 'Pâtisserie et boulangerie', services: 'Services et réparations', other: 'Autre activité'
     },
     otherLabel: 'Que vendez-vous ? (facultatif)', otherPh: 'Par exemple : jouets',
-    otherHint: 'Reste sur votre appareil, n’est envoyé à personne.',
 
     dTitle: 'Sur quoi voulez-vous utiliser Doukkany ?', dSub: 'Choisissez les appareils de votre magasin.',
-    here: 'Votre appareil actuel', hereNote: 'Vous naviguez depuis {device}. Ce n’est pas forcément l’appareil du magasin.',
-    devAndroid: 'un téléphone', devWindows: 'un PC Windows', devOther: 'un autre appareil',
+    here: 'Votre appareil actuel',
+
     modePcT: 'Ordinateur', modePcD: 'Windows 10 et plus · 64 bits',
     modePhoneT: 'Téléphone ou tablette', modePhoneD: 'Android',
     modeBothT: 'Ordinateur et téléphone', modeBothD: 'L’application téléphone est offerte avec le PC',
-    modeTwoT: 'Deux ordinateurs', modeTwoD: 'PC principal + 2e PC, téléphone offert',
-    moreQ: 'Plus de 2 PC ou plus d’un téléphone ? Écrivez-nous.',
-    waMore: 'Bonjour, il me faut Doukkany sur plus d’appareils (plus de 2 PC ou plus d’un téléphone). Quelle offre ?',
-    painTitle: 'Qu’est-ce qui vous pèse le plus au magasin ?', painSub: 'Choisissez un ou plusieurs points. Facultatif.',
-    painIntro: 'Doukkany a {n} outils choisis pour : {activity}.',
+
+    painTitle: 'Qu’est-ce qui vous pèse le plus au magasin ?',
+
     pain: {
       credit: 'J’oublie qui me doit combien', profit: 'Je ne connais pas mon vrai bénéfice',
       stockout: 'Des produits manquent sans que je le voie', expiry: 'Des produits se périment en rayon',
@@ -225,11 +223,11 @@ window.DK_START_TEXT = {
       repairs: 'Je m’y perds dans les réparations'
     },
     painFix: 'La solution : {feature}', painSkip: 'Passer', becauseTag: 'Vous avez dit : {pain}',
-    modeUnsureT: 'Je ne sais pas encore', modeUnsureD: 'Une seule question pour vous aider',
-    unsureQ: 'Avez-vous un ordinateur au magasin ?',
-    unsurePcT: 'Oui, j’ai un ordinateur', unsurePcD: 'Windows 10 et plus',
-    unsurePhoneT: 'Non, seulement un téléphone', unsurePhoneD: 'Android',
-    unsureNote: 'Pas de souci. Cela change seulement la formule proposée, et vous pouvez la changer avant de payer.',
+
+
+
+
+
     whyTitle: 'Pourquoi cette formule ?', whyFrom: 'D’après vos réponses : {activity} · {devices}.',
     whyPc: 'Vous avez choisi un ordinateur : « {plan} » suffit, et le téléphone est offert avec.',
     whyPhone: 'Seulement un téléphone : « {plan} » suffit.',
@@ -239,8 +237,7 @@ window.DK_START_TEXT = {
     netTitle: 'Comment ils se relient ?',
     netNote: 'Par le réseau du magasin (Wi-Fi ou câble). Le PC principal garde les produits et les ventes et doit rester allumé. Pas de synchronisation par internet, et la vente n’a pas besoin d’internet.',
 
-    fTitle: 'Doukkany convient à votre magasin', fSub: 'Ce qui vous aidera le plus :', fTap: 'Touchez un point pour voir son écran.',
-    fAlt: 'Écran de l’application Doukkany : {feature}', fNoShot: 'Suivi des réparations : numéro, pièces, état et fiche imprimée.',
+    fTitle: 'Doukkany convient à votre magasin', fSub: 'Ce qui vous aidera le plus :',
     feat: {
       barcode: ['Vente rapide au code-barres', 'Avec un lecteur ou la caméra du téléphone. Le produit entre sur le ticket en une seconde.'],
       credit: ['Carnet de crédit', 'Qui doit combien, depuis quand. Et un rappel WhatsApp en un geste.'],
@@ -280,13 +277,13 @@ window.DK_START_TEXT = {
     inclTrial: '14 jours d’essai gratuit avant de payer',
     trialRoom: 'Pendant l’essai, vous pouvez relier un 2e PC et un téléphone au PC principal.',
     goTrial: 'Continuer et commencer l’essai', goBuy: 'Continuer l’achat', altBuy: 'Acheter maintenant', altTrial: 'Essayer 14 jours d’abord',
-    changeDevices: 'Changer les appareils', compare: 'Comparer toutes les formules',
+    changeDevices: 'Changer les appareils',
 
     pricesTitle: 'Tarifs de Doukkany', pricesSub: 'Payé une seule fois, à vous pour toujours. Sans abonnement.',
-    pricesHelp: 'Aidez-moi à choisir', pricesTry: 'Essayer 14 jours gratuitement',
+
 
     cTitle: 'Apprenez Doukkany en quelques minutes', cSub: 'Des vidéos courtes, moins d’une minute. Choisies pour : {activity}.',
-    startHere: 'Commencez ici', seen: 'Vue', allLessons: 'Toutes les leçons (25)',
+    startHere: 'Commencez ici', seen: 'Vue', ytAll: 'Voir tous les épisodes sur YouTube',
     seenCount: '{n} sur {t} vues',
     skipTrial: 'Passer et commencer l’essai', skipBuy: 'Passer et continuer l’achat',
     phoneLessonsNote: 'Les vidéos sont filmées sur PC ; le téléphone marche de la même façon.',
@@ -307,10 +304,10 @@ window.DK_START_TEXT = {
     playShareText: 'Doukkany sur Google Play :',
     iosNote: 'L’application mobile n’existe que sur Android pour l’instant.',
     installTitle: 'Pour commencer',
-    instPc: ['Téléchargez le fichier et ouvrez-le.', 'Si Windows affiche un avertissement : « Informations complémentaires », puis « Exécuter quand même ».', 'Ouvrez Doukkany, tapez le nom du magasin et ajoutez un premier produit.', 'Faites votre première vente.'],
-    instPhone: ['Installez Doukkany depuis Google Play.', 'Ouvrez-le et tapez le nom du magasin.', 'Ajoutez un premier produit (ou scannez son code-barres).', 'Faites votre première vente.'],
+    instPc: ['Téléchargez le fichier et ouvrez-le.', 'Si Windows affiche un avertissement : « Informations complémentaires », puis « Exécuter quand même ».', 'Apprenez avec les courtes leçons ci-dessous.', 'Commencez à vendre.'],
+    instPhone: ['Installez Doukkany depuis Google Play.', 'Regardez les leçons pour apprendre à l’utiliser.', 'Ajoutez vos produits.', 'Commencez à vendre.'],
     instLink: 'Pour relier le téléphone et le 2e PC au PC principal, regardez la vidéo « Un 2e ordinateur et un téléphone dans le magasin ».',
-    tLessons: 'Courtes leçons pour démarrer', moreLessons: 'Toutes les leçons',
+    tLessons: 'Courtes leçons pour démarrer',
     helpTitle: 'On vous aide à démarrer ?',
     helpText: 'Écrivez-nous sur WhatsApp : on vous aide à installer et à ajouter vos produits. Nous n’avons votre numéro que si vous nous écrivez.',
     buyNow: 'Acheter maintenant',
@@ -351,6 +348,15 @@ window.DK_START_TEXT = {
     paySafe: 'N’envoyez jamais votre code secret ni le code de votre carte. Nous ne les demandons jamais.',
     nextTitle: 'Et ensuite',
     nextSteps: ['Vous envoyez la commande sur WhatsApp (le message est déjà écrit).', 'Nous confirmons la commande avec vous.', 'Avec BaridiMob ou CCP : vous payez et envoyez la photo du reçu.', 'Nous envoyons la clé chez vous. Paiement à la livraison : vous payez à la réception.', 'Vous installez Doukkany depuis la clé et activez la licence. Internet une seule fois.'],
+    oSubCod: 'Vérifiez la commande, puis confirmez-la ici.',
+    codBtn: 'Confirmer la commande', codSending: 'Envoi…',
+    codFail: 'La commande n’est pas partie. Réessayez, ou envoyez-la sur WhatsApp.', codFailWa: 'Envoyer sur WhatsApp',
+    codDoneT: 'Commande reçue ✅',
+    codDoneD: 'Nous vous appelons au {phone} pour confirmer, puis la clé part chez vous. Vous payez à la réception.',
+    codDoneTry: 'En attendant la clé, essayez Doukkany gratuitement',
+    nextStepsCod: ['Vous confirmez la commande ici.', 'Nous vous appelons pour la confirmer.', 'La clé arrive chez vous, vous payez à la réception.', 'Vous installez Doukkany depuis la clé et activez la licence. Internet une seule fois.'],
+    noDataCod: 'Quand vous confirmez, votre nom, votre numéro, la wilaya et la commune nous arrivent pour vous appeler et livrer. Rien d’autre.',
+    privacyLink: 'Politique de confidentialité',
     sendOrder: 'Confirmer la commande sur WhatsApp',
     orderOpened: 'WhatsApp s’ouvre avec votre commande. Elle nous arrive seulement si vous envoyez le message.',
     tryFirst: 'Essayer d’abord ? 14 jours gratuits',
@@ -366,14 +372,12 @@ window.DK_START_TEXT = {
     title: 'Get started with Doukkany', home: 'Doukkany: download page',
     back: 'Back', stepOf: '{n} of {t}', next: 'Continue', edit: 'Change', da: 'DA', sep: ', ',
     helpBtn: 'Message us on WhatsApp',
-    fDownload: 'Download Doukkany',
     openYt: 'Open on YouTube', close: 'Close',
 
     wTitle: 'Welcome to Doukkany 👋',
     wSub: 'Shop management software and app',
-    trialT: 'I want to try it', trialD: 'Try it free for 14 days before you pay.',
-    buyT: 'I want to buy it', buyD: 'See the prices and ask for your licence.',
-    pricesLink: 'I just want to see the prices',
+    trialT: 'I want to try it',
+    buyT: 'I want to buy it',
     factOffline: 'Works without internet', factOnce: 'Pay once', factDevices: 'Windows and Android',
     resumeTxt: 'You started before. Continue where you stopped?', resumeBtn: 'Continue', restartBtn: 'Start again',
 
@@ -385,19 +389,16 @@ window.DK_START_TEXT = {
       produce: 'Fruit and vegetables', bakery: 'Bakery and sweets', services: 'Services and repairs', other: 'Something else'
     },
     otherLabel: 'What do you sell? (optional)', otherPh: 'For example: toys',
-    otherHint: 'Stays on your device, never sent to anyone.',
 
     dTitle: 'Where do you want to use Doukkany?', dSub: 'Pick the devices you use in the shop.',
-    here: 'The device you are on', hereNote: 'You are browsing from {device}. It does not have to be the shop device.',
-    devAndroid: 'a phone', devWindows: 'a Windows PC', devOther: 'another device',
+    here: 'The device you are on',
+
     modePcT: 'Computer', modePcD: 'Windows 10 and newer · 64-bit',
     modePhoneT: 'Phone or tablet', modePhoneD: 'Android',
     modeBothT: 'Computer and phone', modeBothD: 'The phone app is free with the PC',
-    modeTwoT: 'Two computers', modeTwoD: 'Main PC + 2nd PC, phone app free',
-    moreQ: 'Need more than 2 PCs or more than one phone? Talk to us.',
-    waMore: 'Hello, I need Doukkany on more devices (more than 2 PCs or more than one phone). What is the offer?',
-    painTitle: 'What bothers you most in the shop?', painSub: 'Pick one or more. Optional.',
-    painIntro: 'Doukkany has {n} tools picked for: {activity}.',
+
+    painTitle: 'What bothers you most in the shop?',
+
     pain: {
       credit: 'I lose track of who owes me what', profit: 'I don’t know my real profit',
       stockout: 'Products run out before I notice', expiry: 'Products expire on the shelf',
@@ -405,11 +406,11 @@ window.DK_START_TEXT = {
       repairs: 'I lose track of repairs'
     },
     painFix: 'The fix: {feature}', painSkip: 'Skip', becauseTag: 'You said: {pain}',
-    modeUnsureT: 'Not sure yet', modeUnsureD: 'One easy question helps you pick',
-    unsureQ: 'Do you have a computer in the shop?',
-    unsurePcT: 'Yes, I have a computer', unsurePcD: 'Windows 10 and newer',
-    unsurePhoneT: 'No, only a phone', unsurePhoneD: 'Android',
-    unsureNote: 'No problem. This only changes the offer we suggest, and you can change it before you pay.',
+
+
+
+
+
     whyTitle: 'Why this offer?', whyFrom: 'From your answers: {activity} · {devices}.',
     whyPc: 'You chose one computer, so “{plan}” is enough, and the phone app comes free.',
     whyPhone: 'Only a phone, so “{plan}” is enough.',
@@ -419,8 +420,7 @@ window.DK_START_TEXT = {
     netTitle: 'How do they link?',
     netNote: 'Over the shop network (Wi-Fi or cable). The main PC holds the products and sales and must stay on. No sync over the internet, and selling never needs internet.',
 
-    fTitle: 'Doukkany fits your shop', fSub: 'What helps you most:', fTap: 'Tap a point to see its screen.',
-    fAlt: 'Doukkany app screen: {feature}', fNoShot: 'Repair tracking: number, parts, status and a printed ticket.',
+    fTitle: 'Doukkany fits your shop', fSub: 'What helps you most:',
     feat: {
       barcode: ['Fast barcode checkout', 'With a scanner or the phone camera. The item is on the receipt in a second.'],
       credit: ['Credit book', 'Who owes what, since when. And a WhatsApp reminder in one tap.'],
@@ -460,13 +460,13 @@ window.DK_START_TEXT = {
     inclTrial: '14-day free trial before you pay',
     trialRoom: 'During the trial you can link a 2nd PC and a phone to the main PC.',
     goTrial: 'Continue and start the trial', goBuy: 'Continue to buy', altBuy: 'Buy now', altTrial: 'Try 14 days first',
-    changeDevices: 'Change devices', compare: 'Compare all offers',
+    changeDevices: 'Change devices',
 
     pricesTitle: 'Doukkany prices', pricesSub: 'Pay once, yours for life. No subscription.',
-    pricesHelp: 'Help me choose', pricesTry: 'Try 14 days free',
+
 
     cTitle: 'Learn Doukkany in minutes', cSub: 'Short videos, under a minute. Picked for: {activity}.',
-    startHere: 'Start here', seen: 'Watched', allLessons: 'All lessons (25)',
+    startHere: 'Start here', seen: 'Watched', ytAll: 'Watch all the episodes on YouTube',
     seenCount: '{n} of {t} watched',
     skipTrial: 'Skip and start the trial', skipBuy: 'Skip and continue to buy',
     phoneLessonsNote: 'The videos are filmed on a PC; the phone works the same way.',
@@ -487,10 +487,10 @@ window.DK_START_TEXT = {
     playShareText: 'Doukkany on Google Play:',
     iosNote: 'The phone app is only on Android for now.',
     installTitle: 'How to start',
-    instPc: ['Download the file and open it.', 'If Windows shows a warning: “More info”, then “Run anyway”.', 'Open Doukkany, type the shop name and add a first product.', 'Make your first sale.'],
-    instPhone: ['Install Doukkany from Google Play.', 'Open it and type the shop name.', 'Add a first product (or scan its barcode).', 'Make your first sale.'],
+    instPc: ['Download the file and open it.', 'If Windows shows a warning: “More info”, then “Run anyway”.', 'Learn with the short lessons below.', 'Start selling.'],
+    instPhone: ['Install Doukkany from Google Play.', 'Watch the lessons to learn how to use it.', 'Add your products.', 'Start selling.'],
     instLink: 'To link the phone and the 2nd PC to the main PC, watch the video “A second computer and a phone in the shop”.',
-    tLessons: 'Short lessons to start', moreLessons: 'All lessons',
+    tLessons: 'Short lessons to start',
     helpTitle: 'Want help to start?',
     helpText: 'Message us on WhatsApp and we help you install and add your products. We only see your number if you write to us.',
     buyNow: 'Buy now',
@@ -531,6 +531,15 @@ window.DK_START_TEXT = {
     paySafe: 'Never send anyone your PIN or card code. We never ask for them.',
     nextTitle: 'What happens next',
     nextSteps: ['You send the order on WhatsApp (the message is already written).', 'We confirm the order with you.', 'With BaridiMob or CCP: you pay and send a photo of the receipt.', 'We send the key to your home. Pay on delivery: you pay when it arrives.', 'You install Doukkany from the key and activate the licence. Internet only once.'],
+    oSubCod: 'Check your order, then confirm it here.',
+    codBtn: 'Confirm the order', codSending: 'Sending…',
+    codFail: 'The order did not go through. Try again, or send it on WhatsApp.', codFailWa: 'Send on WhatsApp',
+    codDoneT: 'Order received ✅',
+    codDoneD: 'We will call you on {phone} to confirm, then send the USB key to your home. You pay when it arrives.',
+    codDoneTry: 'While you wait for the key, try Doukkany for free',
+    nextStepsCod: ['You confirm the order here.', 'We call you to confirm it.', 'The USB key comes to your home; you pay when it arrives.', 'You install Doukkany from the key and activate the licence. Internet only once.'],
+    noDataCod: 'When you confirm, your name, number, wilaya and commune reach us so we can call you and deliver. Nothing else.',
+    privacyLink: 'Privacy policy',
     sendOrder: 'Confirm the order on WhatsApp',
     orderOpened: 'WhatsApp opens with your order. It reaches us only when you send the message.',
     tryFirst: 'Try first? 14 days free',
