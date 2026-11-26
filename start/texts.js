@@ -47,6 +47,7 @@ window.DK_START_TEXT = {
 
     whyTitle: 'علاش هذا العرض؟', whyFrom: 'من أجوبتك: {activity} · {devices}.',
     whyPc: 'اخترت حاسوب واحد: «{plan}» يكفيك، والهاتف مجاني معاه.',
+    whyBoth: 'اخترت الحاسوب والهاتف: «{plan}» فيه الحاسوب، وتطبيق الهاتف مجاني معاه، يخدمو على نفس السلع.',
     whyPhone: 'اخترت هاتف برك: «{plan}» يكفيك.',
     whyShop: 'زوج حواسيب في نفس الحانوت: لازم «{plan}». يزيد غير {diff} دج على «{pc}»، والهاتف دايما مجاني.',
     whyPains: 'واش قلت يتعبك، الحل تاعو داخل في الرخصة: {features}.',
@@ -230,6 +231,7 @@ window.DK_START_TEXT = {
 
     whyTitle: 'Pourquoi cette formule ?', whyFrom: 'D’après vos réponses : {activity} · {devices}.',
     whyPc: 'Vous avez choisi un ordinateur : « {plan} » suffit, et le téléphone est offert avec.',
+    whyBoth: 'Vous avez choisi l’ordinateur et le téléphone : « {plan} » couvre le PC, et l’application téléphone est offerte, sur les mêmes produits.',
     whyPhone: 'Seulement un téléphone : « {plan} » suffit.',
     whyShop: 'Deux ordinateurs dans le même magasin : il faut le « {plan} ». Seulement {diff} DA de plus que « {pc} », et le téléphone reste offert.',
     whyPains: 'Ce qui vous pèse est réglé dans la licence : {features}.',
@@ -413,6 +415,7 @@ window.DK_START_TEXT = {
 
     whyTitle: 'Why this offer?', whyFrom: 'From your answers: {activity} · {devices}.',
     whyPc: 'You chose one computer, so “{plan}” is enough, and the phone app comes free.',
+    whyBoth: 'You chose a computer and a phone: “{plan}” covers the PC, and the phone app comes free, on the same products.',
     whyPhone: 'Only a phone, so “{plan}” is enough.',
     whyShop: 'Two computers in the same shop need the “{plan}”. Only {diff} DA more than “{pc}”, and the phone app stays free.',
     whyPains: 'What bothers you is fixed in the licence: {features}.',

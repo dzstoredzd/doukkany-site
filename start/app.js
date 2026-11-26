@@ -451,7 +451,8 @@
   // "Why this offer?": the reasons, built from the visitor's own answers.
   function whyHtml(r, d) {
     var why = [];
-    if (r.type === 'pc') why.push(fill(t.whyPc, { plan: t.plan.pc[0] }));
+    // Computer + phone is the same offer as computer alone, but say what the visitor chose.
+    if (r.type === 'pc') why.push(fill(d && d.phones > 0 ? t.whyBoth : t.whyPc, { plan: t.plan.pc[0] }));
     else if (r.type === 'phone') why.push(fill(t.whyPhone, { plan: t.plan.phone[0] }));
     else if (r.type === 'shop') why.push(fill(t.whyShop, { plan: t.plan.shop[0], pc: t.plan.pc[0], diff: num(OFFER.plans.shop.price - OFFER.plans.pc.price) }));
     var ff = F.featuresFor(state);

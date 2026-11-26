@@ -229,7 +229,7 @@ test('"I want to buy": shop type, devices (3 choices), order', () => {
 test('texts: the pay-at-delivery order words exist in every language', () => {
   const T = loadTexts();
   for (const lang of ['ar', 'fr', 'en']) {
-    for (const k of ['oSubCod', 'codBtn', 'codSending', 'codFail', 'codFailWa', 'codDoneT', 'codDoneD', 'codDoneTry', 'noDataCod', 'privacyLink']) {
+    for (const k of ['whyBoth', 'whyPc', 'oSubCod', 'codBtn', 'codSending', 'codFail', 'codFailWa', 'codDoneT', 'codDoneD', 'codDoneTry', 'noDataCod', 'privacyLink']) {
       assert.ok(T[lang][k], lang + ' ' + k);
     }
     assert.equal(T[lang].nextStepsCod.length, 4, lang);
