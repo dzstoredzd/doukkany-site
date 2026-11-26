@@ -412,19 +412,21 @@
         return '<h1>' + esc(t.oTitle) + '</h1><p class="lead">' + esc(t.oSub) + '</p>' + win + sum +
           '<div class="dock"><button type="button" class="btn block" data-act="tophone">' + esc(t.toPhoneOffer) + '</button>' + dockEnd;
       }
-      var usb = '<div class="card"><h2>' + cic('i-usb', C.slate) + esc(t.usbTitle) + '</h2><ul class="incl">' +
-        t.usbItems.map(function (s) { return '<li>' + ic('i-check') + '<span>' + esc(s) + '</span></li>'; }).join('') + '</ul>' +
+      // Paying first (BaridiMob / CCP): the activation code comes on WhatsApp, no USB key and so
+      // no address (owner, 2026-11-26). Pay at delivery: the USB key, sent home.
+      var codeOnly = buyer.pay === 'prepaid';
+      var usb = '<div class="card"><h2>' + (codeOnly ? cic('i-wa', C.green) + esc(t.codeTitle) : cic('i-usb', C.slate) + esc(t.usbTitle)) + '</h2><ul class="incl">' +
+        (codeOnly ? t.codeItems : t.usbItems).map(function (s) { return '<li>' + ic('i-check') + '<span>' + esc(s) + '</span></li>'; }).join('') + '</ul>' +
         '<p class="q-sub block">' + esc(t.usbPhone) + ' ' + esc(t.usbNote) + '</p></div>';
-      var details = '<div class="card"><h2>' + cic('i-home', C.orange) + esc(t.detailsTitle) + '</h2>' +
+      var details = '<div class="card"><h2>' + (codeOnly ? cic('i-phone', C.blue) + esc(t.detailsTitleCode) : cic('i-home', C.orange) + esc(t.detailsTitle)) + '</h2>' +
         // A trap for robots: people never see this field (CSS .hp), robots fill it.
         '<input id="b-website" class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">' +
         field('b-name', t.fName, '<input id="b-name" type="text" maxlength="60" autocomplete="name" value="' + esc(buyer.name) + '">') +
         field('b-phone', t.fPhone, '<input id="b-phone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" dir="ltr" placeholder="' + esc(t.fPhonePh) + '" value="' + esc(buyer.phone) + '">') +
-        placeFields() + '</div>';
+        (codeOnly ? '' : placeFields()) + '</div>';
       var pay = '<div class="card"><h2>' + cic('i-cash', C.teal) + esc(t.payTitle) + '</h2><div class="seg">' +
         choice('pay:prepaid', 'i-cash', t.payPreT, t.payPreD, { pressed: buyer.pay === 'prepaid', tag: fill(t.youSave, { discount: num(OFFER.prepaidDiscount) }), color: C.blue }) +
-        choice('pay:cod', 'i-home', t.payCodT, t.payCodD, { pressed: buyer.pay === 'cod', color: C.orange }) + '</div>' +
-        '<p class="warn block">' + esc(t.paySafe) + '</p></div>';
+        choice('pay:cod', 'i-home', t.payCodT, t.payCodD, { pressed: buyer.pay === 'cod', color: C.orange }) + '</div></div>';
       // Pay at delivery: the order goes straight to us (Admin CRM), no WhatsApp. Paying first
       // (BaridiMob / CCP): the WhatsApp message, as before (owner, 2026-11-26).
       var cod = buyer.pay === 'cod';
@@ -437,8 +439,9 @@
       return '<h1>' + esc(t.oTitle) + '</h1><p class="lead">' + esc(cod ? t.oSubCod : t.oSub) + '</p>' +
         sum + win + usb + details + pay +
         '<div class="card"><h2>' + esc(t.nextTitle) + '</h2><ol class="steps-list">' + steps.map(function (s) { return '<li><span>' + esc(s) + '</span></li>'; }).join('') + '</ol></div>' +
-        (cod ? '<p class="q-sub block">' + esc(t.noDataCod) + ' <a class="link" href="../privacy.html#start-orders-' + lang + '" target="_blank" rel="noopener">' + esc(t.privacyLink) + '</a></p>'
-          : '<p class="q-sub block">' + esc(t.noData) + '</p>') +
+        // The "what we keep" line under a pay-at-delivery order was removed (owner, 2026-11-26);
+        // privacy.html still says it.
+        (cod ? '' : '<p class="q-sub block">' + esc(t.noData) + '</p>') +
         '<div class="dock">' + send + dockEnd;
     }
   };
@@ -560,7 +563,8 @@
       name: txt(raw.name, 60), phone: txt(raw.phone, 20),
       wilaya: (raw.wilaya | 0) >= 1 && (raw.wilaya | 0) <= 99 ? raw.wilaya | 0 : 0, wilayaTxt: txt(raw.wilayaTxt, 60),
       commune: txt(raw.commune, 60), communeOther: txt(raw.communeOther, 60),
-      pay: ['prepaid', 'cod'].indexOf(raw.pay) !== -1 ? raw.pay : '',
+      // Pay at delivery is chosen by default (owner, 2026-11-26).
+      pay: ['prepaid', 'cod'].indexOf(raw.pay) !== -1 ? raw.pay : 'cod',
       requestId: typeof raw.requestId === 'string' && /^[0-9a-f-]{36}$/.test(raw.requestId) ? raw.requestId : ''
     };
   })();
@@ -599,14 +603,15 @@
     if (buyer.win !== 'yes') miss.push(['win:yes', 'Windows 10 · 64']);
     if (buyer.name.trim().length < 3) miss.push(['b-name', t.fName]);
     if (!phoneOk(buyer.phone)) miss.push(['b-phone', t.fPhone]);
-    if (!wilayaText()) miss.push([placesState === 'failed' ? 'b-wilaya-txt' : 'b-wilaya', t.fWilaya]);
-    if (!communeText()) miss.push([placesState === 'failed' || buyer.commune === 'other' ? 'b-commune-txt' : 'b-commune', t.fCommune]);
+    if (buyer.pay !== 'prepaid' && !wilayaText()) miss.push([placesState === 'failed' ? 'b-wilaya-txt' : 'b-wilaya', t.fWilaya]);
+    if (buyer.pay !== 'prepaid' && !communeText()) miss.push([placesState === 'failed' || buyer.commune === 'other' ? 'b-commune-txt' : 'b-commune', t.fCommune]);
     if (!buyer.pay) miss.push(['pay:prepaid', t.payTitle]);
     return miss;
   }
   function pcOrderMessage() {
     var r = rec();
-    return fill(WA_DZ.pc, {
+    // Paying first: the activation code on WhatsApp, nothing sent home, so no address.
+    return fill(buyer.pay === 'prepaid' ? WA_DZ.pcCode : WA_DZ.pc, {
       offer: AR.plan[r.type][0],
       pay: buyer.pay === 'prepaid' ? fill(WA_DZ.payPrepaid, { discount: num(OFFER.prepaidDiscount) }) : WA_DZ.payCod,
       total: num(OFFER.orderTotal(r.type, buyer.pay)),

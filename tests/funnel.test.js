@@ -79,6 +79,9 @@ test('WhatsApp order messages: Darija, every detail asked, no price written in t
   const W = sandbox.window.DK_WA_DZ;
   for (const k of ['{offer}', '{total}', '{activity}']) assert.ok(W.phone.includes(k), 'phone ' + k);
   for (const k of ['{offer}', '{pay}', '{total}', '{name}', '{phone}', '{wilaya}', '{commune}', '{activity}']) assert.ok(W.pc.includes(k), 'pc ' + k);
+  for (const k of ['{offer}', '{pay}', '{total}', '{name}', '{phone}', '{activity}']) assert.ok(W.pcCode.includes(k), 'pcCode ' + k);
+  // Paying first = the code on WhatsApp, nothing sent home: no address asked in that message.
+  assert.ok(!W.pcCode.includes('{wilaya}') && !W.pcCode.includes('{commune}'));
   assert.ok(W.payPrepaid.includes('{discount}'));
   assert.ok(/[؀-ۿ]/.test(W.pc) && /[؀-ۿ]/.test(W.phone), 'Arabic script');
 });
@@ -229,7 +232,7 @@ test('"I want to buy": shop type, devices (3 choices), order', () => {
 test('texts: the pay-at-delivery order words exist in every language', () => {
   const T = loadTexts();
   for (const lang of ['ar', 'fr', 'en']) {
-    for (const k of ['whyBoth', 'whyPc', 'oSubCod', 'codBtn', 'codSending', 'codFail', 'codFailWa', 'codDoneT', 'codDoneD', 'codDoneTry', 'noDataCod', 'privacyLink']) {
+    for (const k of ['whyBoth', 'whyPc', 'oSubCod', 'codBtn', 'codSending', 'codFail', 'codFailWa', 'codDoneT', 'codDoneD', 'codDoneTry']) {
       assert.ok(T[lang][k], lang + ' ' + k);
     }
     assert.equal(T[lang].nextStepsCod.length, 4, lang);
@@ -253,4 +256,9 @@ test('coloured icons: every feature and answer has one, and every icon is drawn 
     assert.ok(page.includes(`<symbol id="${a.icon}"`), a.id);
     assert.match(a.color, color, a.id);
   }
+});
+
+test('nothing in the page is pushed far sideways (an RTL page then grows wide and phones zoom out)', () => {
+  const page = fs.readFileSync(path.join(__dirname, '../start/index.html'), 'utf8');
+  assert.ok(!/(left|right|inset-inline-start|inset-inline-end)\s*:\s*-\d{3,}px/.test(page), 'a big negative left/right offset');
 });
