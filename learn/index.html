@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دروس دكّاني · Doukkany</title>
+<meta name="description" content="Learn Doukkany: 25 short videos, one minute each. Selling, credit, stock, cash drawer and more.">
+<meta name="theme-color" content="#117A4B">
+<link rel="icon" type="image/png" href="../download/assets/favicon-64.png">
+<link rel="apple-touch-icon" href="../download/assets/icon-192.png">
+<meta property="og:title" content="دروس دكّاني · Doukkany">
+<meta property="og:description" content="25 فيديو قصير، دقيقة لكل واحد.">
+<meta property="og:image" content="https://yousoft.site/doukkany-site/download/assets/pc-sell-1200.webp">
+<link rel="preload" href="../download/assets/plex-ar-bold.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  /* Same fonts and colours as the download page (download/index.html). */
+  @font-face { font-family: D; src: url(../download/assets/plex-ar-regular.woff2) format("woff2"); font-weight: 400; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+  @font-face { font-family: D; src: url(../download/assets/plex-ar-semibold.woff2) format("woff2"); font-weight: 600; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+  @font-face { font-family: D; src: url(../download/assets/plex-ar-bold.woff2) format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+  @font-face { font-family: D; src: url(../download/assets/inter-regular.woff2) format("woff2"); font-weight: 400; font-display: swap; unicode-range: U+0000-00FF, U+0152-0153, U+0178, U+2013-2026, U+20AC, U+2190-2192; }
+  @font-face { font-family: D; src: url(../download/assets/inter-semibold.woff2) format("woff2"); font-weight: 600; font-display: swap; unicode-range: U+0000-00FF, U+0152-0153, U+0178, U+2013-2026, U+20AC, U+2190-2192; }
+  @font-face { font-family: D; src: url(../download/assets/inter-bold.woff2) format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+0000-00FF, U+0152-0153, U+0178, U+2013-2026, U+20AC, U+2190-2192; }
+
+  :root {
+    --logo: #16955F; --green: #117A4B; --deep: #0B4A2E; --mint: #DDF2E6; --mint-2: #EEF8F2;
+    --ink: #17212B; --muted: #4F5D69; --line: #DCE6E0; --bg: #F5F8F6; --card: #fff;
+    --wa: #25D366;
+    --shadow: 0 1px 2px rgba(23,33,43,.05), 0 8px 24px rgba(17,122,75,.08);
+    --wrap: 1100px; --pad: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; font-family: D, system-ui, "Segoe UI", Tahoma, Arial, sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
+  a { color: var(--green); }
+  h1, h2, h3, p { margin: 0; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--logo); outline-offset: 2px; border-radius: 6px; }
+  .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--pad); }
+  .skip { position: absolute; inset-inline-start: 8px; top: -60px; z-index: 50; background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 10px; }
+  .skip:focus { top: 8px; }
+  .ic { width: 1.25em; height: 1.25em; flex: none; fill: currentColor; }
+  .ic.s { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  [hidden] { display: none !important; }
+
+  /* Header */
+  .top-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
+  .logo { display: flex; align-items: center; }
+  .logo img { display: block; height: 36px; width: auto; }
+  .logo .lat { height: 24px; }
+  html[lang="ar"] .logo .lat, html:not([lang="ar"]) .logo .ar { display: none; }
+  .langs { display: flex; gap: 2px; padding: 3px; background: #fff; border: 1px solid var(--line); border-radius: 999px; }
+  .langs button { background: transparent; border: 0; border-radius: 999px; padding: 6px 11px; min-height: 40px; min-width: 44px; cursor: pointer; font-size: .9rem; font-weight: 600; color: var(--muted); }
+  .langs button[aria-pressed="true"] { background: var(--green); color: #fff; }
+  .langs button:not([aria-pressed="true"]):hover { color: var(--ink); background: var(--mint-2); }
+
+  /* Title */
+  .head { padding: 14px 0 6px; }
+  h1 { font-size: clamp(1.8rem, 7vw, 2.6rem); font-weight: 700; line-height: 1.25; }
+  .sub { color: var(--muted); font-weight: 600; font-size: 1.05rem; margin-top: 4px; }
+  .yt-all { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; min-height: 44px; }
+  .yt-all .ic { color: #E62117; width: 22px; height: 22px; }
+  .yt-all:hover { text-decoration: underline; }
+
+  /* The 25 lessons. Phone: a list. Wider screens: a grid of cards. */
+  .lessons { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+  .lesson { display: flex; align-items: center; gap: 12px; padding: 10px 12px; min-height: 64px; text-decoration: none; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); transition: transform .15s; }
+  .lesson:hover { transform: translateY(-2px); }
+  /* The lessons are vertical Shorts: YouTube's wide thumbnails are cropped to the middle 9:16. */
+  .thumb { display: none; position: relative; flex: none; width: 54px; aspect-ratio: 9 / 16; border-radius: 9px; overflow: hidden; background: var(--mint); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb .pl { position: absolute; inset: 0; display: grid; place-items: center; }
+  .thumb .pl span { width: 28px; height: 28px; border-radius: 50%; background: rgba(17,33,26,.72); color: #fff; display: grid; place-items: center; }
+  .thumb .pl .ic { width: 14px; height: 14px; margin-left: 2px; }
+  .dur { position: absolute; bottom: 4px; inset-inline-end: 4px; background: rgba(0,0,0,.75); color: #fff; font-size: .72rem; font-weight: 600; padding: 0 5px; border-radius: 4px; direction: ltr; }
+  .thumb .dur { display: none; }
+  .num { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--mint); color: var(--green); font-weight: 700; display: grid; place-items: center; font-size: .95rem; }
+  .txt { flex: 1; min-width: 0; }
+  .tt { display: block; font-weight: 700; line-height: 1.35; }
+  .td { display: block; color: var(--muted); font-size: .85rem; font-weight: 600; }
+  .go { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--green); color: #fff; display: grid; place-items: center; }
+  .go .ic { width: 16px; height: 16px; margin-left: 2px; }
+
+  /* Help */
+  .help { margin-top: 28px; background: linear-gradient(150deg, #0B5C38 0%, #0E6B43 55%, #117A4B 100%); color: #fff; border-radius: 22px; padding: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; }
+  .help h2 { font-size: 1.3rem; font-weight: 700; }
+  .help p { color: #E5F5EC; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 10px 22px; border-radius: 16px; font-weight: 700; font-size: 1.05rem; text-decoration: none; background: var(--wa); color: #06331A; }
+  .btn:hover { background: #1FBE5B; }
+  .btn .ic { width: 24px; height: 24px; }
+
+  footer { margin-top: 32px; padding: 22px 0 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; }
+  footer nav { display: flex; gap: 6px 16px; flex-wrap: wrap; }
+  footer a { color: var(--muted); }
+
+  /* Video player */
+  dialog.player { width: fit-content; max-width: calc(100% - 24px); padding: 0; border: 0; border-radius: 18px; background: #0F1512; color: #fff; overflow: hidden; }
+  dialog.player::backdrop { background: rgba(10,20,15,.72); }
+  .player-top { width: 0; min-width: 100%; display: flex; align-items: center; gap: 10px; padding-block: 8px; padding-inline: 14px 8px; }
+  .player-top h3 { flex: 1; min-width: 0; font-size: 1rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .player-top a { color: #CDEBD9; font-size: .9rem; display: inline-flex; gap: 4px; align-items: center; min-height: 44px; white-space: nowrap; }
+  .player-top button { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 0; background: rgba(255,255,255,.12); color: #fff; cursor: pointer; display: grid; place-items: center; }
+  .frame { height: min(calc(100dvh - 110px), calc((100vw - 24px) * 16 / 9), 720px); aspect-ratio: 9 / 16; margin: 0 auto; background: #000; }
+  .frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+  @media (min-width: 600px) {
+    :root { --pad: 24px; }
+    .head { padding: 24px 0 10px; }
+    .lessons { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+    .lesson { flex-direction: column; align-items: stretch; gap: 8px; padding: 0; background: none; border: 0; box-shadow: none; min-height: 0; }
+    .lesson .thumb { display: block; width: 100%; border-radius: 14px; box-shadow: var(--shadow); }
+    .lesson .go { display: none; }
+    .lesson .thumb .pl span { width: 44px; height: 44px; }
+    .lesson .thumb .pl .ic { width: 20px; height: 20px; }
+    .lesson .thumb .dur { display: block; }
+    .lesson .num { display: none; }
+    .lesson .td { display: none; }
+    .tt::before { content: attr(data-n) ". "; color: var(--green); }
+    .help { padding: 24px 28px; }
+  }
+  @media (min-width: 1024px) {
+    .top-in { min-height: 68px; }
+    .logo img { height: 42px; }
+    .logo .lat { height: 28px; }
+  }
+  @media (max-width: 380px) {
+    .langs button { padding: 6px 8px; min-width: 40px; font-size: .85rem; }
+    .logo img { height: 32px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-wa" viewBox="0 0 32 32"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3 29l6.6-2c1.9 1 4.1 1.6 6.4 1.6 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.3c-2.1 0-4-.6-5.7-1.6l-.4-.2-3.9 1.2 1.2-3.8-.3-.4c-1.1-1.7-1.8-3.6-1.8-5.7C5.1 10 10 5.2 16 5.2S26.9 10 26.9 15.8 22 26.3 16 26.3zm6-7.8c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.2 3.2 1.3 3.4c.2.2 2.3 3.6 5.7 5 2.8 1.1 3.4.9 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15V9l5.8 3z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+</svg>
+
+<a class="skip" href="#lessons" data-t="skip">انتقل إلى الدروس</a>
+
+<header>
+  <div class="wrap top-in">
+    <a class="logo" href="../download/" data-t-aria="home" aria-label="دكّاني">
+      <img class="ar" src="../download/assets/doukkany-wordmark-ar.png" width="360" height="154" alt="دكّاني">
+      <img class="lat" src="../download/assets/doukkany-wordmark-latin.png" width="400" height="98" alt="Doukkany">
+    </a>
+    <nav class="langs" aria-label="Language">
+      <button type="button" data-lang="ar" lang="ar">العربية</button>
+      <button type="button" data-lang="fr" lang="fr">Français</button>
+      <button type="button" data-lang="en" lang="en">English</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <h1 data-t="h1">تعلّم دكّاني</h1>
+    <p class="sub" data-t="sub">25 فيديو قصير، دقيقة لكل واحد. ابدأ من الأول.</p>
+    <a class="yt-all" id="yt-all" href="https://www.youtube.com/playlist?list=PLATmdIDov8C4" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="#i-yt"/></svg><span data-t="ytAll">شاهدها على YouTube</span></a>
+  </div>
+
+  <ol class="lessons" id="lessons"></ol>
+
+  <section class="help" aria-labelledby="help-title">
+    <div>
+      <h2 id="help-title" data-t="helpTitle">ما لقيتش جوابك؟</h2>
+      <p data-t="helpText">كلّمنا ونعاونوك.</p>
+    </div>
+    <a class="btn" id="wa-btn" href="https://wa.me/213775452101" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="#i-wa"/></svg><span data-t="waBtn">واتساب</span></a>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© Doukkany</span>
+    <nav aria-label="Links">
+      <a href="../download/" data-t="dlLink">تحميل دكّاني</a>
+      <a href="../privacy.html" data-t="privacyLink">سياسة الخصوصية</a>
+      <a href="../terms.html" data-t="terms">شروط الاستخدام</a>
+      <span data-dk-consent-wrap hidden><a href="#" data-dk-consent-open data-t="cookieLink">خيارات القياس</a></span>
+    </nav>
+  </div>
+</footer>
+
+<dialog class="player" id="player" aria-labelledby="player-title">
+  <div class="player-top">
+    <h3 id="player-title"></h3>
+    <a id="player-yt" href="https://www.youtube.com/playlist?list=PLATmdIDov8C4" target="_blank" rel="noopener"><span data-t="openYt">فتح على YouTube</span><svg class="ic s" aria-hidden="true" style="width:16px;height:16px"><use href="#i-ext"/></svg></a>
+    <button type="button" id="player-close" aria-label="Close" data-t-aria="close"><svg class="ic s" aria-hidden="true"><use href="#i-x"/></svg></button>
+  </div>
+  <div class="frame" id="player-frame"></div>
+</dialog>
+
+<script src="../js/tracking.js"></script>
+<script>
+(function () {
+  'use strict';
+  var TEXT = {
+    ar: {
+      title: 'دروس دكّاني · Doukkany', skip: 'انتقل إلى الدروس', home: 'دكّاني: صفحة التحميل',
+      h1: 'تعلّم دكّاني', sub: '25 فيديو قصير، دقيقة لكل واحد. ابدأ من الأول.',
+      ytAll: 'شاهدها على YouTube', openYt: 'فتح على YouTube', close: 'إغلاق',
+      helpTitle: 'ما لقيتش جوابك؟', helpText: 'كلّمنا ونعاونوك.', waBtn: 'واتساب',
+      waMessage: 'السلام عليكم، عندي سؤال على دكّاني.',
+      dlLink: 'تحميل دكّاني', privacyLink: 'سياسة الخصوصية', terms: 'شروط الاستخدام', cookieLink: 'خيارات القياس'
+    },
+    fr: {
+      title: 'Apprendre Doukkany', skip: 'Aller aux leçons', home: 'Doukkany : page de téléchargement',
+      h1: 'Apprendre Doukkany', sub: '25 vidéos courtes, une minute chacune. Commencez par la première.',
+      ytAll: 'Voir sur YouTube', openYt: 'Ouvrir sur YouTube', close: 'Fermer',
+      helpTitle: 'Pas trouvé votre réponse ?', helpText: 'Contactez-nous, on vous aide.', waBtn: 'WhatsApp',
+      waMessage: 'Bonjour, j’ai une question sur Doukkany.',
+      dlLink: 'Télécharger Doukkany', privacyLink: 'Confidentialité', terms: 'Conditions d’utilisation', cookieLink: 'Choix de mesure'
+    },
+    en: {
+      title: 'Learn Doukkany', skip: 'Skip to the lessons', home: 'Doukkany: download page',
+      h1: 'Learn Doukkany', sub: '25 short videos, one minute each. Start with the first one.',
+      ytAll: 'Watch on YouTube', openYt: 'Open on YouTube', close: 'Close',
+      helpTitle: 'Didn’t find your answer?', helpText: 'Contact us and we will help.', waBtn: 'WhatsApp',
+      waMessage: 'Hello, I have a question about Doukkany.',
+      dlLink: 'Download Doukkany', privacyLink: 'Privacy', terms: 'Terms', cookieLink: 'Measurement choices'
+    }
+  };
+
+  // "Doukkany on PC" YouTube playlist, in its order. Each link opens the video inside the playlist.
+  // Row: [video id, Arabic title, French title, English title, length in seconds, category].
+  // The category is sent with tutorial_clicked (tutorial_category).
+  var PLAYLIST_ID = 'PLATmdIDov8C4';
+  var VIDEOS = [
+    ['l487p3PcKrs', 'أول تشغيل لدكّاني على الحاسوب', 'Premier lancement de Doukkany sur PC', 'First start of Doukkany on PC', 56, 'getting_started'],
+    ['knj8FTLcriI', 'الإضافة السريعة للسلعة', 'Ajout rapide d’un produit', 'Quick add of a product', 50, 'products'],
+    ['hwXBqgD0qFU', 'إضافة سلعة بالتفصيل', 'Ajouter un produit en détail', 'Add a product in detail', 61, 'products'],
+    ['UiLl3WZe_iM', 'ترتيب السلع في فئات', 'Classer les produits par catégories', 'Sort products into categories', 46, 'products'],
+    ['HBxeKBFIpbY', 'البيع خطوة بخطوة', 'Vendre étape par étape', 'Selling step by step', 46, 'selling'],
+    ['USUIhjNc9wo', 'البيع بالدَّين', 'Vendre à crédit', 'Selling on credit', 49, 'credit'],
+    ['cWWeTfazA_Y', 'البيع بتخفيض', 'Vendre avec une remise', 'Selling with a discount', 49, 'selling'],
+    ['BecQxkCCNUo', 'البيع بقارئ الباركود', 'Vendre avec le lecteur de code-barres', 'Selling with a barcode scanner', 45, 'selling'],
+    ['GYOgSPXsGNA', 'اختصارات لوحة المفاتيح', 'Raccourcis clavier', 'Keyboard shortcuts', 46, 'selling'],
+    ['Qfl7T7-zdTM', 'عدة زبائن في وقت واحد', 'Plusieurs clients en même temps', 'Several customers at once', 45, 'selling'],
+    ['nX568wrdneU', 'طابعة الإيصالات', 'Imprimante de tickets', 'Receipt printer', 45, 'printing'],
+    ['oJIMUt0StMM', 'دفتر الدَّين', 'Carnet de crédit', 'Credit book', 45, 'credit'],
+    ['MtRhQZSqdRw', 'إضافة عامل وصلاحياته', 'Ajouter un employé et ses droits', 'Add a staff member and their permissions', 48, 'staff'],
+    ['SzjTHiWUKCY', 'الصندوق: الفتح والإغلاق', 'La caisse : ouverture et fermeture', 'Cash drawer: opening and closing', 48, 'cash'],
+    ['zj5Wp16lGYE', 'حاسوب ثانٍ وهاتف في المحل', 'Un 2e ordinateur et un téléphone dans le magasin', 'A second computer and a phone in the shop', 52, 'devices'],
+    ['bxlT8DnAFWY', 'التقارير والربح', 'Rapports et bénéfice', 'Reports and profit', 45, 'reports'],
+    ['qDGltZh8WuM', 'تسجيل وصول السلعة', 'Enregistrer l’arrivée de marchandise', 'Recording new stock', 42, 'stock'],
+    ['vgzS9v2wLVw', 'تنبيهات المخزون والصلاحية', 'Alertes de stock et de péremption', 'Stock and expiry alerts', 52, 'stock'],
+    ['IXEpl-ptxuE', 'إرجاع سلعة', 'Retour d’un produit', 'Returning a product', 45, 'selling'],
+    ['NriEqQDR_D8', 'طباعة الملصقات', 'Impression d’étiquettes', 'Printing labels', 41, 'printing'],
+    ['C_tN8K8XnAc', 'استيراد السلع من Excel', 'Importer les produits depuis Excel', 'Import products from Excel', 37, 'products'],
+    ['EH5Sdd2-Ueg', 'سعر التجزئة وسعر الجملة', 'Prix de détail et prix de gros', 'Retail and wholesale prices', 34, 'products'],
+    ['sFtffw9oHFw', 'التصليحات والخدمات', 'Réparations et services', 'Repairs and services', 39, 'services'],
+    ['h4q0r4vEIJg', 'نقاط الوفاء والعروض', 'Points de fidélité et offres', 'Loyalty points and offers', 38, 'loyalty'],
+    ['72vZnHe9ay4', 'النسخة الاحتياطية', 'Sauvegarde', 'Backup', 48, 'backup']
+  ];
+  // Same support number as the app (kSupportPhone in support_center.dart).
+  var WA_NUMBER = '213775452101';
+
+  var params = new URLSearchParams(location.search);
+  var lang = 'ar';
+  function $(id) { return document.getElementById(id); }
+
+  // Tracking (../js/tracking.js). The page works the same if it did not load.
+  var tracking = window.dkTracking || null;
+  function track(name, p) { try { if (tracking) tracking.track(name, p); } catch (e) {} }
+
+  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  function icon(id) {
+    var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    s.setAttribute('class', 'ic'); s.setAttribute('aria-hidden', 'true');
+    var u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#' + id); s.appendChild(u);
+    return s;
+  }
+  function mmss(sec) { return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
+  function videoUrl(i) { return 'https://www.youtube.com/watch?v=' + VIDEOS[i][0] + '&list=' + PLAYLIST_ID + '&index=' + (i + 1); }
+  function title(i) { return VIDEOS[i][{ ar: 1, fr: 2, en: 3 }[lang]]; }
+
+  function render() {
+    var list = $('lessons'); list.textContent = '';
+    VIDEOS.forEach(function (v, i) {
+      var li = el('li');
+      var a = el('a', 'lesson');
+      a.href = videoUrl(i); a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('data-v', i);
+      var t = el('span', 'thumb');
+      var img = el('img'); img.src = 'https://i.ytimg.com/vi/' + v[0] + '/hq720.jpg';
+      img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.width = 9; img.height = 16;
+      t.appendChild(img);
+      var pl = el('span', 'pl'), c = el('span'); c.appendChild(icon('i-play')); pl.appendChild(c); t.appendChild(pl);
+      t.appendChild(el('span', 'dur', mmss(v[4])));
+      a.appendChild(t);
+      a.appendChild(el('span', 'num', String(i + 1)));
+      var tx = el('span', 'txt');
+      var tt = el('span', 'tt', title(i)); tt.setAttribute('data-n', String(i + 1)); tx.appendChild(tt);
+      var td = el('span', 'td'); var b = el('bdi', null, mmss(v[4])); b.dir = 'ltr'; td.appendChild(b); tx.appendChild(td);
+      a.appendChild(tx);
+      var go = el('span', 'go'); go.appendChild(icon('i-play')); a.appendChild(go);
+      li.appendChild(a); list.appendChild(li);
+    });
+  }
+
+  // ---- Language (same saved choice as the download page) ----
+  function pickLang() {
+    var asked = params.get('lang');
+    if (TEXT[asked]) return asked;
+    try { var saved = localStorage.getItem('doukkany-lang'); if (TEXT[saved]) return saved; } catch (e) {}
+    return 'ar';
+  }
+  function setLang(next) {
+    lang = next;
+    var t = TEXT[lang];
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.title = t.title;
+    document.querySelectorAll('[data-t]').forEach(function (e) { e.textContent = t[e.getAttribute('data-t')]; });
+    document.querySelectorAll('[data-t-aria]').forEach(function (e) { e.setAttribute('aria-label', t[e.getAttribute('data-t-aria')]); });
+    document.querySelectorAll('.langs button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang));
+    });
+    $('wa-btn').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(t.waMessage);
+    render();
+    try { localStorage.setItem('doukkany-lang', lang); } catch (e) {}
+  }
+  document.querySelectorAll('.langs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var next = b.getAttribute('data-lang');
+      if (next !== lang) track('language_changed', { from_language: lang, to_language: next });
+      setLang(next);
+    });
+  });
+
+  // ---- Video player: YouTube loads only after a click (youtube-nocookie). ----
+  // Ctrl/middle click, or a browser without <dialog>, opens the video on YouTube.
+  var player = $('player');
+  var canDialog = typeof player.showModal === 'function';
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[data-v]');
+    if (!a) return;
+    var i = +a.getAttribute('data-v');
+    track('tutorial_clicked', { tutorial_id: VIDEOS[i][0], tutorial_category: VIDEOS[i][5], tutorial_position: i + 1 });
+    if (!canDialog || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    $('player-title').textContent = (i + 1) + '. ' + title(i);
+    $('player-yt').href = videoUrl(i);
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + VIDEOS[i][0] + '?autoplay=1&rel=0&playsinline=1&hl=' + lang;
+    f.title = title(i);
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    $('player-frame').textContent = '';
+    $('player-frame').appendChild(f);
+    player.showModal();
+  });
+  $('player-close').addEventListener('click', function () { player.close(); });
+  player.addEventListener('click', function (e) { if (e.target === player) player.close(); });
+  player.addEventListener('close', function () { $('player-frame').textContent = ''; });
+  $('yt-all').addEventListener('click', function () {
+    track('tutorial_clicked', { tutorial_id: 'playlist', tutorial_category: 'playlist' });
+  });
+  $('wa-btn').addEventListener('click', function () {
+    track('whatsapp_support_clicked', { link_type: 'whatsapp', method: 'learn' });
+  });
+
+  setLang(pickLang());
+})();
+</script>
+</body>
+</html>

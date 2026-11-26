@@ -121,22 +121,6 @@
   .sec-title { font-size: clamp(1.35rem, 4.4vw, 1.7rem); font-weight: 700; line-height: 1.3; }
   .sec-sub { color: var(--muted); margin-top: 2px; }
 
-  /* 3 short videos */
-  .vids { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; max-width: 640px; }
-  .vcard { display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: var(--ink); }
-  /* The tutorials are vertical Shorts: YouTube's wide thumbnails are cropped to the middle 9:16. */
-  .thumb { position: relative; width: 100%; aspect-ratio: 9 / 16; border-radius: 14px; overflow: hidden; background: var(--mint); box-shadow: var(--shadow); }
-  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .thumb .pl { position: absolute; inset: 0; display: grid; place-items: center; }
-  .thumb .pl span { width: 44px; height: 44px; border-radius: 50%; background: rgba(17,33,26,.72); color: #fff; display: grid; place-items: center; transition: transform .15s; }
-  .thumb .pl .ic { width: 20px; height: 20px; margin-left: 2px; }
-  .vcard:hover .pl span { transform: scale(1.08); }
-  .dur { position: absolute; bottom: 6px; inset-inline-end: 6px; background: rgba(0,0,0,.75); color: #fff; font-size: .75rem; font-weight: 600; padding: 0 6px; border-radius: 4px; direction: ltr; }
-  .vt { font-weight: 700; line-height: 1.35; font-size: .95rem; }
-  .yt-all { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; min-height: 44px; margin-top: 8px; }
-  .yt-all .ic { color: #E62117; width: 22px; height: 22px; }
-  .yt-all:hover { text-decoration: underline; }
-
   /* Help and buying, in one box */
   .help { background: linear-gradient(150deg, #0B5C38 0%, #0E6B43 55%, #117A4B 100%); color: #fff; border-radius: var(--r-lg); padding: 22px 20px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
   .help p { color: #E5F5EC; }
@@ -149,21 +133,10 @@
   footer nav { display: flex; gap: 6px 16px; flex-wrap: wrap; }
   footer a { color: var(--muted); }
 
-  /* Video player */
-  dialog.player { width: fit-content; max-width: calc(100% - 24px); padding: 0; border: 0; border-radius: 18px; background: #0F1512; color: #fff; overflow: hidden; }
-  dialog.player::backdrop { background: rgba(10,20,15,.72); }
-  .player-top { width: 0; min-width: 100%; display: flex; align-items: center; gap: 10px; padding-block: 8px; padding-inline: 14px 8px; }
-  .player-top h3 { flex: 1; min-width: 0; font-size: 1rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .player-top a { color: #CDEBD9; font-size: .9rem; display: inline-flex; gap: 4px; align-items: center; min-height: 44px; white-space: nowrap; }
-  .player-top button { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 0; background: rgba(255,255,255,.12); color: #fff; cursor: pointer; display: grid; place-items: center; }
-  .frame { height: min(calc(100dvh - 110px), calc((100vw - 24px) * 16 / 9), 720px); aspect-ratio: 9 / 16; margin: 0 auto; background: #000; }
-  .frame iframe { width: 100%; height: 100%; border: 0; display: block; }
-
   /* ---- Larger screens ---- */
   @media (min-width: 600px) {
     :root { --pad: 24px; }
     .devices { max-width: 440px; }
-    .vids { gap: 16px; }
     .help { padding: 26px 28px; }
   }
   @media (min-width: 1024px) {
@@ -180,7 +153,6 @@
   @media (max-width: 380px) {
     .langs button { padding: 6px 8px; min-width: 40px; font-size: .85rem; }
     .logo img { height: 32px; }
-    .vt { font-size: .88rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -192,12 +164,8 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-win" viewBox="0 0 24 24"><path d="M3 5.6 10.4 4.6v7H3zM11.4 4.4 21 3v8.6h-9.6zM3 12.6h7.4v7L3 18.4zM11.4 12.6H21V21l-9.6-1.4z"/></symbol>
   <symbol id="i-wa" viewBox="0 0 32 32"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3 29l6.6-2c1.9 1 4.1 1.6 6.4 1.6 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.3c-2.1 0-4-.6-5.7-1.6l-.4-.2-3.9 1.2 1.2-3.8-.3-.4c-1.1-1.7-1.8-3.6-1.8-5.7C5.1 10 10 5.2 16 5.2S26.9 10 26.9 15.8 22 26.3 16 26.3zm6-7.8c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.2 3.2 1.3 3.4c.2.2 2.3 3.6 5.7 5 2.8 1.1 3.4.9 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></symbol>
-  <symbol id="i-yt" viewBox="0 0 24 24"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15V9l5.8 3z"/></symbol>
-  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></symbol>
   <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
-  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
-  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3l10 18H2zM12 10v5M12 18h.01"/></symbol>
 </svg>
 
@@ -265,13 +233,6 @@
     </div>
   </section>
 
-  <section class="sec wrap" id="tutorials" aria-labelledby="tut-title">
-    <h2 class="sec-title" id="tut-title" data-t="tutorialTitle">شوف كيفاش يخدم</h2>
-    <p class="sec-sub" data-t="tutorialHint">3 فيديوهات قصار، دقيقة لكل واحد.</p>
-    <div class="vids" id="vids"></div>
-    <a class="yt-all" id="tutorial-all" href="https://www.youtube.com/playlist?list=PLATmdIDov8C4" target="_blank" rel="noopener"><svg class="ic f" aria-hidden="true"><use href="#i-yt"/></svg><span data-t="tutorialAll">كل الدروس (25) على YouTube</span></a>
-  </section>
-
   <section class="sec wrap" id="support" aria-labelledby="support-title">
     <div class="help">
       <h2 class="sec-title" id="support-title" data-t="supportTitle">تحتاج مساعدة ولا حاب تشري؟</h2>
@@ -288,21 +249,13 @@
   <div class="wrap">
     <span>© Doukkany</span>
     <nav aria-label="Legal">
+      <a href="../learn/" data-t="learnLink">دروس الفيديو</a>
       <a href="../privacy.html" data-t="privacyLink">سياسة الخصوصية</a>
       <a href="../terms.html" data-t="terms">شروط الاستخدام</a>
       <span data-dk-consent-wrap hidden><a href="#" data-dk-consent-open data-t="cookieLink">خيارات القياس</a></span>
     </nav>
   </div>
 </footer>
-
-<dialog class="player" id="player" aria-labelledby="player-title">
-  <div class="player-top">
-    <h3 id="player-title"></h3>
-    <a id="player-yt" href="https://www.youtube.com/playlist?list=PLATmdIDov8C4" target="_blank" rel="noopener"><span data-t="openYt">فتح على YouTube</span><svg class="ic" aria-hidden="true" style="width:16px;height:16px"><use href="#i-ext"/></svg></a>
-    <button type="button" id="player-close" aria-label="Close" data-t-aria="close"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
-  </div>
-  <div class="frame" id="player-frame"></div>
-</dialog>
 
 <script src="../js/tracking.js"></script>
 <script>
@@ -326,14 +279,11 @@
       pcOnPhone: 'تحب تحطّو في الحاسوب؟', sendBtn: 'ابعث الرابط للحاسوب',
       sent: 'تم. افتح الرابط على الحاسوب والتحميل يبدأ وحده.',
       shareText: 'رابط تحميل دكّاني للحاسوب (Windows 10 وما بعده):',
-      tutorialTitle: 'شوف كيفاش يخدم', tutorialHint: '3 فيديوهات قصار، دقيقة لكل واحد.',
-      tutorialAll: 'كل الدروس (25) على YouTube',
-      openYt: 'فتح على YouTube', close: 'إغلاق',
       supportTitle: 'تحتاج مساعدة ولا حاب تشري؟',
       supportText: 'تخلص مرة وحدة، بلا اشتراك شهري. كلّمنا ونعاونوك في التثبيت والتفعيل.',
       waBtn: 'واتساب',
       waMessage: 'السلام عليكم، عندي سؤال على دكّاني.',
-      privacyLink: 'سياسة الخصوصية', terms: 'شروط الاستخدام', cookieLink: 'خيارات القياس'
+      learnLink: 'دروس الفيديو', privacyLink: 'سياسة الخصوصية', terms: 'شروط الاستخدام', cookieLink: 'خيارات القياس'
     },
     fr: {
       title: 'Télécharger Doukkany',
@@ -352,14 +302,11 @@
       pcOnPhone: 'Vous le voulez sur votre PC ?', sendBtn: 'Envoyer le lien au PC',
       sent: 'C’est fait. Ouvrez le lien sur le PC : le téléchargement démarre tout seul.',
       shareText: 'Lien de téléchargement de Doukkany pour PC (Windows 10 et plus) :',
-      tutorialTitle: 'Voyez comment ça marche', tutorialHint: '3 vidéos courtes, une minute chacune.',
-      tutorialAll: 'Toutes les leçons (25) sur YouTube',
-      openYt: 'Ouvrir sur YouTube', close: 'Fermer',
       supportTitle: 'Besoin d’aide ou envie d’acheter ?',
       supportText: 'Vous payez une seule fois, sans abonnement. Contactez-nous : on vous aide à installer et à activer.',
       waBtn: 'WhatsApp',
       waMessage: 'Bonjour, j’ai une question sur Doukkany.',
-      privacyLink: 'Confidentialité', terms: 'Conditions d’utilisation', cookieLink: 'Choix de mesure'
+      learnLink: 'Vidéos de formation', privacyLink: 'Confidentialité', terms: 'Conditions d’utilisation', cookieLink: 'Choix de mesure'
     },
     en: {
       title: 'Download Doukkany',
@@ -378,26 +325,13 @@
       pcOnPhone: 'Want it on your PC?', sendBtn: 'Send the link to your PC',
       sent: 'Done. Open the link on your PC: the download starts by itself.',
       shareText: 'Doukkany download link for PC (Windows 10 and newer):',
-      tutorialTitle: 'See how it works', tutorialHint: '3 short videos, one minute each.',
-      tutorialAll: 'All lessons (25) on YouTube',
-      openYt: 'Open on YouTube', close: 'Close',
       supportTitle: 'Need help, or ready to buy?',
       supportText: 'Pay once, no subscription. Contact us and we help you install and activate.',
       waBtn: 'WhatsApp',
       waMessage: 'Hello, I have a question about Doukkany.',
-      privacyLink: 'Privacy', terms: 'Terms', cookieLink: 'Measurement choices'
+      learnLink: 'Video lessons', privacyLink: 'Privacy', terms: 'Terms', cookieLink: 'Measurement choices'
     }
   };
-
-  // The first 3 videos of the "Doukkany on PC" YouTube playlist that a new shop needs.
-  // Row: [video id, Arabic title, French title, English title, length in seconds, category, playlist position].
-  // The category is sent with tutorial_clicked (tutorial_category).
-  var PLAYLIST_ID = 'PLATmdIDov8C4';
-  var VIDEOS = [
-    ['l487p3PcKrs', 'أول تشغيل لدكّاني', 'Premier lancement', 'First start', 56, 'getting_started', 1],
-    ['knj8FTLcriI', 'إضافة سلعة بسرعة', 'Ajouter un produit', 'Add a product', 50, 'products', 2],
-    ['HBxeKBFIpbY', 'البيع خطوة بخطوة', 'Vendre étape par étape', 'Selling step by step', 46, 'selling', 5]
-  ];
 
   var PLAY_URL = 'https://play.google.com/store/apps/details?id=com.yousoft.doukkany';
   var RELEASE_PAGE = 'https://github.com/dzstoredzd/doukkany-releases/releases/latest';
@@ -466,7 +400,6 @@
     });
     $('play-img').src = 'https://play.google.com/intl/en_us/badges/static/images/badges/' + lang + '_badge_web_generic.png';
     if (DEVICE === 'ios') $('and-note').textContent = t.iosReq;
-    renderVideos();
     $('play-btn').href = playUrl();
     $('wa-btn').href = waUrl();
     if ($('status').textContent) $('status').textContent = t.starting;
@@ -562,63 +495,6 @@
     track('download_link_shared', { method: 'whatsapp' });
     window.open('https://wa.me/?text=' + encodeURIComponent(TEXT[lang].shareText + '\n' + winLink('share')), '_blank', 'noopener');
   }
-
-  // ---- Videos ----
-  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
-  function icon(id) {
-    var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    s.setAttribute('class', 'ic f'); s.setAttribute('aria-hidden', 'true');
-    var u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#' + id); s.appendChild(u);
-    return s;
-  }
-  function mmss(sec) { return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
-  function videoUrl(i) { return 'https://www.youtube.com/watch?v=' + VIDEOS[i][0] + '&list=' + PLAYLIST_ID + '&index=' + VIDEOS[i][6]; }
-  function title(i) { return VIDEOS[i][{ ar: 1, fr: 2, en: 3 }[lang]]; }
-
-  function renderVideos() {
-    var box = $('vids'); box.textContent = '';
-    VIDEOS.forEach(function (v, i) {
-      var a = el('a', 'vcard');
-      a.href = videoUrl(i); a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('data-v', i);
-      var t = el('span', 'thumb');
-      var img = el('img'); img.src = 'https://i.ytimg.com/vi/' + v[0] + '/hq720.jpg';
-      img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.width = 9; img.height = 16;
-      t.appendChild(img);
-      var pl = el('span', 'pl'), c = el('span'); c.appendChild(icon('i-play')); pl.appendChild(c); t.appendChild(pl);
-      t.appendChild(el('span', 'dur', mmss(v[4])));
-      a.appendChild(t);
-      a.appendChild(el('span', 'vt', title(i)));
-      box.appendChild(a);
-    });
-  }
-
-  // Video player: the YouTube player loads only after a click (youtube-nocookie).
-  // Ctrl/middle click, or a browser without <dialog>, opens the video on YouTube.
-  var player = $('player');
-  var canDialog = typeof player.showModal === 'function';
-  document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a[data-v]');
-    if (!a) return;
-    var i = +a.getAttribute('data-v');
-    track('tutorial_clicked', { tutorial_id: VIDEOS[i][0], tutorial_category: VIDEOS[i][5], tutorial_position: VIDEOS[i][6] });
-    if (!canDialog || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
-    e.preventDefault();
-    $('player-title').textContent = title(i);
-    $('player-yt').href = videoUrl(i);
-    var f = document.createElement('iframe');
-    f.src = 'https://www.youtube-nocookie.com/embed/' + VIDEOS[i][0] + '?autoplay=1&rel=0&playsinline=1&hl=' + lang;
-    f.title = title(i);
-    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
-    $('player-frame').textContent = '';
-    $('player-frame').appendChild(f);
-    player.showModal();
-  });
-  $('player-close').addEventListener('click', function () { player.close(); });
-  player.addEventListener('click', function (e) { if (e.target === player) player.close(); });
-  player.addEventListener('close', function () { $('player-frame').textContent = ''; });
-  $('tutorial-all').addEventListener('click', function () {
-    track('tutorial_clicked', { tutorial_id: 'playlist', tutorial_category: 'playlist' });
-  });
 
   // ---- WhatsApp support ----
   $('wa-btn').addEventListener('click', function () {
