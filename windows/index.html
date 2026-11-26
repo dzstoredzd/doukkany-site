@@ -2,13 +2,394 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Doukkany for Windows</title>
-<meta http-equiv="refresh" content="0; url=https://github.com/dzstoredzd/doukkany-releases/releases/latest">
-<style>body{font-family:system-ui,"Segoe UI",Tahoma,Arial,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;line-height:1.6}</style>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دكّاني للحاسوب · Doukkany</title>
+<meta name="description" content="Download Doukkany for Windows 10 and newer (64-bit). Point of sale and shop management that works without internet. 14-day free trial.">
+<meta name="theme-color" content="#117A4B">
+<link rel="icon" type="image/png" href="../download/assets/favicon-64.png">
+<link rel="apple-touch-icon" href="../download/assets/icon-192.png">
+<meta property="og:title" content="دكّاني للحاسوب · Doukkany for Windows">
+<meta property="og:description" content="Windows 10 وما بعده. 14 يوم مجانا.">
+<meta property="og:image" content="https://yousoft.site/doukkany-site/download/assets/pc-sell-1200.webp">
+<link rel="preload" href="../download/assets/plex-ar-bold.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  /* Same fonts and colours as the download page (download/index.html). */
+  @font-face { font-family: D; src: url(../download/assets/plex-ar-regular.woff2) format("woff2"); font-weight: 400; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+  @font-face { font-family: D; src: url(../download/assets/plex-ar-semibold.woff2) format("woff2"); font-weight: 600; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+  @font-face { font-family: D; src: url(../download/assets/plex-ar-bold.woff2) format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200F; }
+  @font-face { font-family: D; src: url(../download/assets/inter-regular.woff2) format("woff2"); font-weight: 400; font-display: swap; unicode-range: U+0000-00FF, U+0152-0153, U+0178, U+2013-2026, U+20AC, U+2190-2192; }
+  @font-face { font-family: D; src: url(../download/assets/inter-semibold.woff2) format("woff2"); font-weight: 600; font-display: swap; unicode-range: U+0000-00FF, U+0152-0153, U+0178, U+2013-2026, U+20AC, U+2190-2192; }
+  @font-face { font-family: D; src: url(../download/assets/inter-bold.woff2) format("woff2"); font-weight: 700; font-display: swap; unicode-range: U+0000-00FF, U+0152-0153, U+0178, U+2013-2026, U+20AC, U+2190-2192; }
+
+  :root {
+    --logo: #16955F; --green: #117A4B; --deep: #0B4A2E; --mint: #DDF2E6; --mint-2: #EEF8F2;
+    --ink: #17212B; --muted: #4F5D69; --line: #DCE6E0; --bg: #F5F8F6; --card: #fff;
+    --shadow: 0 1px 2px rgba(23,33,43,.05), 0 8px 24px rgba(17,122,75,.08);
+    --pad: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; font-family: D, system-ui, "Segoe UI", Tahoma, Arial, sans-serif; background: radial-gradient(900px 520px at 70% 0%, #F4FBF7 0%, #E4F4EB 45%, var(--bg) 100%) no-repeat, var(--bg); color: var(--ink); line-height: 1.6; overflow-x: hidden; }
+  a { color: var(--green); }
+  h1, h2, p { margin: 0; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--logo); outline-offset: 2px; border-radius: 6px; }
+  .wrap { width: 100%; max-width: 600px; margin: 0 auto; padding: 0 var(--pad); }
+  .ic { width: 1.25em; height: 1.25em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ic.f { fill: currentColor; stroke: none; }
+  [hidden] { display: none !important; }
+
+  /* Header */
+  .top-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
+  .logo { display: flex; align-items: center; }
+  .logo img { display: block; height: 36px; width: auto; }
+  .logo .lat { height: 24px; }
+  html[lang="ar"] .logo .lat, html:not([lang="ar"]) .logo .ar { display: none; }
+  .langs { display: flex; gap: 2px; padding: 3px; background: #fff; border: 1px solid var(--line); border-radius: 999px; }
+  .langs button { background: transparent; border: 0; border-radius: 999px; padding: 6px 11px; min-height: 40px; min-width: 44px; cursor: pointer; font-size: .9rem; font-weight: 600; color: var(--muted); }
+  .langs button[aria-pressed="true"] { background: var(--green); color: #fff; }
+  .langs button:not([aria-pressed="true"]):hover { color: var(--ink); background: var(--mint-2); }
+
+  /* Title */
+  .head { padding: 18px 0 4px; display: flex; align-items: center; gap: 14px; }
+  .head-ic { width: 60px; height: 60px; flex: none; border-radius: 18px; background: var(--green); color: #fff; display: grid; place-items: center; box-shadow: 0 10px 24px rgba(17,122,75,.25); }
+  .head-ic .ic { width: 30px; height: 30px; }
+  h1 { font-size: clamp(1.7rem, 7vw, 2.4rem); font-weight: 700; line-height: 1.2; }
+  .sub { color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+  /* Cards */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 20px; box-shadow: var(--shadow); margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .card.main { border: 2px solid var(--logo); }
+  .card h2 { font-size: 1.15rem; font-weight: 700; line-height: 1.35; }
+  .note { color: var(--muted); font-weight: 600; font-size: .95rem; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 58px; padding: 12px 22px; border-radius: 16px; border: 0; cursor: pointer; font-weight: 700; font-size: 1.15rem; text-decoration: none; background: var(--green); color: #fff; box-shadow: 0 10px 22px rgba(17,122,75,.22); width: 100%; transition: background .15s; }
+  .btn:hover { background: #0D6A40; }
+  .btn .ic { width: 24px; height: 24px; }
+  .status, .msg { font-weight: 600; color: var(--green); font-size: .95rem; }
+  .status:empty, .msg:empty { display: none; }
+  .tip { font-size: .92rem; color: var(--muted); }
+  .tip summary { cursor: pointer; font-weight: 600; color: var(--ink); list-style: none; display: flex; align-items: center; gap: 6px; min-height: 32px; }
+  .tip summary::-webkit-details-marker { display: none; }
+  .tip summary .ic { color: #9A5A00; }
+  .tip p { margin-top: 4px; }
+
+  /* Phone app */
+  .phone-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+  .phone-row p { flex: 1 1 220px; }
+  .play-badge { display: inline-block; line-height: 0; border-radius: 12px; }
+  .play-badge img { height: 64px; width: auto; margin: -8px; display: block; }
+  .wifi { display: inline-flex; align-items: center; gap: 6px; color: var(--deep); font-weight: 700; }
+  .wifi .ic { color: var(--green); }
+
+  /* Learn link */
+  .learn { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--ink); }
+  .learn-ic { width: 48px; height: 48px; flex: none; border-radius: 14px; background: var(--mint); color: var(--green); display: grid; place-items: center; }
+  .learn-ic .ic { width: 22px; height: 22px; margin-left: 2px; }
+  .learn b { display: block; font-size: 1.1rem; }
+  .learn span.t { flex: 1; }
+  .learn .s { display: block; color: var(--muted); font-weight: 600; font-size: .92rem; }
+  .learn .arr { color: var(--muted); }
+  html[dir="rtl"] .learn .arr { transform: scaleX(-1); }
+  .learn:hover b { text-decoration: underline; }
+
+  footer { margin-top: 32px; padding: 22px 0 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; }
+  footer nav { display: flex; gap: 6px 16px; flex-wrap: wrap; }
+  footer a { color: var(--muted); }
+
+  /* On a phone the computer card only sends the link to the PC. */
+  #send-btn, .on-phone { display: none; }
+  html[data-device="android"] #win-btn, html[data-device="ios"] #win-btn,
+  html[data-device="android"] #smartscreen, html[data-device="ios"] #smartscreen { display: none; }
+  html[data-device="android"] #send-btn, html[data-device="ios"] #send-btn { display: inline-flex; }
+  html[data-device="android"] .on-phone, html[data-device="ios"] .on-phone { display: block; }
+
+  @media (min-width: 600px) {
+    :root { --pad: 24px; }
+    .head { padding-top: 32px; }
+    .card { padding: 24px; }
+  }
+  @media (max-width: 380px) {
+    .langs button { padding: 6px 8px; min-width: 40px; font-size: .85rem; }
+    .logo img { height: 32px; }
+  }
+</style>
 </head>
 <body>
-<p>جارٍ فتح صفحة التنزيل… · Ouverture de la page de téléchargement… · Opening the download page…</p>
-<p><a href="https://github.com/dzstoredzd/doukkany-releases/releases/latest">Doukkany — Windows</a></p>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-win" viewBox="0 0 24 24"><path d="M3 5.6 10.4 4.6v7H3zM11.4 4.4 21 3v8.6h-9.6zM3 12.6h7.4v7L3 18.4zM11.4 12.6H21V21l-9.6-1.4z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3l10 18H2zM12 10v5M12 18h.01"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 9a15 15 0 0 1 20 0M12 20h.01"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></symbol>
+  <symbol id="i-arr" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<header>
+  <div class="wrap top-in">
+    <a class="logo" href="../download/" data-t-aria="home" aria-label="دكّاني">
+      <img class="ar" src="../download/assets/doukkany-wordmark-ar.png" width="360" height="154" alt="دكّاني">
+      <img class="lat" src="../download/assets/doukkany-wordmark-latin.png" width="400" height="98" alt="Doukkany">
+    </a>
+    <nav class="langs" aria-label="Language">
+      <button type="button" data-lang="ar" lang="ar">العربية</button>
+      <button type="button" data-lang="fr" lang="fr">Français</button>
+      <button type="button" data-lang="en" lang="en">English</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <span class="head-ic"><svg class="ic f" aria-hidden="true"><use href="#i-win"/></svg></span>
+    <div>
+      <h1 data-t="h1">دكّاني للحاسوب</h1>
+      <p class="sub" data-t="sub">يخدم بلا أنترنت · 14 يوم مجانا</p>
+    </div>
+  </div>
+
+  <section class="card main">
+    <p class="note on-phone" data-t="phoneNote">راك في الهاتف؟ هذي النسخة للحاسوب. ابعث الرابط لحاسوبك وافتحو تمّاك.</p>
+    <a class="btn" id="win-btn" href="https://github.com/dzstoredzd/doukkany-releases/releases/latest"><svg class="ic" aria-hidden="true"><use href="#i-win"/></svg><span data-t="winBtn">تحميل للحاسوب</span></a>
+    <button type="button" class="btn" id="send-btn"><svg class="ic" aria-hidden="true"><use href="#i-send"/></svg><span data-t="sendBtn">ابعث الرابط للحاسوب</span></button>
+    <p class="note" data-t="winReq">Windows 10 وما بعده · 64 بت</p>
+    <p class="status" id="status" role="status"></p>
+    <p class="msg" id="send-msg" role="status"></p>
+    <details class="tip" id="smartscreen">
+      <summary><svg class="ic" aria-hidden="true"><use href="#i-warn"/></svg><span data-t="smartTitle">ظهرت رسالة حماية من Windows؟</span></summary>
+      <p data-t="smartBody">هذا يحدث مع البرامج الجديدة. اضغط «مزيد من المعلومات» (More info)، ثم «تشغيل على أي حال» (Run anyway).</p>
+    </details>
+  </section>
+
+  <section class="card" aria-labelledby="and-title">
+    <h2 id="and-title" data-t="andTitle">وتطبيق الهاتف كذلك</h2>
+    <div class="phone-row">
+      <p><span class="wifi"><svg class="ic" aria-hidden="true"><use href="#i-wifi"/></svg><span data-t="andWifi">يتربط بالحاسوب عبر شبكة Wi-Fi</span></span><br><span class="note" data-t="andText">في نفس الحانوت، بلا أنترنت.</span></p>
+      <a class="play-badge" id="play-btn" href="https://play.google.com/store/apps/details?id=com.yousoft.doukkany"><img id="play-img" src="https://play.google.com/intl/en_us/badges/static/images/badges/ar_badge_web_generic.png" width="646" height="250" alt="احصل عليه من Google Play" data-t-alt="playAlt"></a>
+    </div>
+  </section>
+
+  <section class="card">
+    <a class="learn" href="../learn/">
+      <span class="learn-ic"><svg class="ic f" aria-hidden="true"><use href="#i-play"/></svg></span>
+      <span class="t"><b data-t="learnTitle">تعلّم دكّاني</b><span class="s" data-t="learnText">25 فيديو قصير، دقيقة لكل واحد.</span></span>
+      <svg class="ic arr" aria-hidden="true"><use href="#i-arr"/></svg>
+    </a>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© Doukkany</span>
+    <nav aria-label="Links">
+      <a href="../privacy.html" data-t="privacyLink">سياسة الخصوصية</a>
+      <a href="../terms.html" data-t="terms">شروط الاستخدام</a>
+      <span data-dk-consent-wrap hidden><a href="#" data-dk-consent-open data-t="cookieLink">خيارات القياس</a></span>
+    </nav>
+  </div>
+</footer>
+
+<script src="../js/tracking.js"></script>
+<script>
+(function () {
+  'use strict';
+  var TEXT = {
+    ar: {
+      title: 'دكّاني للحاسوب · Doukkany', home: 'دكّاني: صفحة التحميل',
+      h1: 'دكّاني للحاسوب', sub: 'يخدم بلا أنترنت · 14 يوم مجانا',
+      phoneNote: 'راك في الهاتف؟ هذي النسخة للحاسوب. ابعث الرابط لحاسوبك وافتحو تمّاك.',
+      winBtn: 'تحميل للحاسوب', winReq: 'Windows 10 وما بعده · 64 بت',
+      starting: 'سيبدأ التنزيل بعد لحظات…',
+      smartTitle: 'ظهرت رسالة حماية من Windows؟',
+      smartBody: 'هذا يحدث مع البرامج الجديدة. اضغط «مزيد من المعلومات» (More info)، ثم «تشغيل على أي حال» (Run anyway).',
+      sendBtn: 'ابعث الرابط للحاسوب', sent: 'تم. افتح الرابط على الحاسوب والتحميل يبدأ وحده.',
+      shareText: 'رابط تحميل دكّاني للحاسوب (Windows 10 وما بعده):',
+      andTitle: 'وتطبيق الهاتف كذلك', andWifi: 'يتربط بالحاسوب عبر شبكة Wi-Fi', andText: 'في نفس الحانوت، بلا أنترنت.',
+      playAlt: 'احصل عليه من Google Play',
+      learnTitle: 'تعلّم دكّاني', learnText: '25 فيديو قصير، دقيقة لكل واحد.',
+      privacyLink: 'سياسة الخصوصية', terms: 'شروط الاستخدام', cookieLink: 'خيارات القياس'
+    },
+    fr: {
+      title: 'Doukkany pour PC', home: 'Doukkany : page de téléchargement',
+      h1: 'Doukkany pour PC', sub: 'Marche sans internet · 14 jours gratuits',
+      phoneNote: 'Vous êtes sur téléphone ? Cette version est pour PC. Envoyez-vous le lien et ouvrez-le sur l’ordinateur.',
+      winBtn: 'Télécharger pour PC', winReq: 'Windows 10 et plus · 64 bits',
+      starting: 'Le téléchargement va commencer…',
+      smartTitle: 'Windows affiche un avertissement ?',
+      smartBody: 'Cela arrive avec les nouveaux logiciels. Cliquez sur « Informations complémentaires », puis sur « Exécuter quand même ».',
+      sendBtn: 'Envoyer le lien au PC', sent: 'C’est fait. Ouvrez le lien sur le PC : le téléchargement démarre tout seul.',
+      shareText: 'Lien de téléchargement de Doukkany pour PC (Windows 10 et plus) :',
+      andTitle: 'Et l’application mobile', andWifi: 'Elle se relie au PC par le Wi-Fi', andText: 'dans le même magasin, sans internet.',
+      playAlt: 'Disponible sur Google Play',
+      learnTitle: 'Apprendre Doukkany', learnText: '25 vidéos courtes, une minute chacune.',
+      privacyLink: 'Confidentialité', terms: 'Conditions d’utilisation', cookieLink: 'Choix de mesure'
+    },
+    en: {
+      title: 'Doukkany for PC', home: 'Doukkany: download page',
+      h1: 'Doukkany for PC', sub: 'Works without internet · 14 days free',
+      phoneNote: 'On your phone? This version is for computers. Send yourself the link and open it on your PC.',
+      winBtn: 'Download for PC', winReq: 'Windows 10 and newer · 64-bit',
+      starting: 'Your download will start in a moment…',
+      smartTitle: 'Windows shows a warning?',
+      smartBody: 'This happens with new software. Click “More info”, then “Run anyway”.',
+      sendBtn: 'Send the link to your PC', sent: 'Done. Open the link on your PC: the download starts by itself.',
+      shareText: 'Doukkany download link for PC (Windows 10 and newer):',
+      andTitle: 'And the phone app', andWifi: 'It links to the PC over Wi-Fi', andText: 'in the same shop, no internet needed.',
+      playAlt: 'Get it on Google Play',
+      learnTitle: 'Learn Doukkany', learnText: '25 short videos, one minute each.',
+      privacyLink: 'Privacy', terms: 'Terms', cookieLink: 'Measurement choices'
+    }
+  };
+
+  var PLAY_URL = 'https://play.google.com/store/apps/details?id=com.yousoft.doukkany';
+  var RELEASE_PAGE = 'https://github.com/dzstoredzd/doukkany-releases/releases/latest';
+  // Same "latest Windows version" file the app's auto-update reads.
+  var FEED_URL = 'https://raw.githubusercontent.com/dzstoredzd/doukkany-releases/main/doukkany/stable/latest.json';
+  var API_URL = 'https://api.github.com/repos/dzstoredzd/doukkany-releases/releases/latest';
+
+  var params = new URLSearchParams(location.search);
+  var lang = 'ar';
+  var latest = null;
+  function $(id) { return document.getElementById(id); }
+
+  // Tracking (../js/tracking.js). The page works the same if it did not load.
+  var tracking = window.dkTracking || null;
+  function track(name, p) { try { if (tracking) tracking.track(name, p); } catch (e) {} }
+  function withCampaign(url, via) {
+    var q = tracking ? tracking.campaignQuery(via) : '';
+    return q ? url + (url.indexOf('?') === -1 ? '?' : '&') + q : url;
+  }
+  // Google Play gives 'referrer' to the app on its first open (Play Install Referrer).
+  function playUrl() {
+    var q = tracking ? tracking.campaignQuery() : '';
+    return q ? PLAY_URL + '&referrer=' + encodeURIComponent(q) : PLAY_URL;
+  }
+  // This page with ?get=windows: opened on a computer, the download starts by itself.
+  function winLink(via) { return withCampaign(location.origin + location.pathname + '?get=windows&lang=' + lang, via); }
+
+  var DEVICE = (function () {
+    var ua = navigator.userAgent || '';
+    if (/android/i.test(ua)) return 'android';
+    if (/iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
+    if (/windows/i.test(ua)) return 'windows';
+    return 'other';
+  })();
+  var IS_PHONE = DEVICE === 'android' || DEVICE === 'ios';
+  document.documentElement.setAttribute('data-device', DEVICE);
+
+  // ---- Language (same saved choice as the other pages) ----
+  function pickLang() {
+    var asked = params.get('lang');
+    if (TEXT[asked]) return asked;
+    try { var saved = localStorage.getItem('doukkany-lang'); if (TEXT[saved]) return saved; } catch (e) {}
+    return 'ar';
+  }
+  function setLang(next) {
+    lang = next;
+    var t = TEXT[lang];
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.title = t.title;
+    document.querySelectorAll('[data-t]').forEach(function (e) { e.textContent = t[e.getAttribute('data-t')]; });
+    document.querySelectorAll('[data-t-aria]').forEach(function (e) { e.setAttribute('aria-label', t[e.getAttribute('data-t-aria')]); });
+    document.querySelectorAll('[data-t-alt]').forEach(function (e) { e.alt = t[e.getAttribute('data-t-alt')]; });
+    document.querySelectorAll('.langs button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang));
+    });
+    $('play-img').src = 'https://play.google.com/intl/en_us/badges/static/images/badges/' + lang + '_badge_web_generic.png';
+    $('play-btn').href = playUrl();
+    if ($('status').textContent) $('status').textContent = t.starting;
+    $('send-msg').textContent = '';
+    try { localStorage.setItem('doukkany-lang', lang); } catch (e) {}
+  }
+  document.querySelectorAll('.langs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var next = b.getAttribute('data-lang');
+      if (next !== lang) track('language_changed', { from_language: lang, to_language: next });
+      setLang(next);
+    });
+  });
+
+  // ---- Latest Windows installer ----
+  function fromFeed() {
+    return fetch(FEED_URL, { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error('feed ' + r.status); return r.json(); })
+      .then(function (f) {
+        if (!f.downloadUrl || !/\.exe$/i.test(f.downloadUrl)) throw new Error('feed has no installer');
+        return { url: f.downloadUrl, label: f.version + ' (' + f.build + ')', signed: f.signed };
+      });
+  }
+  function fromApi() {
+    return fetch(API_URL, { headers: { 'Accept': 'application/vnd.github+json' } })
+      .then(function (r) { if (!r.ok) throw new Error('api ' + r.status); return r.json(); })
+      .then(function (rel) {
+        var exe = (rel.assets || []).filter(function (a) { return /^Doukkany-.*\.exe$/i.test(a.name); })[0];
+        if (!exe) throw new Error('release has no installer');
+        var m = /^v?(\d+\.\d+\.\d+)-(\d+)$/.exec(rel.tag_name || '');
+        return { url: exe.browser_download_url, label: m ? m[1] + ' (' + m[2] + ')' : rel.tag_name };
+      });
+  }
+  var latestPromise = fromFeed().catch(fromApi).then(function (found) {
+    latest = found;
+    $('win-btn').href = found.url;
+    // Only a build the feed calls signed hides the Windows warning help.
+    $('smartscreen').hidden = found.signed === true;
+    return found;
+  }).catch(function () { return null; });
+
+  // A click (or a shared ?get=windows link) only; not a finished download or an install.
+  function trackWindows(trigger, found) {
+    track('windows_download_clicked', {
+      platform: 'windows',
+      download_trigger: trigger,
+      link_type: found ? 'installer' : 'release_page',
+      app_version: found ? found.label : undefined
+    });
+  }
+  function startDownload(trigger) {
+    $('status').textContent = TEXT[lang].starting;
+    latestPromise.then(function (found) {
+      trackWindows(trigger, found);
+      // If GitHub could not be reached, open the latest release page instead.
+      location.href = found ? found.url : RELEASE_PAGE;
+    });
+  }
+  $('win-btn').addEventListener('click', function (e) {
+    if (latest) { trackWindows('button', latest); return; }
+    e.preventDefault();
+    startDownload('button');
+  });
+  $('play-btn').addEventListener('click', function () {
+    track('google_play_clicked', { platform: 'android', link_type: 'play_store' });
+  });
+
+  // ---- Phones: send this page's link to the PC (share sheet, else WhatsApp) ----
+  $('send-btn').addEventListener('click', function () {
+    var t = TEXT[lang];
+    if (navigator.share) {
+      navigator.share({ title: t.title, text: t.shareText, url: winLink('share') }).then(function () {
+        $('send-msg').textContent = t.sent;
+        track('download_link_shared', { method: 'web_share' });
+      }, function (err) {
+        if (err && err.name === 'AbortError') return; // closed without sharing: not counted
+        shareByWhatsApp();
+      });
+    } else {
+      shareByWhatsApp();
+    }
+  });
+  // WhatsApp opens with the link written in; we cannot know it was sent.
+  function shareByWhatsApp() {
+    track('download_link_shared', { method: 'whatsapp' });
+    window.open('https://wa.me/?text=' + encodeURIComponent(TEXT[lang].shareText + '\n' + winLink('share')), '_blank', 'noopener');
+  }
+
+  setLang(pickLang());
+
+  // A link sent from a phone (?get=windows) starts the newest installer on a computer.
+  // The app's own link (?ref=app-windows) only opens the page; the visitor presses the button.
+  if (params.get('get') === 'windows' && !IS_PHONE) startDownload('shared_link');
+})();
+</script>
 </body>
 </html>
