@@ -262,3 +262,14 @@ test('nothing in the page is pushed far sideways (an RTL page then grows wide an
   const page = fs.readFileSync(path.join(__dirname, '../start/index.html'), 'utf8');
   assert.ok(!/(left|right|inset-inline-start|inset-inline-end)\s*:\s*-\d{3,}px/.test(page), 'a big negative left/right offset');
 });
+
+test('link preview: a 1200x630 JPG that exists (WhatsApp shows WebP badly)', () => {
+  const page = fs.readFileSync(path.join(__dirname, '../start/index.html'), 'utf8');
+  const m = page.match(/<meta property="og:image" content="https:\/\/yousoft\.site\/doukkany-site\/([^"]+)">/);
+  assert.ok(m, 'og:image on the live site');
+  assert.ok(/\.jpe?g$/.test(m[1]), 'a JPG');
+  const file = path.join(__dirname, '..', m[1]);
+  assert.ok(fs.existsSync(file), m[1] + ' exists');
+  assert.ok(fs.statSync(file).size < 300 * 1024, 'under 300 KB');
+  assert.ok(page.includes('<meta property="og:image:width" content="1200">') && page.includes('<meta property="og:image:height" content="630">'));
+});
