@@ -5,12 +5,12 @@ window.DK_START_TEXT = {
   ar: {
     title: 'ابدا مع دكّاني · Doukkany', home: 'دكّاني: صفحة التحميل',
     back: 'رجوع', stepOf: '{n} من {t}', next: 'كمّل', edit: 'بدّل', da: 'دج', sep: '، ',
-    helpQ: 'عندك سؤال؟', helpBtn: 'كلّمنا في واتساب',
-    fDownload: 'تحميل دكّاني', fPrices: 'الأسعار', fLearn: 'دروس الفيديو', fPrivacy: 'سياسة الخصوصية', fTerms: 'شروط الاستخدام', fConsent: 'خيارات القياس',
+    helpBtn: 'كلّمنا في واتساب',
+    fDownload: 'تحميل دكّاني',
     openYt: 'فتح على YouTube', close: 'غلق',
 
     wTitle: 'مرحبا بيك في دكّاني 👋',
-    wSub: 'خلّينا نعاونوك تختار البرنامج المناسب لحانوتك.',
+    wSub: 'برنامج وتطبيق تسيير المحلات',
     trialT: 'حاب نجرب البرنامج', trialD: 'جرّبو 14 يوم مجانا قبل ما تخلّص.',
     buyT: 'حاب نشري البرنامج', buyD: 'شوف الأسعار واطلب تفعيل الرخصة.',
     pricesLink: 'حاب غير نشوف الأسعار',
@@ -185,12 +185,12 @@ window.DK_START_TEXT = {
   fr: {
     title: 'Bien commencer avec Doukkany', home: 'Doukkany : page de téléchargement',
     back: 'Retour', stepOf: '{n} sur {t}', next: 'Continuer', edit: 'Modifier', da: 'DA', sep: ', ',
-    helpQ: 'Une question ?', helpBtn: 'Écrivez-nous sur WhatsApp',
-    fDownload: 'Télécharger Doukkany', fPrices: 'Tarifs', fLearn: 'Vidéos de formation', fPrivacy: 'Confidentialité', fTerms: 'Conditions d’utilisation', fConsent: 'Choix de mesure',
+    helpBtn: 'Écrivez-nous sur WhatsApp',
+    fDownload: 'Télécharger Doukkany',
     openYt: 'Ouvrir sur YouTube', close: 'Fermer',
 
     wTitle: 'Bienvenue sur Doukkany 👋',
-    wSub: 'On vous aide à choisir la bonne formule pour votre magasin.',
+    wSub: 'Logiciel et application de gestion de magasin',
     trialT: 'Je veux l’essayer', trialD: 'Essai gratuit de 14 jours avant de payer.',
     buyT: 'Je veux l’acheter', buyD: 'Voir les tarifs et demander l’activation.',
     pricesLink: 'Je veux juste voir les tarifs',
@@ -365,12 +365,12 @@ window.DK_START_TEXT = {
   en: {
     title: 'Get started with Doukkany', home: 'Doukkany: download page',
     back: 'Back', stepOf: '{n} of {t}', next: 'Continue', edit: 'Change', da: 'DA', sep: ', ',
-    helpQ: 'A question?', helpBtn: 'Message us on WhatsApp',
-    fDownload: 'Download Doukkany', fPrices: 'Prices', fLearn: 'Video lessons', fPrivacy: 'Privacy', fTerms: 'Terms', fConsent: 'Measurement choices',
+    helpBtn: 'Message us on WhatsApp',
+    fDownload: 'Download Doukkany',
     openYt: 'Open on YouTube', close: 'Close',
 
     wTitle: 'Welcome to Doukkany 👋',
-    wSub: 'Let us help you pick the right setup for your shop.',
+    wSub: 'Shop management software and app',
     trialT: 'I want to try it', trialD: 'Try it free for 14 days before you pay.',
     buyT: 'I want to buy it', buyD: 'See the prices and ask for your licence.',
     pricesLink: 'I just want to see the prices',

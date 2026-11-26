@@ -271,11 +271,6 @@
   .pay span { background: var(--mint-2); border: 1px solid #CDE8D8; border-radius: 10px; padding: 6px 14px; font-weight: 700; }
   .sent { margin-top: 14px; }
 
-  .help-line { margin-top: 26px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 8px; color: var(--muted); font-weight: 600; font-size: .95rem; }
-  footer { padding: 20px 0 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
-  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; }
-  footer nav { display: flex; gap: 4px 16px; flex-wrap: wrap; }
-  footer a { color: var(--muted); display: inline-flex; min-height: 32px; align-items: center; }
 
   @media (min-width: 600px) {
     :root { --pad: 24px; }
@@ -332,8 +327,6 @@
   /* Soft fade at the bottom of the list: there is more below. */
   html.app .step > .scroll::after { content: ""; position: sticky; bottom: -16px; display: block; height: 28px; margin-top: -12px; background: linear-gradient(rgba(245,248,246,0), var(--bg)); pointer-events: none; }
   html.app .step > .dock { flex: none; position: relative; bottom: auto; z-index: 3; margin: 0; padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); backdrop-filter: none; }
-  html.app .scroll > footer { margin-top: 28px; padding: 16px 0 4px; }
-  html.app .scroll > footer .wrap { padding: 0; max-width: none; }
   @media (min-width: 600px) {
     html.app .step > .dock { align-items: center; }
   }
@@ -428,19 +421,6 @@
   </div>
 </main>
 
-<footer>
-  <div class="wrap wide">
-    <span>© Doukkany</span>
-    <nav aria-label="Links">
-      <a href="../download/" data-t="fDownload">تحميل دكّاني</a>
-      <a href="#prices" data-t="fPrices">الأسعار</a>
-      <a href="../learn/" data-t="fLearn">دروس الفيديو</a>
-      <a href="../privacy.html" data-t="fPrivacy">سياسة الخصوصية</a>
-      <a href="../terms.html" data-t="fTerms">شروط الاستخدام</a>
-      <span data-dk-consent-wrap hidden><a href="#" data-dk-consent-open data-t="fConsent">خيارات القياس</a></span>
-    </nav>
-  </div>
-</footer>
 
 <dialog class="player" id="player" aria-labelledby="player-title">
   <div class="player-top">
@@ -456,7 +436,7 @@
 <script src="funnel.js?v=5"></script>
 <script src="counter.js?v=1"></script>
 <script src="../js/tracking.js?v=2"></script>
-<script src="texts.js?v=6"></script>
-<script src="app.js?v=13"></script>
+<script src="texts.js?v=7"></script>
+<script src="app.js?v=14"></script>
 </body>
 </html>

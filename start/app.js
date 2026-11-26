@@ -154,7 +154,7 @@
   function render(step, focus) {
     current = step;
     var html = SCREENS[step]();
-    view.innerHTML = '<section class="step" data-step="' + step + '"><div class="scroll">' + html + helpLine(step) + '</div></section>';
+    view.innerHTML = '<section class="step" data-step="' + step + '"><div class="scroll">' + html + '</div></section>';
     shapeScreen(step);
     renderProgress(step);
     afterRender(step, focus || firstRender);
@@ -167,9 +167,8 @@
   }
 
   // The page itself never scrolls (owner, 2026-11-26): the question stays at the top, the
-  // answers are the only part that scrolls, the buttons stay at the bottom. The site footer
-  // (privacy, terms, consent) shows only at the end of the welcome and prices screens.
-  var footer = document.querySelector('footer');
+  // answers are the only part that scrolls, the buttons stay at the bottom. No site footer and
+  // no "a question?" line on this page (owner, 2026-11-26).
   function shapeScreen(step) {
     var sec = view.firstChild, scroll = sec.firstChild;
     var head = document.createElement('div');
@@ -181,10 +180,6 @@
     sec.insertBefore(head, scroll);
     var dock = scroll.querySelector(':scope > .dock');
     if (dock) sec.appendChild(dock);
-    if (footer) {
-      if (step === 'welcome' || step === 'prices') { scroll.appendChild(footer); footer.hidden = false; }
-      else { footer.hidden = true; document.body.appendChild(footer); }
-    }
     scroll.addEventListener('scroll', function () { sec.classList.toggle('scrolled', scroll.scrollTop > 2); }, { passive: true });
   }
 
@@ -200,11 +195,6 @@
     $('bar').innerHTML = seg;
     $('prog-txt').textContent = i < 0 ? '' : fill(t.stepOf, { n: n, t: total });
     $('back-txt').textContent = t.back;
-  }
-
-  function helpLine(step) {
-    if (step === 'trial' || step === 'order') return '';
-    return '<p class="help-line"><span>' + esc(t.helpQ) + '</span><a class="link" data-wa="help" href="' + esc(waLink(t.waHelp)) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.helpBtn) + '</a></p>';
   }
 
   function choice(act, icon, title, desc, opts) {
