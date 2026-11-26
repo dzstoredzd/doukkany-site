@@ -3,7 +3,8 @@
  *
  * Rules (see DOUKKANY-MARKETING/TRACKING_SETUP.md in the app repo):
  * - Nothing leaves the browser before the visitor accepts. Google Tag Manager is the only
- *   third-party script this file loads, and only after "Accept" or "Statistics only".
+ *   third-party script this file loads, and only after "OK". (Visitors who chose the old
+ *   "Statistics only" button keep that choice: analytics on, ads off.)
  * - GA4 and the Meta Pixel live inside the GTM container, never here. If Microsoft Clarity
  *   is added later: add it to the banner text and privacy.html, and raise consentVersion.
  * - Events never carry an email, a phone number or a name: dkTrack() keeps only the
@@ -323,29 +324,27 @@
   }
 
   // ---------------------------------------------------------------------------------
-  // Banner (standard Arabic, French, English; follows the page language)
+  // Banner: one short sentence and two equal buttons (standard Arabic, French, English;
+  // follows the page language). The details are on privacy.html.
   // ---------------------------------------------------------------------------------
   var TEXT = {
     ar: {
-      text: 'نستعمل أداة القياس Google Analytics لنفهم كيف تُستعمل هذه الصفحة، وأداة Meta لقياس إعلاناتنا على فيسبوك وإنستغرام. لا تعملان إلا بموافقتك، ولا تجمعان بريدك ولا رقم هاتفك.',
+      text: 'نستعمل أدوات Google وFacebook لقياس الزيارات والإعلانات.',
       accept: 'موافق',
-      stats: 'الإحصاءات فقط',
-      refuse: 'رفض',
+      refuse: 'لا',
       more: 'التفاصيل'
     },
     fr: {
-      text: 'Nous utilisons Google Analytics pour comprendre l’usage de cette page, et l’outil de Meta pour mesurer nos publicités sur Facebook et Instagram. Ils ne fonctionnent qu’avec votre accord et ne collectent ni votre e-mail ni votre téléphone.',
-      accept: 'Accepter',
-      stats: 'Statistiques seulement',
-      refuse: 'Refuser',
-      more: 'En savoir plus'
+      text: 'Nous utilisons des outils Google et Facebook pour mesurer les visites et les publicités.',
+      accept: 'D’accord',
+      refuse: 'Non',
+      more: 'Détails'
     },
     en: {
-      text: 'We use Google Analytics to understand how this page is used, and Meta’s tool to measure our ads on Facebook and Instagram. They only run if you agree, and they never collect your email or phone number.',
-      accept: 'Accept',
-      stats: 'Statistics only',
-      refuse: 'Refuse',
-      more: 'Learn more'
+      text: 'We use Google and Facebook tools to measure visits and ads.',
+      accept: 'OK',
+      refuse: 'No',
+      more: 'Details'
     }
   };
 
@@ -367,13 +366,13 @@
     var st = d.createElement('style');
     st.id = 'dk-consent-style';
     st.textContent =
-      '.dk-consent{position:fixed;left:0;right:0;bottom:0;z-index:1000;padding:0 12px 12px;pointer-events:none}' +
-      '.dk-consent-box{pointer-events:auto;max-width:720px;margin:0 auto;background:#fff;color:#1d2421;border:1px solid #dfe5e2;border-radius:16px;box-shadow:0 4px 18px rgba(0,0,0,.14);padding:14px 16px;font:inherit;font-size:.92rem;line-height:1.55}' +
-      '.dk-consent-box p{margin:0 0 10px}' +
-      '.dk-consent-box a{color:#1f8a4c}' +
-      '.dk-consent-row{display:flex;flex-wrap:wrap;gap:8px}' +
-      '.dk-consent-row button{font:inherit;font-weight:600;min-height:44px;padding:8px 16px;border-radius:12px;cursor:pointer;border:2px solid #1f8a4c;background:#1f8a4c;color:#fff;flex:1 1 auto}' +
-      '.dk-consent-row button.dk-outline{background:transparent;color:#1f8a4c}';
+      '.dk-consent{position:fixed;left:0;right:0;bottom:0;z-index:1000;padding:0 10px 10px;pointer-events:none}' +
+      '.dk-consent-box{pointer-events:auto;max-width:640px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:#fff;color:#1d2421;border:1px solid #dfe5e2;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.14);padding:10px 12px;font:inherit;font-size:.9rem;line-height:1.5}' +
+      '.dk-consent-box p{margin:0;flex:1 1 240px}' +
+      '.dk-consent-box a{color:#1f8a4c;white-space:nowrap}' +
+      '.dk-consent-row{display:flex;gap:8px;flex:0 0 auto}' +
+      '.dk-consent-row button{font:inherit;font-weight:600;min-height:44px;min-width:88px;padding:6px 16px;border-radius:12px;cursor:pointer;border:2px solid #1f8a4c;background:#1f8a4c;color:#fff}' +
+      '@media (max-width:480px){.dk-consent-row{flex:1 1 100%}.dk-consent-row button{flex:1 1 0}}';
     d.head.appendChild(st);
   }
 
@@ -385,7 +384,6 @@
     more.textContent = t.more;
     more.href = siteRoot + 'privacy.html#website-' + lang();
     banner.querySelector('[data-k="accept"]').textContent = t.accept;
-    banner.querySelector('[data-k="stats"]').textContent = t.stats;
     banner.querySelector('[data-k="refuse"]').textContent = t.refuse;
     banner.setAttribute('aria-label', t.more);
     padBody();
@@ -408,11 +406,9 @@
       '<p><span data-k="text"></span><a data-k="more" href="#"></a></p>' +
       '<div class="dk-consent-row">' +
       '<button type="button" data-k="accept"></button>' +
-      '<button type="button" class="dk-outline" data-k="stats"></button>' +
       '<button type="button" data-k="refuse"></button>' +
       '</div></div>';
     banner.querySelector('[data-k="accept"]').addEventListener('click', function () { saveConsent(true, true); });
-    banner.querySelector('[data-k="stats"]').addEventListener('click', function () { saveConsent(true, false); });
     banner.querySelector('[data-k="refuse"]').addEventListener('click', function () { saveConsent(false, false); });
     d.body.appendChild(banner);
     renderBanner();

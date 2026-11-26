@@ -25,10 +25,10 @@
   :root {
     --logo: #16955F; --green: #117A4B; --deep: #0B4A2E; --mint: #DDF2E6; --mint-2: #EEF8F2;
     --ink: #17212B; --muted: #4F5D69; --line: #DCE6E0; --bg: #F5F8F6; --card: #fff;
-    --wa: #25D366; --error: #B3261E;
+    --wa: #25D366;
     --r-lg: 24px; --r-md: 16px; --r-sm: 12px;
     --shadow: 0 1px 2px rgba(23,33,43,.05), 0 8px 24px rgba(17,122,75,.08);
-    --wrap: 1180px; --pad: 16px;
+    --wrap: 1100px; --pad: 16px;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
@@ -36,10 +36,9 @@
   img { max-width: 100%; }
   a { color: var(--green); }
   h1, h2, h3, p { margin: 0; }
-  button, input { font: inherit; color: inherit; }
+  button { font: inherit; color: inherit; }
   :focus-visible { outline: 3px solid var(--logo); outline-offset: 2px; border-radius: 6px; }
   .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--pad); }
-  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .skip { position: absolute; inset-inline-start: 8px; top: -60px; z-index: 50; background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 10px; }
   .skip:focus { top: 8px; }
   .ic { width: 1.25em; height: 1.25em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -48,195 +47,107 @@
   [hidden] { display: none !important; }
 
   /* ---- Header ---- */
-  .top { position: sticky; top: 0; z-index: 20; background: rgba(245,248,246,.9); backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid transparent; transition: border-color .2s; }
-  .top.scrolled { border-bottom-color: var(--line); }
+  .top { background: var(--bg); }
   .top-in { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
   .logo { display: flex; align-items: center; text-decoration: none; }
-  .logo img { display: block; height: 38px; width: auto; }
-  .logo .lat { height: 26px; }
+  .logo img { display: block; height: 36px; width: auto; }
+  .logo .lat { height: 24px; }
   html[lang="ar"] .logo .lat, html:not([lang="ar"]) .logo .ar { display: none; }
   .langs { display: flex; gap: 2px; padding: 3px; background: #fff; border: 1px solid var(--line); border-radius: 999px; }
   .langs button { background: transparent; border: 0; border-radius: 999px; padding: 6px 11px; min-height: 40px; min-width: 44px; cursor: pointer; font-size: .9rem; font-weight: 600; color: var(--muted); }
   .langs button[aria-pressed="true"] { background: var(--green); color: #fff; }
   .langs button:not([aria-pressed="true"]):hover { color: var(--ink); background: var(--mint-2); }
 
-  /* ---- Hero ---- */
-  .hero { background: radial-gradient(900px 520px at 70% 10%, #F4FBF7 0%, #E4F4EB 60%, #D3ECDE 100%); padding: 18px 0 8px; overflow: hidden; }
-  .hero-in { display: grid; gap: 18px; align-items: center; }
-  .kicker { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: .9rem; color: var(--deep); background: rgba(255,255,255,.65); border: 1px solid rgba(22,149,95,.3); padding: 3px 12px; border-radius: 999px; }
-  h1 { font-weight: 700; font-size: clamp(1.85rem, 7.4vw, 3.2rem); line-height: 1.2; margin-top: 12px; }
+  /* ---- Hero: the promise and the download buttons, nothing else ---- */
+  .hero { background: radial-gradient(900px 520px at 70% 10%, #F4FBF7 0%, #E4F4EB 60%, #D3ECDE 100%); padding: 16px 0 28px; overflow: hidden; }
+  .hero-in { display: grid; gap: 22px; align-items: center; }
+  h1 { font-weight: 700; font-size: clamp(1.85rem, 7.4vw, 3rem); line-height: 1.2; }
   h1 .g { color: var(--green); display: block; }
-  .sub { font-size: clamp(1.05rem, 3.6vw, 1.35rem); font-weight: 600; color: var(--muted); margin-top: 8px; }
+  .sub { font-size: clamp(1.05rem, 3.6vw, 1.3rem); font-weight: 600; color: var(--muted); margin-top: 8px; }
   .trial { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 16px; }
-  .trial-badge { display: inline-flex; align-items: baseline; gap: 8px; background: var(--green); color: #fff; border-radius: 16px; padding: 4px 16px 6px; box-shadow: 0 10px 24px rgba(17,122,75,.25); }
-  .trial-num { font-size: 2.1rem; font-weight: 700; line-height: 1.1; }
-  .trial-word { font-size: 1.2rem; font-weight: 700; }
-  .trial-sub { font-size: 1.05rem; font-weight: 600; color: var(--ink); }
-  /* Hero button: only scrolls to the download card for this device, never downloads. */
-  .hero-cta { margin-top: 18px; min-width: 260px; }
-  .dl-card { scroll-margin-top: 84px; }
-  .chips { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-  .chips li { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px 4px 10px; font-size: .92rem; font-weight: 600; }
-  .chips .ic { color: var(--green); width: 18px; height: 18px; }
+  .trial-badge { display: inline-flex; align-items: baseline; gap: 8px; background: var(--green); color: #fff; border-radius: 16px; padding: 3px 16px 5px; box-shadow: 0 10px 24px rgba(17,122,75,.25); }
+  .trial-num { font-size: 1.9rem; font-weight: 700; line-height: 1.1; }
+  .trial-word { font-size: 1.15rem; font-weight: 700; }
+  .perks { font-size: 1rem; font-weight: 600; color: var(--ink); }
 
-  /* Devices: real app screens in a Windows monitor and an Android phone (demo data). */
-  .devices { position: relative; margin: 4px auto 0; width: 100%; max-width: 560px; padding-bottom: 14px; }
-  .mon { width: 88%; margin-inline-start: auto; }
-  .mon .bez { padding: 7px 7px 8px; border-radius: 14px; background: #121816; box-shadow: 0 30px 60px rgba(20,45,32,.22), inset 0 0 0 2px #2C3430; }
-  .mon .win { border-radius: 6px; overflow: hidden; background: #fff; }
-  .mon .tb { height: 18px; display: flex; align-items: center; direction: ltr; gap: 5px; padding: 0 6px; background: #F3F3F3; border-bottom: 1px solid #E4E4E4; font-size: 9px; color: #333; font-family: system-ui, sans-serif; }
-  .mon .tb img { width: 10px; height: 10px; border-radius: 2px; }
-  .mon .tb .sp { flex: 1; }
-  .mon .tb i { width: 7px; height: 1px; background: #444; display: inline-block; margin: 0 5px; }
-  .mon .win > img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 1000; }
-  .mon .neck { width: 18%; height: 22px; margin: 0 auto; background: linear-gradient(90deg, #A9B0B8, #DCE0E4 50%, #A9B0B8); clip-path: polygon(14% 0, 86% 0, 100% 100%, 0 100%); }
-  .mon .foot { width: 40%; height: 7px; margin: 0 auto; border-radius: 6px 6px 3px 3px; background: linear-gradient(#DCE0E4, #9EA6AE); box-shadow: 0 10px 18px rgba(0,0,0,.18); }
-  .phn { position: absolute; inset-inline-start: 0; bottom: 0; width: 21%; padding: 5px; border-radius: 24px; background: #121816; box-shadow: 0 22px 44px rgba(20,45,32,.28), inset 0 0 0 1.5px #2C3430; }
-  .phn .scr { border-radius: 19px; overflow: hidden; background: #F3F6F9; }
-  .phn img { display: block; width: 100%; height: auto; aspect-ratio: 1080 / 2400; }
-  .demo-note { position: absolute; inset-inline-end: 4px; bottom: -2px; font-size: .75rem; color: #5F7067; }
-
-  /* ---- Download cards ---- */
-  .downloads { padding-top: 18px; scroll-margin-top: 70px; }
-  .notice { display: flex; gap: 10px; align-items: flex-start; background: #FFF8E1; border: 1px solid #F3DC8B; color: #5B4300; border-radius: var(--r-md); padding: 12px 14px; margin-bottom: 12px; font-weight: 600; }
-  .notice .ic { margin-top: 3px; }
-  .notice a { color: inherit; font-weight: 700; }
-  .dl-grid { display: grid; gap: 14px; }
-  .dl-card { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 18px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; }
-  .dl-card.mine { border: 2px solid var(--logo); }
-  .dl-head { display: flex; align-items: center; gap: 12px; }
-  .dl-icon { width: 52px; height: 52px; flex: none; border-radius: 16px; display: grid; place-items: center; background: var(--mint); color: var(--green); }
-  .dl-icon .ic { width: 28px; height: 28px; }
-  .dl-card h3 { font-size: 1.3rem; font-weight: 700; line-height: 1.3; }
-  .dl-req { color: var(--muted); font-weight: 600; font-size: .95rem; }
-  .mine-tag { display: none; position: absolute; top: -12px; inset-inline-end: 16px; background: var(--green); color: #fff; font-size: .8rem; font-weight: 700; padding: 2px 10px; border-radius: 999px; }
-  .dl-card.mine .mine-tag { display: inline-block; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 12px 22px; border-radius: var(--r-md); border: 0; cursor: pointer; font-weight: 700; font-size: 1.1rem; text-decoration: none; background: var(--green); color: #fff; box-shadow: 0 10px 22px rgba(17,122,75,.22); transition: background .15s, transform .15s; }
+  /* Download buttons. The one for this device comes first (see data-device rules below). */
+  .get { display: flex; flex-direction: column; gap: 18px; margin-top: 22px; max-width: 400px; }
+  .get-row { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .get-note { color: var(--muted); font-size: .92rem; font-weight: 600; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 58px; padding: 12px 22px; border-radius: var(--r-md); border: 0; cursor: pointer; font-weight: 700; font-size: 1.15rem; text-decoration: none; background: var(--green); color: #fff; box-shadow: 0 10px 22px rgba(17,122,75,.22); transition: background .15s, transform .15s; }
   .btn:hover { background: #0D6A40; }
   .btn:active { transform: translateY(1px); }
   .btn .ic { width: 24px; height: 24px; }
   .btn.block { width: 100%; }
-  .btn.soft { background: #fff; color: var(--green); border: 2px solid var(--green); box-shadow: none; min-height: 48px; font-size: 1rem; padding: 8px 16px; }
+  .btn.soft { background: #fff; color: var(--green); border: 2px solid var(--green); box-shadow: none; min-height: 50px; font-size: 1rem; padding: 8px 18px; }
   .btn.soft:hover { background: var(--mint-2); }
   .btn.wa { background: var(--wa); color: #06331A; box-shadow: 0 10px 22px rgba(37,211,102,.28); }
   .btn.wa:hover { background: #1FBE5B; }
-  .meta { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: .92rem; min-height: 1.6em; }
-  .meta b { color: var(--ink); font-weight: 600; }
-  .meta .loading { display: inline-flex; align-items: center; gap: 8px; }
-  .spin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--green); animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .play-badge { display: inline-block; line-height: 0; border-radius: 12px; }
+  .play-badge img { height: 74px; width: auto; margin: -9px; display: block; }
   .status { font-weight: 600; color: var(--green); font-size: .95rem; }
-  .status:empty { display: none; }
-  .tip { border-top: 1px dashed var(--line); padding-top: 10px; font-size: .92rem; color: var(--muted); }
+  .status:empty, .msg:empty { display: none; }
+  .msg { font-size: .92rem; font-weight: 600; color: var(--green); }
+  .tip { font-size: .92rem; color: var(--muted); }
   .tip summary { cursor: pointer; font-weight: 600; color: var(--ink); list-style: none; display: flex; align-items: center; gap: 6px; min-height: 32px; }
   .tip summary::-webkit-details-marker { display: none; }
   .tip summary .ic { color: #9A5A00; }
-  .tip p { margin-top: 6px; }
-  .play-badge { display: inline-block; align-self: flex-start; line-height: 0; border-radius: 12px; }
-  .play-badge img { height: 72px; width: auto; margin: -8px; display: block; }
-  .dl-foot { color: var(--muted); font-size: .92rem; }
+  .tip p { margin-top: 4px; }
+  .notice { background: #FFF8E1; border: 1px solid #F3DC8B; color: #5B4300; border-radius: var(--r-sm); padding: 10px 12px; font-weight: 600; font-size: .95rem; }
+
+  /* Phones: the Google Play button first, and the computer row only sends the link to the PC. */
+  #send-btn, .on-phone { display: none; }
+  html[data-device="android"] #row-and, html[data-device="ios"] #row-and { order: -1; }
+  html[data-device="android"] #win-btn, html[data-device="ios"] #win-btn,
+  html[data-device="android"] #smartscreen, html[data-device="ios"] #smartscreen,
+  html[data-device="android"] .win-req, html[data-device="ios"] .win-req { display: none; }
+  html[data-device="android"] #send-btn, html[data-device="ios"] #send-btn { display: inline-flex; }
+  html[data-device="android"] .on-phone, html[data-device="ios"] .on-phone { display: block; }
+
+  /* Real app screens in a Windows monitor and an Android phone (demo data). */
+  .devices { position: relative; margin: 0 auto; width: 100%; max-width: 300px; padding-bottom: 12px; }
+  .mon { width: 88%; margin-inline-start: auto; }
+  .mon .bez { padding: 6px 6px 7px; border-radius: 12px; background: #121816; box-shadow: 0 24px 50px rgba(20,45,32,.2), inset 0 0 0 2px #2C3430; }
+  .mon .win { border-radius: 5px; overflow: hidden; background: #fff; }
+  .mon .win > img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 1000; }
+  .mon .neck { width: 18%; height: 18px; margin: 0 auto; background: linear-gradient(90deg, #A9B0B8, #DCE0E4 50%, #A9B0B8); clip-path: polygon(14% 0, 86% 0, 100% 100%, 0 100%); }
+  .mon .foot { width: 40%; height: 6px; margin: 0 auto; border-radius: 6px 6px 3px 3px; background: linear-gradient(#DCE0E4, #9EA6AE); }
+  .phn { position: absolute; inset-inline-start: 0; bottom: 0; width: 22%; padding: 4px; border-radius: 20px; background: #121816; box-shadow: 0 18px 36px rgba(20,45,32,.26), inset 0 0 0 1.5px #2C3430; }
+  .phn .scr { border-radius: 16px; overflow: hidden; background: #F3F6F9; }
+  .phn img { display: block; width: 100%; height: auto; aspect-ratio: 1080 / 2400; }
 
   /* ---- Sections ---- */
-  main { display: flex; flex-direction: column; }
-  /* Section order. On a computer the "send it to your PC" box moves under the tutorials (see 1024px). */
-  .hero { order: 1; } #download { order: 2; } #share { order: 3; } .steps { order: 4; } #tutorials { order: 4; } .duo { order: 6; }
-  .sec { padding-top: 32px; }
-  .sec-title { font-size: clamp(1.35rem, 4.4vw, 1.75rem); font-weight: 700; line-height: 1.3; }
-  .sec-sub { color: var(--muted); margin-top: 4px; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 18px; box-shadow: var(--shadow); }
+  .sec { padding-top: 36px; }
+  .sec-title { font-size: clamp(1.35rem, 4.4vw, 1.7rem); font-weight: 700; line-height: 1.3; }
+  .sec-sub { color: var(--muted); margin-top: 2px; }
 
-  /* Share (cross-device) */
-  .share { scroll-margin-top: 70px; }
-  .share .card { background: linear-gradient(160deg, #fff 0%, var(--mint-2) 100%); }
-  .link-box { display: flex; gap: 8px; margin-top: 14px; }
-  .link-box input { flex: 1; min-width: 0; min-height: 48px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: #fff; direction: ltr; color: var(--muted); font-size: .9rem; }
-  .share-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 10px; }
-  .share-actions .btn { min-height: 48px; font-size: 1rem; }
-  .email-form { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); }
-  .email-form label { font-weight: 600; display: block; margin-bottom: 6px; }
-  .email-row { display: flex; flex-wrap: wrap; gap: 8px; }
-  .email-row input { flex: 1 1 200px; min-height: 48px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: #fff; direction: ltr; }
-  .email-row input[aria-invalid="true"] { border-color: var(--error); }
-  .email-row .btn { min-height: 48px; font-size: 1rem; }
-  .msg { margin-top: 8px; font-size: .95rem; font-weight: 600; }
-  .msg:empty { display: none; }
-  .msg.ok { color: var(--green); }
-  .msg.err { color: var(--error); }
-
-  /* Steps */
-  .steps-list { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 10px; counter-reset: s; }
-  .step { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px; box-shadow: var(--shadow); }
-  .step-n { width: 44px; height: 44px; flex: none; border-radius: 14px; background: var(--mint); color: var(--green); display: grid; place-items: center; position: relative; }
-  .step-n .ic { width: 24px; height: 24px; }
-  .step-n::after { counter-increment: s; content: counter(s); position: absolute; top: -6px; inset-inline-end: -6px; width: 20px; height: 20px; border-radius: 50%; background: var(--green); color: #fff; font-size: .75rem; font-weight: 700; display: grid; place-items: center; line-height: 1; }
-  .step h3 { font-size: 1.05rem; font-weight: 700; line-height: 1.35; }
-  .step a { display: inline-flex; align-items: center; gap: 4px; font-size: .92rem; font-weight: 600; text-decoration: none; min-height: 32px; }
-  .step a:hover { text-decoration: underline; }
-  .step a .ic { width: 16px; height: 16px; }
-
-  /* Tutorials */
-  .tut-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 16px; }
-  .yt-all { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; min-height: 44px; }
-  .yt-all .ic { color: #E62117; width: 22px; height: 22px; }
-  .yt-all:hover { text-decoration: underline; }
-  .label { font-weight: 700; color: var(--deep); font-size: .95rem; margin: 16px 0 8px; display: flex; align-items: center; gap: 6px; }
-  .featured { display: grid; gap: 12px; grid-template-columns: 1fr; }
-  .vcard { display: flex; gap: 14px; align-items: center; text-decoration: none; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); padding: 8px; box-shadow: var(--shadow); transition: transform .15s, box-shadow .15s; }
-  .vcard:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(23,33,43,.06), 0 14px 30px rgba(17,122,75,.14); }
+  /* 3 short videos */
+  .vids { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; max-width: 640px; }
+  .vcard { display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: var(--ink); }
   /* The tutorials are vertical Shorts: YouTube's wide thumbnails are cropped to the middle 9:16. */
-  .thumb { position: relative; flex: none; width: 62px; aspect-ratio: 9 / 16; border-radius: 10px; overflow: hidden; background: var(--mint); }
+  .thumb { position: relative; width: 100%; aspect-ratio: 9 / 16; border-radius: 14px; overflow: hidden; background: var(--mint); box-shadow: var(--shadow); }
   .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .thumb .pl { position: absolute; inset: 0; display: grid; place-items: center; }
-  .thumb .pl span { width: 38px; height: 38px; border-radius: 50%; background: rgba(17,33,26,.72); color: #fff; display: grid; place-items: center; }
-  .thumb .pl .ic { width: 18px; height: 18px; margin-left: 2px; }
-  .dur { position: absolute; bottom: 4px; inset-inline-end: 4px; background: rgba(0,0,0,.75); color: #fff; font-size: .72rem; font-weight: 600; padding: 0 5px; border-radius: 4px; direction: ltr; }
-  .vtx { display: block; }
-  .vcard .vt { display: block; font-weight: 700; line-height: 1.35; }
-  .vcard .vn { display: block; color: var(--muted); font-size: .85rem; font-weight: 600; }
-  .cats { display: grid; gap: 10px; }
-  .cat { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow); }
-  .cat summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 60px; border-radius: var(--r-md); }
-  .cat summary::-webkit-details-marker { display: none; }
-  .cat .cic { width: 40px; height: 40px; flex: none; border-radius: 12px; background: var(--mint); color: var(--green); display: grid; place-items: center; }
-  .cat .cic .ic { width: 22px; height: 22px; }
-  .cat .ct { flex: 1; font-weight: 700; }
-  .cat .cn { font-size: .8rem; font-weight: 700; color: var(--green); background: var(--mint-2); border-radius: 999px; padding: 1px 9px; }
-  .cat .chev { width: 20px; height: 20px; color: var(--muted); transition: transform .2s; }
-  .cat[open] .chev { transform: rotate(180deg); }
-  .cat ol { list-style: none; margin: 0; padding: 0 8px 8px; }
-  .cat li + li { border-top: 1px solid #EDF2EF; }
-  .row { display: flex; align-items: center; gap: 10px; padding: 8px 6px; min-height: 56px; text-decoration: none; color: var(--ink); border-radius: 10px; }
-  .row:hover { background: var(--mint-2); }
-  .row .thumb { width: 36px; border-radius: 6px; }
-  .row .thumb .pl, .row .thumb .dur { display: none; }
-  .row .rd { color: var(--muted); font-size: .85rem; font-weight: 600; direction: ltr; display: inline-flex; align-items: center; gap: 4px; }
-  .row .rd .ic { width: 14px; height: 14px; color: var(--green); }
-  .row .rt { flex: 1; font-weight: 600; line-height: 1.35; }
+  .thumb .pl span { width: 44px; height: 44px; border-radius: 50%; background: rgba(17,33,26,.72); color: #fff; display: grid; place-items: center; transition: transform .15s; }
+  .thumb .pl .ic { width: 20px; height: 20px; margin-left: 2px; }
+  .vcard:hover .pl span { transform: scale(1.08); }
+  .dur { position: absolute; bottom: 6px; inset-inline-end: 6px; background: rgba(0,0,0,.75); color: #fff; font-size: .75rem; font-weight: 600; padding: 0 6px; border-radius: 4px; direction: ltr; }
+  .vt { font-weight: 700; line-height: 1.35; font-size: .95rem; }
+  .yt-all { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; min-height: 44px; margin-top: 8px; }
+  .yt-all .ic { color: #E62117; width: 22px; height: 22px; }
+  .yt-all:hover { text-decoration: underline; }
 
-  /* Offer + support */
-  .duo { display: grid; gap: 14px; }
-  .offer-list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 12px; }
-  .offer-list li { display: flex; gap: 12px; align-items: flex-start; }
-  .offer-list .oi { width: 40px; height: 40px; flex: none; border-radius: 12px; background: var(--mint); color: var(--green); display: grid; place-items: center; }
-  .offer-list .oi .ic { width: 22px; height: 22px; }
-  .offer-list b { display: block; font-weight: 700; line-height: 1.4; }
-  .offer-list span { color: var(--muted); font-size: .95rem; }
-  .support { background: linear-gradient(150deg, #0B5C38 0%, #0E6B43 55%, #117A4B 100%); color: #fff; border: 0; display: flex; flex-direction: column; gap: 10px; }
-  .support .sec-title { color: #fff; }
-  .support p { color: #E5F5EC; }
-  .support .num { font-weight: 700; color: #fff; letter-spacing: .02em; }
-  .support .btn.wa { align-self: flex-start; margin-top: 6px; }
+  /* Help and buying, in one box */
+  .help { background: linear-gradient(150deg, #0B5C38 0%, #0E6B43 55%, #117A4B 100%); color: #fff; border-radius: var(--r-lg); padding: 22px 20px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
+  .help p { color: #E5F5EC; }
+  .help-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 8px; }
+  .help .num { color: #fff; font-weight: 700; font-size: 1.15rem; letter-spacing: .02em; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+  .help .num:hover { text-decoration: underline; }
 
   footer { margin-top: 36px; padding: 22px 0 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
   footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; }
   footer nav { display: flex; gap: 6px 16px; flex-wrap: wrap; }
   footer a { color: var(--muted); }
-
-  /* Phone-only floating WhatsApp button: shown after the download cards scroll away. */
-  .wa-float { position: fixed; z-index: 30; bottom: calc(16px + env(safe-area-inset-bottom)); inset-inline-end: 14px; width: 50px; height: 50px; border-radius: 50%; background: var(--wa); color: #fff; display: grid; place-items: center; box-shadow: 0 10px 26px rgba(0,0,0,.22); opacity: 0; transform: translateY(16px); pointer-events: none; transition: opacity .2s, transform .2s; }
-  .wa-float.on { opacity: 1; transform: none; pointer-events: auto; }
-  .wa-float .ic { width: 28px; height: 28px; }
-  footer.room { padding-bottom: 92px; }
 
   /* Video player */
   dialog.player { width: fit-content; max-width: calc(100% - 24px); padding: 0; border: 0; border-radius: 18px; background: #0F1512; color: #fff; overflow: hidden; }
@@ -251,70 +162,25 @@
   /* ---- Larger screens ---- */
   @media (min-width: 600px) {
     :root { --pad: 24px; }
-    .devices { max-width: 480px; }
-    .featured { grid-template-columns: repeat(3, 1fr); }
-    .vcard .thumb { width: 96px; }
-    .steps-list { grid-template-columns: repeat(3, 1fr); }
-    .step { flex-direction: column; align-items: flex-start; }
-    .phn { border-radius: 26px; padding: 6px; }
-    .phn .scr { border-radius: 21px; }
-  }
-  @media (min-width: 700px) {
-    .dl-grid { grid-template-columns: 1fr 1fr; }
-  }
-  @media (min-width: 768px) {
-    footer.room { padding-bottom: 28px; }
-    .cats { grid-template-columns: 1fr 1fr; align-items: start; }
-    .duo { grid-template-columns: 1fr 1fr; align-items: stretch; }
-    .share .card { display: grid; grid-template-columns: 1.1fr 1fr; gap: 8px 28px; align-items: start; }
-    .share .card .head { grid-column: 1 / -1; }
-    .share .email-form { margin-top: 14px; padding-top: 0; border-top: 0; border-inline-start: 1px dashed var(--line); padding-inline-start: 24px; }
+    .devices { max-width: 440px; }
+    .vids { gap: 16px; }
+    .help { padding: 26px 28px; }
   }
   @media (min-width: 1024px) {
     .top-in { min-height: 68px; }
-    .logo img { height: 44px; }
-    .logo .lat { height: 30px; }
-    .hero { padding: 36px 0 18px; }
-    .hero-in { grid-template-columns: 1fr 1.05fr; gap: 40px; }
-    .devices { max-width: 620px; }
-    .trial-num { font-size: 2.6rem; }
-    .trial-word { font-size: 1.4rem; }
-    .downloads { padding-top: 26px; }
-    .dl-card { padding: 22px 24px; }
+    .logo img { height: 42px; }
+    .logo .lat { height: 28px; }
+    .hero { padding: 32px 0 44px; }
+    .hero-in { grid-template-columns: 1fr 1fr; gap: 48px; }
+    .devices { max-width: 540px; }
+    .trial-num { font-size: 2.4rem; }
+    .trial-word { font-size: 1.35rem; }
     .sec { padding-top: 48px; }
-    /* On a computer the "send it to your PC" box matters less: it moves under the tutorials. */
-    html:not([data-device="android"]):not([data-device="ios"]) #share { order: 5; }
-  }
-  @media (max-width: 599px) {
-    /* Phones: keep the hero short so the download cards are on the first screen. */
-    .hero { padding-top: 12px; }
-    .hero-in { gap: 10px; }
-    .kicker { font-size: .82rem; padding: 2px 10px; }
-    h1 { margin-top: 8px; }
-    .sub { margin-top: 4px; }
-    .trial { margin-top: 10px; }
-    .trial-badge { padding: 2px 14px 4px; }
-    .trial-num { font-size: 1.7rem; }
-    .trial-word { font-size: 1.05rem; }
-    .hero-cta { display: flex; width: 100%; margin-top: 12px; min-height: 52px; }
-    .chips { margin-top: 10px; gap: 6px; }
-    .chips li { padding: 2px 10px 2px 8px; font-size: .84rem; }
-    .devices { max-width: 270px; padding-bottom: 10px; }
-    .demo-note { font-size: .7rem; }
-    .hero { padding-bottom: 4px; }
-    .downloads { padding-top: 12px; }
-  }
-  /* Tablets and small laptops: no room beside the content, so no floating button. Wide screens
-     (1320px and more) show it in the empty margin beside the 1180px content. */
-  @media (min-width: 768px) and (max-width: 1319px) {
-    .wa-float { display: none; }
   }
   @media (max-width: 380px) {
     .langs button { padding: 6px 8px; min-width: 40px; font-size: .85rem; }
-    .logo img { height: 34px; }
-    .chips li { font-size: .82rem; }
-    .devices { max-width: 205px; }
-    .hero-cta { font-size: 1.05rem; padding: 10px 16px; }
+    .logo img { height: 32px; }
+    .vt { font-size: .88rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -325,31 +191,14 @@
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-win" viewBox="0 0 24 24"><path d="M3 5.6 10.4 4.6v7H3zM11.4 4.4 21 3v8.6h-9.6zM3 12.6h7.4v7L3 18.4zM11.4 12.6H21V21l-9.6-1.4z"/></symbol>
-  <symbol id="i-android" viewBox="0 0 24 24"><path d="M17.6 9.5l1.8-3.2a.4.4 0 0 0-.7-.4l-1.8 3.2a11.4 11.4 0 0 0-9.8 0L5.3 5.9a.4.4 0 0 0-.7.4l1.8 3.2A10.8 10.8 0 0 0 1 18h22a10.8 10.8 0 0 0-5.4-8.5zM7 15.3a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6zm10 0a1.3 1.3 0 1 1 0-2.6 1.3 1.3 0 0 1 0 2.6z"/></symbol>
   <symbol id="i-wa" viewBox="0 0 32 32"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3 29l6.6-2c1.9 1 4.1 1.6 6.4 1.6 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.3c-2.1 0-4-.6-5.7-1.6l-.4-.2-3.9 1.2 1.2-3.8-.3-.4c-1.1-1.7-1.8-3.6-1.8-5.7C5.1 10 10 5.2 16 5.2S26.9 10 26.9 15.8 22 26.3 16 26.3zm6-7.8c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.2 3.2 1.3 3.4c.2.2 2.3 3.6 5.7 5 2.8 1.1 3.4.9 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></symbol>
   <symbol id="i-yt" viewBox="0 0 24 24"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15V9l5.8 3z"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></symbol>
   <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></symbol>
-  <symbol id="i-wifioff" viewBox="0 0 24 24"><path d="M2 2l20 20M8.5 16.4a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 4.2-2.5M14.8 10.4A10 10 0 0 1 19 12.9M1.4 9.3a15 15 0 0 1 4.3-2.8M10.7 5.1A15 15 0 0 1 22.6 9.3M12 20h.01"/></symbol>
-  <symbol id="i-devices" viewBox="0 0 24 24"><rect x="2" y="4" width="15" height="11" rx="1.5"/><path d="M6 19h7M9.5 15v4"/><rect x="16" y="9" width="6" height="11" rx="1.5"/></symbol>
-  <symbol id="i-once" viewBox="0 0 24 24"><path d="M12 2l2.6 3.2L18.6 4l.6 4.1L23 10l-2.4 3.4.9 4-4.1.7-1.6 3.8L12 20l-3.8 1.9-1.6-3.8-4.1-.7.9-4L1 10l3.8-1.9.6-4.1 4 1.2z"/><path d="M8.5 12l2.4 2.4 4.6-4.6"/></symbol>
-  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.4A8.5 8.5 0 1 1 21 12z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></symbol>
-  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
-  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></symbol>
-  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></symbol>
-  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></symbol>
-  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6"/></symbol>
-  <symbol id="i-barcode" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10.5 8v8M14 8v8M17 8v8"/></symbol>
-  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 3.3a4 4 0 0 1 0 7.4M22 21a7 7 0 0 0-4-6.3"/></symbol>
-  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M8 16v-5M12.5 16V7M17 16v-8"/></symbol>
-  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
-  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.2-.9z"/></symbol>
-  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
   <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3l10 18H2zM12 10v5M12 18h.01"/></symbol>
-  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5M12 8h.01"/></symbol>
 </svg>
 
 <a class="skip" href="#download" data-t="skip">انتقل إلى التحميل</a>
@@ -371,132 +220,68 @@
 <main id="main">
   <section class="hero" aria-labelledby="hero-title">
     <div class="wrap hero-in">
-      <div class="hero-text">
-        <p class="kicker" data-t="kicker">برنامج تسيير المحلات</p>
+      <div>
         <h1 id="hero-title"><span data-t="h1a">حانوتك كامل،</span> <span class="g" data-t="h1b">في بلاصة وحدة.</span></h1>
         <p class="sub" data-t="heroSub">المبيعات، الكريدي، المخزون والأرباح.</p>
         <div class="trial">
           <span class="trial-badge"><span class="trial-num ltr">14</span><span class="trial-word" data-t="trialWord">يوم مجانا</span></span>
-          <span class="trial-sub" data-t="trialSub">جرّب، ومن بعد قرّر.</span>
+          <span class="perks" data-t="perks">يخدم بلا أنترنت · بلا اشتراك شهري</span>
         </div>
-        <a class="btn hero-cta" id="hero-cta" href="#download"><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg><span data-t="heroCta">حمّل دكّاني مجانا</span></a>
-        <ul class="chips">
-          <li><svg class="ic" aria-hidden="true"><use href="#i-wifioff"/></svg><span data-t="chipOffline">يخدم بلا أنترنت</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-devices"/></svg><span data-t="chipDevices">للحاسوب والهاتف</span></li>
-          <li><svg class="ic" aria-hidden="true"><use href="#i-once"/></svg><span data-t="chipOnce">بلا اشتراك شهري</span></li>
-        </ul>
+
+        <div class="get" id="download">
+          <p class="notice" id="phone-get-win" hidden data-t="phoneGetWin">هذا الرابط لتحميل نسخة الحاسوب. افتحه على حاسوبك، أو حمّل تطبيق الهاتف من Google Play.</p>
+
+          <div class="get-row" id="row-win">
+            <p class="get-note on-phone" data-t="pcOnPhone">تحب تحطّو في الحاسوب؟</p>
+            <a class="btn block" id="win-btn" href="https://github.com/dzstoredzd/doukkany-releases/releases/latest"><svg class="ic f" aria-hidden="true"><use href="#i-win"/></svg><span data-t="winBtn">تحميل للحاسوب</span></a>
+            <button type="button" class="btn soft" id="send-btn"><svg class="ic" aria-hidden="true"><use href="#i-send"/></svg><span data-t="sendBtn">ابعث الرابط للحاسوب</span></button>
+            <p class="get-note win-req" data-t="winReq">Windows 10 وما بعده · 64 بت</p>
+            <p class="status" id="status" role="status"></p>
+            <p class="msg" id="send-msg" role="status"></p>
+            <details class="tip" id="smartscreen">
+              <summary><svg class="ic" aria-hidden="true"><use href="#i-warn"/></svg><span data-t="smartTitle">ظهرت رسالة حماية من Windows؟</span></summary>
+              <p data-t="smartBody">هذا يحدث مع البرامج الجديدة. اضغط «مزيد من المعلومات» (More info)، ثم «تشغيل على أي حال» (Run anyway).</p>
+            </details>
+          </div>
+
+          <div class="get-row" id="row-and">
+            <a class="play-badge" id="play-btn" href="https://play.google.com/store/apps/details?id=com.yousoft.doukkany"><img id="play-img" src="https://play.google.com/intl/en_us/badges/static/images/badges/ar_badge_web_generic.png" width="646" height="250" alt="احصل عليه من Google Play" data-t-alt="playAlt"></a>
+            <p class="get-note" id="and-note" data-t="andReq">للهاتف Android</p>
+          </div>
+        </div>
       </div>
+
       <div class="devices">
         <div class="mon">
           <div class="bez"><div class="win">
-            <div class="tb" aria-hidden="true"><img src="assets/favicon-64.png" alt="" width="10" height="10">Doukkany<span class="sp"></span><i></i><i></i><i></i></div>
-            <img src="assets/pc-sell-760.webp" srcset="assets/pc-sell-760.webp 760w, assets/pc-sell-1200.webp 1200w" sizes="(min-width:1024px) 520px, 80vw" width="1200" height="750" alt="شاشة البيع في دكّاني على حاسوب Windows" data-t-alt="altPc" fetchpriority="high">
+            <img src="assets/pc-sell-760.webp" srcset="assets/pc-sell-760.webp 760w, assets/pc-sell-1200.webp 1200w" sizes="(min-width:1024px) 480px, 80vw" width="1200" height="750" alt="شاشة البيع في دكّاني على حاسوب Windows" data-t-alt="altPc" fetchpriority="high">
           </div></div>
           <div class="neck"></div><div class="foot"></div>
         </div>
         <div class="phn"><div class="scr">
-          <img src="assets/01-sell-360.webp" srcset="assets/01-sell-360.webp 360w, assets/01-sell-540.webp 540w" sizes="(min-width:1024px) 130px, 21vw" width="540" height="1200" alt="شاشة البيع في دكّاني على هاتف Android" data-t-alt="altPhone">
+          <img src="assets/01-sell-360.webp" srcset="assets/01-sell-360.webp 360w, assets/01-sell-540.webp 540w" sizes="(min-width:1024px) 120px, 22vw" width="540" height="1200" alt="شاشة البيع في دكّاني على هاتف Android" data-t-alt="altPhone" loading="lazy">
         </div></div>
-        <span class="demo-note" data-t="demo">بيانات تجريبية</span>
       </div>
     </div>
   </section>
 
-  <section class="downloads wrap" id="download" aria-labelledby="dl-title">
-    <h2 class="sr-only" id="dl-title" data-t="dlTitle">حمّل دكّاني</h2>
-    <p class="notice" id="ios-note" hidden><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg><span><span data-t="iosNote">تطبيق الهاتف متوفر حاليًا على Android فقط. أرسل رابط نسخة الحاسوب إلى حاسوبك.</span> <a href="#share" data-t="iosLink">أرسل الرابط</a></span></p>
-    <p class="notice" id="phone-get-win" hidden><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg><span data-t="phoneGetWin">هذا الرابط لتحميل نسخة الحاسوب. افتحه على حاسوبك، أو حمّل تطبيق الهاتف من Google Play.</span></p>
-    <div class="dl-grid">
-      <article class="dl-card" id="card-win" aria-labelledby="win-name">
-        <span class="mine-tag" data-t="mine">مناسب لجهازك</span>
-        <div class="dl-head">
-          <span class="dl-icon"><svg class="ic f" aria-hidden="true"><use href="#i-win"/></svg></span>
-          <div><h3 id="win-name" data-t="winName">نسخة الحاسوب</h3><p class="dl-req" data-t="winReq">Windows 10 وما بعده · 64 بت</p></div>
-        </div>
-        <a class="btn block" id="win-btn" href="https://github.com/dzstoredzd/doukkany-releases/releases/latest"><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg><span data-t="winBtn">تحميل للحاسوب</span></a>
-        <p class="meta" id="win-meta" aria-live="polite"><span class="loading"><span class="spin" aria-hidden="true"></span><span data-t="checking">نبحث عن آخر إصدار…</span></span></p>
-        <p class="status" id="status" role="status"></p>
-        <details class="tip" id="smartscreen">
-          <summary><svg class="ic" aria-hidden="true"><use href="#i-warn"/></svg><span data-t="smartTitle">ظهرت رسالة حماية من Windows؟</span></summary>
-          <p data-t="smartBody">هذا يحدث مع البرامج الجديدة. اضغط «مزيد من المعلومات» (More info)، ثم «تشغيل على أي حال» (Run anyway).</p>
-        </details>
-      </article>
+  <section class="sec wrap" id="tutorials" aria-labelledby="tut-title">
+    <h2 class="sec-title" id="tut-title" data-t="tutorialTitle">شوف كيفاش يخدم</h2>
+    <p class="sec-sub" data-t="tutorialHint">3 فيديوهات قصار، دقيقة لكل واحد.</p>
+    <div class="vids" id="vids"></div>
+    <a class="yt-all" id="tutorial-all" href="https://www.youtube.com/playlist?list=PLATmdIDov8C4" target="_blank" rel="noopener"><svg class="ic f" aria-hidden="true"><use href="#i-yt"/></svg><span data-t="tutorialAll">كل الدروس (25) على YouTube</span></a>
+  </section>
 
-      <article class="dl-card" id="card-and" aria-labelledby="and-name">
-        <span class="mine-tag" data-t="mine">مناسب لجهازك</span>
-        <div class="dl-head">
-          <span class="dl-icon"><svg class="ic f" aria-hidden="true"><use href="#i-android"/></svg></span>
-          <div><h3 id="and-name" data-t="andName">نسخة الهاتف</h3><p class="dl-req" data-t="andReq">Android · من Google Play</p></div>
-        </div>
-        <a class="play-badge" id="play-btn" href="https://play.google.com/store/apps/details?id=com.yousoft.doukkany"><img id="play-img" src="https://play.google.com/intl/en_us/badges/static/images/badges/ar_badge_web_generic.png" width="646" height="250" alt="احصل عليه من Google Play" data-t-alt="playAlt"></a>
-        <p class="dl-foot" data-t="andFoot">التثبيت والتحديثات من متجر Google Play.</p>
-      </article>
+  <section class="sec wrap" id="support" aria-labelledby="support-title">
+    <div class="help">
+      <h2 class="sec-title" id="support-title" data-t="supportTitle">تحتاج مساعدة ولا حاب تشري؟</h2>
+      <p data-t="supportText">تخلص مرة وحدة، بلا اشتراك شهري. كلّمنا ونعاونوك في التثبيت والتفعيل.</p>
+      <div class="help-actions">
+        <a class="btn wa" id="wa-btn" href="https://wa.me/213775452101" target="_blank" rel="noopener"><svg class="ic f" aria-hidden="true"><use href="#i-wa"/></svg><span data-t="waBtn">واتساب</span></a>
+        <a class="num ltr" href="tel:+213775452101">0775 45 21 01</a>
+      </div>
     </div>
   </section>
-
-  <section class="sec wrap share" id="share" aria-labelledby="share-title">
-    <div class="card">
-      <div class="head">
-        <h2 class="sec-title" id="share-title" data-t="shareTitle">راك في الهاتف وحاب تحمّل للحاسوب؟</h2>
-        <p class="sec-sub" data-t="shareHelp">ابعث الرابط لروحك وافتحه على الحاسوب: التحميل يبدأ وحده.</p>
-      </div>
-      <div>
-        <div class="link-box">
-          <input id="share-link" type="text" readonly aria-label="Link" data-t-aria="linkLabel" value="https://yousoft.site/doukkany-site/download/?get=windows">
-        </div>
-        <div class="share-actions">
-          <button type="button" class="btn soft" id="copy-btn"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg><span data-t="copyBtn">نسخ الرابط</span></button>
-          <button type="button" class="btn soft" id="share-btn" hidden><svg class="ic" aria-hidden="true"><use href="#i-share"/></svg><span data-t="shareBtn">مشاركة</span></button>
-          <a class="btn soft" id="wa-share" href="https://wa.me/" target="_blank" rel="noopener"><svg class="ic f" aria-hidden="true"><use href="#i-wa"/></svg><span>WhatsApp</span></a>
-        </div>
-        <p class="msg" id="share-msg" role="status"></p>
-      </div>
-      <form class="email-form" id="email-form" novalidate data-clarity-mask="true">
-        <label for="email"><span data-t="emailLabel">أو ابعثه لبريدك الإلكتروني</span></label>
-        <div class="email-row">
-          <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="name@example.com" aria-describedby="email-msg" data-clarity-mask="true">
-          <button class="btn soft" type="submit"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg><span data-t="emailBtn">ابعث</span></button>
-        </div>
-        <p class="msg" id="email-msg" role="status"></p>
-      </form>
-    </div>
-  </section>
-
-  <section class="sec wrap steps" aria-labelledby="steps-title">
-    <h2 class="sec-title" id="steps-title" data-t="stepsTitle">ابدأ في 3 خطوات</h2>
-    <ol class="steps-list" id="steps"></ol>
-  </section>
-
-  <section class="sec wrap tutorials" id="tutorials" aria-labelledby="tut-title">
-    <div class="tut-head">
-      <div>
-        <h2 class="sec-title" id="tut-title" data-t="tutorialTitle">دورة تعليمية سريعة</h2>
-        <p class="sec-sub" data-t="tutorialHint">25 فيديو، كل واحد مدته دقيقة أو أقل.</p>
-      </div>
-      <a class="yt-all" id="tutorial-all" href="https://www.youtube.com/playlist?list=PLATmdIDov8C4" target="_blank" rel="noopener"><svg class="ic f" aria-hidden="true"><use href="#i-yt"/></svg><span data-t="tutorialAll">مشاهدة القائمة كاملة على YouTube</span></a>
-    </div>
-    <p class="label"><svg class="ic" aria-hidden="true" style="width:18px;height:18px"><use href="#i-star"/></svg><span data-t="startHere">ابدأ من هنا</span></p>
-    <div class="featured" id="featured"></div>
-    <p class="label" data-t="moreVideos">كل الدروس حسب الموضوع</p>
-    <div class="cats" id="cats"></div>
-  </section>
-
-  <div class="sec wrap duo">
-    <section class="card" aria-labelledby="offer-title">
-      <h2 class="sec-title" id="offer-title" data-t="offerTitle">كيف تشتري دكّاني؟</h2>
-      <ul class="offer-list">
-        <li><span class="oi"><svg class="ic" aria-hidden="true"><use href="#i-gift"/></svg></span><div><b data-t="o1">14 يوم تجربة مجانية</b><span data-t="o1s">بلا حساب وبلا دفع مسبق. بعد التجربة، بياناتك تبقى محفوظة.</span></div></li>
-        <li><span class="oi"><svg class="ic" aria-hidden="true"><use href="#i-once"/></svg></span><div><b data-t="o2">تدفع مرة واحدة</b><span data-t="o2s">رخصة دائمة للبرنامج، بلا اشتراك شهري.</span></div></li>
-        <li><span class="oi"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></span><div><b data-t="o3">الشراء عبر واتساب أو مكالمة</b><span data-t="o3s">تتواصل معنا، ثم تكتب رمز التفعيل في البرنامج. لا دفع داخل التطبيق.</span></div></li>
-      </ul>
-    </section>
-    <section class="card support" id="support" aria-labelledby="support-title">
-      <h2 class="sec-title" id="support-title" data-t="supportTitle">تحتاج مساعدة؟</h2>
-      <p data-t="supportText">رانا هنا نعاونوك في التثبيت والاستعمال.</p>
-      <p><span data-t="supportExtra">وللأسعار وتفعيل البرنامج كذلك:</span> <span class="num ltr">0775 45 21 01</span></p>
-      <a class="btn wa js-wa" id="wa-btn" data-place="section" href="https://wa.me/213775452101" target="_blank" rel="noopener"><svg class="ic f" aria-hidden="true"><use href="#i-wa"/></svg><span data-t="waBtn">تواصل معنا على واتساب</span></a>
-    </section>
-  </div>
 </main>
 
 <footer id="footer">
@@ -509,8 +294,6 @@
     </nav>
   </div>
 </footer>
-
-<a class="wa-float js-wa" id="wa-float" data-place="float" href="https://wa.me/213775452101" target="_blank" rel="noopener" aria-label="WhatsApp" data-t-aria="waBtn" tabindex="-1"><svg class="ic f" aria-hidden="true"><use href="#i-wa"/></svg></a>
 
 <dialog class="player" id="player" aria-labelledby="player-title">
   <div class="player-top">
@@ -529,192 +312,91 @@
     ar: {
       title: 'تحميل دكّاني · Doukkany',
       skip: 'انتقل إلى التحميل', home: 'دكّاني: الصفحة الرئيسية',
-      kicker: 'برنامج تسيير المحلات',
       h1a: 'حانوتك كامل،', h1b: 'في بلاصة وحدة.',
       heroSub: 'المبيعات، الكريدي، المخزون والأرباح.',
-      trialWord: 'يوم مجانا', trialSub: 'جرّب، ومن بعد قرّر.', heroCta: 'حمّل دكّاني مجانا',
-      chipOffline: 'يخدم بلا أنترنت', chipDevices: 'للحاسوب والهاتف', chipOnce: 'بلا اشتراك شهري',
-      altPc: 'شاشة البيع في دكّاني على حاسوب Windows', altPhone: 'شاشة البيع في دكّاني على هاتف Android', demo: 'بيانات تجريبية',
-      dlTitle: 'حمّل دكّاني', mine: 'مناسب لجهازك',
-      winName: 'نسخة الحاسوب', winReq: 'Windows 10 وما بعده · 64 بت', winBtn: 'تحميل للحاسوب',
-      checking: 'نبحث عن آخر إصدار…', version: 'الإصدار', size: 'الحجم', mb: 'ميغا',
-      noVersion: 'الزر يفتح صفحة آخر إصدار.',
+      trialWord: 'يوم مجانا', perks: 'يخدم بلا أنترنت · بلا اشتراك شهري',
+      altPc: 'شاشة البيع في دكّاني على حاسوب Windows', altPhone: 'شاشة البيع في دكّاني على هاتف Android',
+      winBtn: 'تحميل للحاسوب', winReq: 'Windows 10 وما بعده · 64 بت',
       starting: 'سيبدأ التنزيل بعد لحظات…',
       smartTitle: 'ظهرت رسالة حماية من Windows؟',
       smartBody: 'هذا يحدث مع البرامج الجديدة. اضغط «مزيد من المعلومات» (More info)، ثم «تشغيل على أي حال» (Run anyway).',
-      andName: 'نسخة الهاتف', andReq: 'Android · من Google Play', playAlt: 'احصل عليه من Google Play',
-      andFoot: 'التثبيت والتحديثات من متجر Google Play.',
-      iosNote: 'تطبيق الهاتف متوفر حاليًا على Android فقط. أرسل رابط نسخة الحاسوب إلى حاسوبك.', iosLink: 'أرسل الرابط',
+      playAlt: 'احصل عليه من Google Play', andReq: 'للهاتف Android',
+      iosReq: 'تطبيق الهاتف متوفر على Android فقط حاليًا.',
       phoneGetWin: 'هذا الرابط لتحميل نسخة الحاسوب. افتحه على حاسوبك، أو حمّل تطبيق الهاتف من Google Play.',
-      shareTitle: 'راك في الهاتف وحاب تحمّل للحاسوب؟',
-      shareHelp: 'ابعث الرابط لروحك وافتحه على الحاسوب: التحميل يبدأ وحده.',
-      linkLabel: 'رابط التحميل للحاسوب',
-      copyBtn: 'نسخ الرابط', copied: 'تم نسخ الرابط. الصقه في رسالة لنفسك.', copyFail: 'لم يتم النسخ. اضغط على الرابط وانسخه يدويًا.',
-      shareBtn: 'مشاركة', shared: 'تمت المشاركة.', shareFail: 'لم تتم المشاركة. جرّب «نسخ الرابط».',
+      pcOnPhone: 'تحب تحطّو في الحاسوب؟', sendBtn: 'ابعث الرابط للحاسوب',
+      sent: 'تم. افتح الرابط على الحاسوب والتحميل يبدأ وحده.',
       shareText: 'رابط تحميل دكّاني للحاسوب (Windows 10 وما بعده):',
-      emailLabel: 'أو ابعثه لبريدك الإلكتروني', emailBtn: 'ابعث',
-      emailBad: 'هذا البريد غير صحيح. تحقّق منه.',
-      emailOpened: 'يُفتح الآن تطبيق البريد: اضغط «إرسال» فيه. إن لم يُفتح، استعمل «نسخ الرابط».',
-      mailSubject: 'روابط تنزيل دكّاني',
-      mailBody: 'روابط تنزيل دكّاني (أحدث إصدار دائمًا):\n\nالحاسوب (Windows 10 وما بعده):\n{win}\n\nالهاتف (Android):\n{play}\n\nصفحة التنزيل:\n{page}\n',
-      stepsTitle: 'ابدأ في 3 خطوات',
-      step1: 'حمّل وثبّت البرنامج', step2: 'أضف السلعة تاع حانوتك', step3: 'جرّب أول عملية بيع',
-      watch: 'شاهد الفيديو',
-      tutorialTitle: 'دورة تعليمية سريعة', tutorialHint: '25 فيديو، كل واحد مدته دقيقة أو أقل.',
-      tutorialAll: 'مشاهدة القائمة كاملة على YouTube',
-      startHere: 'ابدأ من هنا', moreVideos: 'كل الدروس حسب الموضوع', episode: 'الحلقة',
-      catSales: 'البيع والباركود', catCredit: 'الزبائن والكريدي', catStock: 'السلع والمخزون',
-      catMoney: 'الصندوق والأرباح', catAdvanced: 'العمّال والإعدادات المتقدمة',
+      tutorialTitle: 'شوف كيفاش يخدم', tutorialHint: '3 فيديوهات قصار، دقيقة لكل واحد.',
+      tutorialAll: 'كل الدروس (25) على YouTube',
       openYt: 'فتح على YouTube', close: 'إغلاق',
-      offerTitle: 'كيف تشتري دكّاني؟',
-      o1: '14 يوم تجربة مجانية', o1s: 'بلا حساب وبلا دفع مسبق. بعد التجربة، بياناتك تبقى محفوظة.',
-      o2: 'تدفع مرة واحدة', o2s: 'رخصة دائمة للبرنامج، بلا اشتراك شهري.',
-      o3: 'الشراء عبر واتساب أو مكالمة', o3s: 'تتواصل معنا، ثم تكتب رمز التفعيل في البرنامج. لا دفع داخل التطبيق.',
-      supportTitle: 'تحتاج مساعدة؟', supportText: 'رانا هنا نعاونوك في التثبيت والاستعمال.',
-      supportExtra: 'وللأسعار وتفعيل البرنامج كذلك:', waBtn: 'تواصل معنا على واتساب',
+      supportTitle: 'تحتاج مساعدة ولا حاب تشري؟',
+      supportText: 'تخلص مرة وحدة، بلا اشتراك شهري. كلّمنا ونعاونوك في التثبيت والتفعيل.',
+      waBtn: 'واتساب',
       waMessage: 'السلام عليكم، عندي سؤال على دكّاني.',
       privacyLink: 'سياسة الخصوصية', terms: 'شروط الاستخدام', cookieLink: 'خيارات القياس'
     },
     fr: {
       title: 'Télécharger Doukkany',
       skip: 'Aller au téléchargement', home: 'Doukkany : accueil',
-      kicker: 'Logiciel de gestion de magasin',
       h1a: 'Tout votre magasin,', h1b: 'au même endroit.',
       heroSub: 'Ventes, crédit clients, stock et bénéfices.',
-      trialWord: 'jours gratuits', trialSub: 'Essayez, puis décidez.', heroCta: 'Télécharger gratuitement',
-      chipOffline: 'Marche sans internet', chipDevices: 'PC et téléphone', chipOnce: 'Sans abonnement mensuel',
-      altPc: 'Écran de vente de Doukkany sur un PC Windows', altPhone: 'Écran de vente de Doukkany sur un téléphone Android', demo: 'Données de démonstration',
-      dlTitle: 'Télécharger Doukkany', mine: 'Pour votre appareil',
-      winName: 'Version ordinateur', winReq: 'Windows 10 et plus · 64 bits', winBtn: 'Télécharger pour PC',
-      checking: 'Recherche de la dernière version…', version: 'Version', size: 'Taille', mb: 'Mo',
-      noVersion: 'Le bouton ouvre la page de la dernière version.',
+      trialWord: 'jours gratuits', perks: 'Marche sans internet · Sans abonnement',
+      altPc: 'Écran de vente de Doukkany sur un PC Windows', altPhone: 'Écran de vente de Doukkany sur un téléphone Android',
+      winBtn: 'Télécharger pour PC', winReq: 'Windows 10 et plus · 64 bits',
       starting: 'Le téléchargement va commencer…',
       smartTitle: 'Windows affiche un avertissement ?',
       smartBody: 'Cela arrive avec les nouveaux logiciels. Cliquez sur « Informations complémentaires », puis sur « Exécuter quand même ».',
-      andName: 'Version téléphone', andReq: 'Android · sur Google Play', playAlt: 'Disponible sur Google Play',
-      andFoot: 'Installation et mises à jour depuis Google Play.',
-      iosNote: 'L’application mobile n’existe pour l’instant que sur Android. Envoyez le lien de la version PC à votre ordinateur.', iosLink: 'Envoyer le lien',
+      playAlt: 'Disponible sur Google Play', andReq: 'Pour téléphone Android',
+      iosReq: 'L’application mobile n’existe que sur Android pour l’instant.',
       phoneGetWin: 'Ce lien sert à télécharger la version PC. Ouvrez-le sur votre ordinateur, ou installez l’application mobile depuis Google Play.',
-      shareTitle: 'Vous êtes sur téléphone et voulez l’installer sur PC ?',
-      shareHelp: 'Envoyez-vous le lien et ouvrez-le sur l’ordinateur : le téléchargement démarre tout seul.',
-      linkLabel: 'Lien de téléchargement pour PC',
-      copyBtn: 'Copier le lien', copied: 'Lien copié. Collez-le dans un message pour vous.', copyFail: 'Copie impossible. Touchez le lien et copiez-le à la main.',
-      shareBtn: 'Partager', shared: 'Lien partagé.', shareFail: 'Partage impossible. Essayez « Copier le lien ».',
+      pcOnPhone: 'Vous le voulez sur votre PC ?', sendBtn: 'Envoyer le lien au PC',
+      sent: 'C’est fait. Ouvrez le lien sur le PC : le téléchargement démarre tout seul.',
       shareText: 'Lien de téléchargement de Doukkany pour PC (Windows 10 et plus) :',
-      emailLabel: 'Ou envoyez-le à votre e-mail', emailBtn: 'Envoyer',
-      emailBad: 'Cette adresse e-mail n’est pas valide. Vérifiez-la.',
-      emailOpened: 'Votre application e-mail s’ouvre : appuyez sur « Envoyer ». Si rien ne s’ouvre, utilisez « Copier le lien ».',
-      mailSubject: 'Liens de téléchargement Doukkany',
-      mailBody: 'Liens de téléchargement Doukkany (toujours la dernière version) :\n\nOrdinateur (Windows 10 et plus) :\n{win}\n\nTéléphone (Android) :\n{play}\n\nPage de téléchargement :\n{page}\n',
-      stepsTitle: 'Démarrer en 3 étapes',
-      step1: 'Téléchargez et installez', step2: 'Ajoutez les produits de votre magasin', step3: 'Faites votre première vente',
-      watch: 'Voir la vidéo',
-      tutorialTitle: 'Formation rapide', tutorialHint: '25 vidéos, chacune d’une minute ou moins.',
-      tutorialAll: 'Voir toute la liste sur YouTube',
-      startHere: 'Commencez ici', moreVideos: 'Toutes les leçons par thème', episode: 'Épisode',
-      catSales: 'Vente et code-barres', catCredit: 'Clients et crédit', catStock: 'Produits et stock',
-      catMoney: 'Caisse et bénéfices', catAdvanced: 'Employés et réglages avancés',
+      tutorialTitle: 'Voyez comment ça marche', tutorialHint: '3 vidéos courtes, une minute chacune.',
+      tutorialAll: 'Toutes les leçons (25) sur YouTube',
       openYt: 'Ouvrir sur YouTube', close: 'Fermer',
-      offerTitle: 'Comment acheter Doukkany ?',
-      o1: '14 jours d’essai gratuit', o1s: 'Sans compte et sans paiement à l’avance. Après l’essai, vos données restent enregistrées.',
-      o2: 'Vous payez une seule fois', o2s: 'Licence à vie du logiciel, sans abonnement mensuel.',
-      o3: 'Achat par WhatsApp ou par appel', o3s: 'Vous nous contactez, puis vous saisissez le code d’activation dans le logiciel. Aucun paiement dans l’application.',
-      supportTitle: 'Besoin d’aide ?', supportText: 'Nous sommes là pour vous aider à installer et à utiliser Doukkany.',
-      supportExtra: 'Aussi pour les prix et l’activation :', waBtn: 'Nous contacter sur WhatsApp',
+      supportTitle: 'Besoin d’aide ou envie d’acheter ?',
+      supportText: 'Vous payez une seule fois, sans abonnement. Contactez-nous : on vous aide à installer et à activer.',
+      waBtn: 'WhatsApp',
       waMessage: 'Bonjour, j’ai une question sur Doukkany.',
       privacyLink: 'Confidentialité', terms: 'Conditions d’utilisation', cookieLink: 'Choix de mesure'
     },
     en: {
       title: 'Download Doukkany',
       skip: 'Skip to download', home: 'Doukkany: home',
-      kicker: 'Shop management software',
       h1a: 'Your whole shop,', h1b: 'in one place.',
       heroSub: 'Sales, customer credit, stock and profit.',
-      trialWord: 'days free', trialSub: 'Try it first, then decide.', heroCta: 'Download Doukkany for free',
-      chipOffline: 'Works without internet', chipDevices: 'PC and phone', chipOnce: 'No monthly subscription',
-      altPc: 'Doukkany sales screen on a Windows PC', altPhone: 'Doukkany sales screen on an Android phone', demo: 'Demo data',
-      dlTitle: 'Download Doukkany', mine: 'For your device',
-      winName: 'Computer version', winReq: 'Windows 10 and newer · 64-bit', winBtn: 'Download for PC',
-      checking: 'Checking the latest version…', version: 'Version', size: 'Size', mb: 'MB',
-      noVersion: 'The button opens the latest release page.',
+      trialWord: 'days free', perks: 'Works without internet · No subscription',
+      altPc: 'Doukkany sales screen on a Windows PC', altPhone: 'Doukkany sales screen on an Android phone',
+      winBtn: 'Download for PC', winReq: 'Windows 10 and newer · 64-bit',
       starting: 'Your download will start in a moment…',
       smartTitle: 'Windows shows a warning?',
       smartBody: 'This happens with new software. Click “More info”, then “Run anyway”.',
-      andName: 'Phone version', andReq: 'Android · on Google Play', playAlt: 'Get it on Google Play',
-      andFoot: 'Install and update from Google Play.',
-      iosNote: 'The phone app is only on Android for now. Send the PC version link to your computer.', iosLink: 'Send the link',
+      playAlt: 'Get it on Google Play', andReq: 'For Android phones',
+      iosReq: 'The phone app is only on Android for now.',
       phoneGetWin: 'This link downloads the PC version. Open it on your computer, or get the phone app from Google Play.',
-      shareTitle: 'On your phone but want it on your PC?',
-      shareHelp: 'Send yourself the link and open it on your computer: the download starts by itself.',
-      linkLabel: 'PC download link',
-      copyBtn: 'Copy link', copied: 'Link copied. Paste it in a message to yourself.', copyFail: 'Could not copy. Tap the link and copy it by hand.',
-      shareBtn: 'Share', shared: 'Link shared.', shareFail: 'Could not share. Try “Copy link”.',
+      pcOnPhone: 'Want it on your PC?', sendBtn: 'Send the link to your PC',
+      sent: 'Done. Open the link on your PC: the download starts by itself.',
       shareText: 'Doukkany download link for PC (Windows 10 and newer):',
-      emailLabel: 'Or send it to your email', emailBtn: 'Send',
-      emailBad: 'This email address is not valid. Please check it.',
-      emailOpened: 'Your email app is opening: press “Send” there. If nothing opens, use “Copy link”.',
-      mailSubject: 'Doukkany download links',
-      mailBody: 'Doukkany download links (always the latest version):\n\nComputer (Windows 10 and newer):\n{win}\n\nPhone (Android):\n{play}\n\nDownload page:\n{page}\n',
-      stepsTitle: 'Get started in 3 steps',
-      step1: 'Download and install', step2: 'Add your shop’s products', step3: 'Make your first sale',
-      watch: 'Watch the video',
-      tutorialTitle: 'Quick tutorial', tutorialHint: '25 videos, each one minute or less.',
-      tutorialAll: 'See the full list on YouTube',
-      startHere: 'Start here', moreVideos: 'All lessons by topic', episode: 'Episode',
-      catSales: 'Selling and barcodes', catCredit: 'Customers and credit', catStock: 'Products and stock',
-      catMoney: 'Cash drawer and profit', catAdvanced: 'Staff and advanced settings',
+      tutorialTitle: 'See how it works', tutorialHint: '3 short videos, one minute each.',
+      tutorialAll: 'All lessons (25) on YouTube',
       openYt: 'Open on YouTube', close: 'Close',
-      offerTitle: 'How to buy Doukkany',
-      o1: '14-day free trial', o1s: 'No account and nothing to pay first. After the trial, your data stays saved.',
-      o2: 'Pay once', o2s: 'A lifetime licence for the software, no monthly subscription.',
-      o3: 'Buy by WhatsApp or a call', o3s: 'You contact us, then type the activation code in the app. No payment inside the app.',
-      supportTitle: 'Need help?', supportText: 'We are here to help you install and use Doukkany.',
-      supportExtra: 'Also for prices and activation:', waBtn: 'Contact us on WhatsApp',
+      supportTitle: 'Need help, or ready to buy?',
+      supportText: 'Pay once, no subscription. Contact us and we help you install and activate.',
+      waBtn: 'WhatsApp',
       waMessage: 'Hello, I have a question about Doukkany.',
       privacyLink: 'Privacy', terms: 'Terms', cookieLink: 'Measurement choices'
     }
   };
 
-  // "Doukkany on PC" YouTube playlist, in its order. Each link opens the video inside the playlist.
-  // Row: [video id, Arabic title, French title, English title, length in seconds, category].
-  // The category is sent with tutorial_clicked (tutorial_category); the page groups by CATS below.
+  // The first 3 videos of the "Doukkany on PC" YouTube playlist that a new shop needs.
+  // Row: [video id, Arabic title, French title, English title, length in seconds, category, playlist position].
+  // The category is sent with tutorial_clicked (tutorial_category).
   var PLAYLIST_ID = 'PLATmdIDov8C4';
   var VIDEOS = [
-    ['l487p3PcKrs', 'أول تشغيل لدكّاني على الحاسوب', 'Premier lancement de Doukkany sur PC', 'First start of Doukkany on PC', 56, 'getting_started'],
-    ['knj8FTLcriI', 'الإضافة السريعة للسلعة', 'Ajout rapide d’un produit', 'Quick add of a product', 50, 'products'],
-    ['hwXBqgD0qFU', 'إضافة سلعة بالتفصيل', 'Ajouter un produit en détail', 'Add a product in detail', 61, 'products'],
-    ['UiLl3WZe_iM', 'ترتيب السلع في فئات', 'Classer les produits par catégories', 'Sort products into categories', 46, 'products'],
-    ['HBxeKBFIpbY', 'البيع خطوة بخطوة', 'Vendre étape par étape', 'Selling step by step', 46, 'selling'],
-    ['USUIhjNc9wo', 'البيع بالدَّين', 'Vendre à crédit', 'Selling on credit', 49, 'credit'],
-    ['cWWeTfazA_Y', 'البيع بتخفيض', 'Vendre avec une remise', 'Selling with a discount', 49, 'selling'],
-    ['BecQxkCCNUo', 'البيع بقارئ الباركود', 'Vendre avec le lecteur de code-barres', 'Selling with a barcode scanner', 45, 'selling'],
-    ['GYOgSPXsGNA', 'اختصارات لوحة المفاتيح', 'Raccourcis clavier', 'Keyboard shortcuts', 46, 'selling'],
-    ['Qfl7T7-zdTM', 'عدة زبائن في وقت واحد', 'Plusieurs clients en même temps', 'Several customers at once', 45, 'selling'],
-    ['nX568wrdneU', 'طابعة الإيصالات', 'Imprimante de tickets', 'Receipt printer', 45, 'printing'],
-    ['oJIMUt0StMM', 'دفتر الدَّين', 'Carnet de crédit', 'Credit book', 45, 'credit'],
-    ['MtRhQZSqdRw', 'إضافة عامل وصلاحياته', 'Ajouter un employé et ses droits', 'Add a staff member and their permissions', 48, 'staff'],
-    ['SzjTHiWUKCY', 'الصندوق: الفتح والإغلاق', 'La caisse : ouverture et fermeture', 'Cash drawer: opening and closing', 48, 'cash'],
-    ['zj5Wp16lGYE', 'حاسوب ثانٍ وهاتف في المحل', 'Un 2e ordinateur et un téléphone dans le magasin', 'A second computer and a phone in the shop', 52, 'devices'],
-    ['bxlT8DnAFWY', 'التقارير والربح', 'Rapports et bénéfice', 'Reports and profit', 45, 'reports'],
-    ['qDGltZh8WuM', 'تسجيل وصول السلعة', 'Enregistrer l’arrivée de marchandise', 'Recording new stock', 42, 'stock'],
-    ['vgzS9v2wLVw', 'تنبيهات المخزون والصلاحية', 'Alertes de stock et de péremption', 'Stock and expiry alerts', 52, 'stock'],
-    ['IXEpl-ptxuE', 'إرجاع سلعة', 'Retour d’un produit', 'Returning a product', 45, 'selling'],
-    ['NriEqQDR_D8', 'طباعة الملصقات', 'Impression d’étiquettes', 'Printing labels', 41, 'printing'],
-    ['C_tN8K8XnAc', 'استيراد السلع من Excel', 'Importer les produits depuis Excel', 'Import products from Excel', 37, 'products'],
-    ['EH5Sdd2-Ueg', 'سعر التجزئة وسعر الجملة', 'Prix de détail et prix de gros', 'Retail and wholesale prices', 34, 'products'],
-    ['sFtffw9oHFw', 'التصليحات والخدمات', 'Réparations et services', 'Repairs and services', 39, 'services'],
-    ['h4q0r4vEIJg', 'نقاط الوفاء والعروض', 'Points de fidélité et offres', 'Loyalty points and offers', 38, 'loyalty'],
-    ['72vZnHe9ay4', 'النسخة الاحتياطية', 'Sauvegarde', 'Backup', 48, 'backup']
-  ];
-  // Positions in VIDEOS (0-based). Every video is shown once: in "start here" or in one topic.
-  var FEATURED = [0, 1, 4];
-  var STEPS = [['i-dl', 'step1', 0], ['i-box', 'step2', 1], ['i-cart', 'step3', 4]];
-  var CATS = [
-    ['catSales', 'i-barcode', [7, 6, 8, 9, 10, 18, 21, 22]],
-    ['catCredit', 'i-users', [5, 11, 23]],
-    ['catStock', 'i-box', [2, 3, 16, 17, 19, 20]],
-    ['catMoney', 'i-chart', [13, 15]],
-    ['catAdvanced', 'i-gear', [12, 14, 24]]
+    ['l487p3PcKrs', 'أول تشغيل لدكّاني', 'Premier lancement', 'First start', 56, 'getting_started', 1],
+    ['knj8FTLcriI', 'إضافة سلعة بسرعة', 'Ajouter un produit', 'Add a product', 50, 'products', 2],
+    ['HBxeKBFIpbY', 'البيع خطوة بخطوة', 'Vendre étape par étape', 'Selling step by step', 46, 'selling', 5]
   ];
 
   var PLAY_URL = 'https://play.google.com/store/apps/details?id=com.yousoft.doukkany';
@@ -728,7 +410,6 @@
   var params = new URLSearchParams(location.search);
   var lang = 'ar';
   var latest = null; // { url, label, size, signed }
-  var latestFailed = false;
   function $(id) { return document.getElementById(id); }
 
   // ---- Tracking (../js/tracking.js). The page works the same if it did not load. ----
@@ -752,7 +433,7 @@
   function pageUrl() { return location.origin + location.pathname; }
   function winLink(via) { return withCampaign(pageUrl() + '?get=windows&lang=' + lang, via); }
 
-  // ---- Device: only reorders and highlights. Both downloads always stay on the page. ----
+  // ---- Device: only reorders the two download rows (CSS, data-device). ----
   var DEVICE = (function () {
     var ua = navigator.userAgent || '';
     if (/android/i.test(ua)) return 'android';
@@ -762,12 +443,6 @@
   })();
   var IS_PHONE = DEVICE === 'android' || DEVICE === 'ios';
   document.documentElement.setAttribute('data-device', DEVICE);
-  if (DEVICE === 'windows') $('card-win').classList.add('mine');
-  if (DEVICE === 'android') {
-    $('card-and').classList.add('mine');
-    $('card-and').parentNode.insertBefore($('card-and'), $('card-win'));
-  }
-  if (DEVICE === 'ios') $('ios-note').hidden = false;
 
   // ---- Language ----
   function pickLang() {
@@ -790,20 +465,13 @@
       b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === lang));
     });
     $('play-img').src = 'https://play.google.com/intl/en_us/badges/static/images/badges/' + lang + '_badge_web_generic.png';
-    showVersion();
-    renderSteps();
+    if (DEVICE === 'ios') $('and-note').textContent = t.iosReq;
     renderVideos();
-    updateLinks();
-    if ($('status').textContent) $('status').textContent = t.starting;
-    ['share-msg', 'email-msg'].forEach(function (id) { $(id).textContent = ''; $(id).className = 'msg'; });
-    try { localStorage.setItem('doukkany-lang', lang); } catch (e) {}
-  }
-
-  function updateLinks() {
     $('play-btn').href = playUrl();
-    $('share-link').value = winLink('copy');
-    $('wa-share').href = 'https://wa.me/?text=' + encodeURIComponent(TEXT[lang].shareText + '\n' + winLink('share'));
-    document.querySelectorAll('.js-wa').forEach(function (a) { a.href = waUrl(); });
+    $('wa-btn').href = waUrl();
+    if ($('status').textContent) $('status').textContent = t.starting;
+    $('send-msg').textContent = '';
+    try { localStorage.setItem('doukkany-lang', lang); } catch (e) {}
   }
 
   document.querySelectorAll('.langs button').forEach(function (b) {
@@ -839,29 +507,10 @@
   var latestPromise = fromFeed().catch(fromApi).then(function (found) {
     latest = found;
     $('win-btn').href = found.url;
-    showVersion();
-    return found;
-  }).catch(function () { latestFailed = true; showVersion(); return null; });
-
-  function showVersion() {
-    var t = TEXT[lang], meta = $('win-meta');
-    if (!latest && !latestFailed) return; // the spinner stays until GitHub answers
-    meta.textContent = '';
-    if (!latest) { meta.textContent = t.noVersion; return; }
-    function add(label, value) {
-      var s = document.createElement('span');
-      s.appendChild(document.createTextNode(label + ' '));
-      var b = document.createElement('b'); b.className = 'ltr'; b.textContent = value; s.appendChild(b);
-      meta.appendChild(s);
-    }
-    add(t.version, latest.label);
-    if (latest.size > 0) {
-      var mb = (latest.size / 1048576).toFixed(1);
-      add(t.size, (lang === 'fr' ? mb.replace('.', ',') : mb) + ' ' + t.mb);
-    }
     // Only a build the feed calls signed hides the Windows warning help.
-    $('smartscreen').hidden = latest.signed === true;
-  }
+    $('smartscreen').hidden = found.signed === true;
+    return found;
+  }).catch(function () { return null; });
 
   // A click on the button (or a shared ?get=windows link) only. It does not prove the
   // file finished downloading or that the app was installed.
@@ -893,169 +542,65 @@
     track('google_play_clicked', { platform: 'android', link_type: 'play_store' });
   });
 
-  // Hero button: scrolls to the card for this device (both cards stay), then puts the keyboard
-  // focus on its download button. It never starts a download by itself.
-  $('hero-cta').addEventListener('click', function (e) {
-    e.preventDefault();
-    var card = DEVICE === 'android' ? 'card-and' : DEVICE === 'windows' ? 'card-win' : 'download';
-    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    $(card).scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
-    var target = DEVICE === 'android' ? $('play-btn') : DEVICE === 'windows' ? $('win-btn') : null;
-    if (target) try { target.focus({ preventScroll: true }); } catch (err) {}
-  });
-
-  // ---- Send the PC link to yourself: copy, share sheet, WhatsApp, email ----
-  function say(id, text, ok) { var m = $(id); m.textContent = text; m.className = 'msg ' + (ok ? 'ok' : 'err'); }
-
-  // Clipboard blocked (some in-app browsers): select the link and try the old copy command.
-  // If that fails too, the visitor copies it by hand (not counted).
-  function copyByHand() {
-    var box = $('share-link');
-    box.focus(); box.select();
-    var ok = false;
-    try { ok = document.execCommand('copy'); } catch (e) {}
-    if (ok) copied('exec_command');
-    else say('share-msg', TEXT[lang].copyFail, false);
-  }
-  function copied(method) {
-    say('share-msg', TEXT[lang].copied, true);
-    track('download_link_copied', { method: method });
-  }
-  $('copy-btn').addEventListener('click', function () {
-    var link = winLink('copy');
-    $('share-link').value = link;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(link).then(function () { copied('clipboard'); }, copyByHand);
-    } else {
-      copyByHand();
-    }
-  });
-  $('share-link').addEventListener('focus', function () { this.select(); });
-
-  if (navigator.share) {
-    $('share-btn').hidden = false;
-    $('share-btn').addEventListener('click', function () {
-      var t = TEXT[lang];
+  // ---- Phones: send the PC link to yourself (share sheet, else WhatsApp) ----
+  $('send-btn').addEventListener('click', function () {
+    var t = TEXT[lang];
+    if (navigator.share) {
       navigator.share({ title: t.title, text: t.shareText, url: winLink('share') }).then(function () {
-        say('share-msg', t.shared, true);
+        $('send-msg').textContent = t.sent;
         track('download_link_shared', { method: 'web_share' });
       }, function (err) {
         if (err && err.name === 'AbortError') return; // closed without sharing: not counted
-        say('share-msg', t.shareFail, false);
+        shareByWhatsApp();
       });
-    });
-  }
-  // WhatsApp opens with the link written in; we cannot know it was sent.
-  $('wa-share').addEventListener('click', function () { track('download_link_shared', { method: 'whatsapp' }); });
-
-  // Email: opens the visitor's own email app (mailto). There is no server: the address is never sent anywhere.
-  $('email-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var t = TEXT[lang];
-    var input = $('email');
-    var to = input.value.trim();
-    if (to && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
-      input.setAttribute('aria-invalid', 'true');
-      say('email-msg', t.emailBad, false);
-      input.focus();
-      return;
+    } else {
+      shareByWhatsApp();
     }
-    input.removeAttribute('aria-invalid');
-    var body = t.mailBody
-      .replace('{win}', winLink('email'))
-      .replace('{play}', playUrl())
-      .replace('{page}', withCampaign(pageUrl() + '?lang=' + lang, 'email'));
-    say('email-msg', t.emailOpened, true);
-    // We only know the email app was opened, never that the email was sent. The address
-    // itself is never given to tracking.
-    track('download_email_app_opened', { method: 'mailto' });
-    location.href = 'mailto:' + encodeURIComponent(to).replace('%40', '@') +
-      '?subject=' + encodeURIComponent(t.mailSubject) +
-      '&body=' + encodeURIComponent(body);
   });
+  // WhatsApp opens with the link written in; we cannot know it was sent.
+  function shareByWhatsApp() {
+    track('download_link_shared', { method: 'whatsapp' });
+    window.open('https://wa.me/?text=' + encodeURIComponent(TEXT[lang].shareText + '\n' + winLink('share')), '_blank', 'noopener');
+  }
 
-  // ---- Steps and tutorials ----
+  // ---- Videos ----
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
-  function icon(id, filled) {
+  function icon(id) {
     var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    s.setAttribute('class', 'ic' + (filled ? ' f' : '')); s.setAttribute('aria-hidden', 'true');
+    s.setAttribute('class', 'ic f'); s.setAttribute('aria-hidden', 'true');
     var u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#' + id); s.appendChild(u);
     return s;
   }
   function mmss(sec) { return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
-  function videoUrl(i) { return 'https://www.youtube.com/watch?v=' + VIDEOS[i][0] + '&list=' + PLAYLIST_ID + '&index=' + (i + 1); }
+  function videoUrl(i) { return 'https://www.youtube.com/watch?v=' + VIDEOS[i][0] + '&list=' + PLAYLIST_ID + '&index=' + VIDEOS[i][6]; }
   function title(i) { return VIDEOS[i][{ ar: 1, fr: 2, en: 3 }[lang]]; }
-  function videoLink(a, i) { a.href = videoUrl(i); a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('data-v', i); return a; }
-  // big = the sharper 1280x720 picture (start-here cards), else the small 320x180 one.
-  function thumb(i, big) {
-    var t = el('span', 'thumb');
-    var img = el('img'); img.src = 'https://i.ytimg.com/vi/' + VIDEOS[i][0] + (big ? '/hq720.jpg' : '/mqdefault.jpg');
-    img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.width = 9; img.height = 16;
-    t.appendChild(img);
-    var pl = el('span', 'pl'), c = el('span'); c.appendChild(icon('i-play', true)); pl.appendChild(c); t.appendChild(pl);
-    t.appendChild(el('span', 'dur', mmss(VIDEOS[i][4])));
-    return t;
-  }
-
-  function renderSteps() {
-    var t = TEXT[lang], list = $('steps');
-    list.textContent = '';
-    STEPS.forEach(function (s) {
-      var li = el('li', 'step');
-      var n = el('span', 'step-n'); n.appendChild(icon(s[0])); li.appendChild(n);
-      var box = el('div'); box.appendChild(el('h3', null, t[s[1]]));
-      var a = videoLink(el('a'), s[2]);
-      a.appendChild(icon('i-play', true)); a.appendChild(el('span', null, t.watch + ' · '));
-      var d = el('bdi', null, mmss(VIDEOS[s[2]][4])); d.dir = 'ltr'; a.appendChild(d);
-      box.appendChild(a); li.appendChild(box); list.appendChild(li);
-    });
-  }
 
   function renderVideos() {
-    var t = TEXT[lang];
-    var feat = $('featured'); feat.textContent = '';
-    FEATURED.forEach(function (i) {
-      var a = videoLink(el('a', 'vcard'), i);
-      a.appendChild(thumb(i, true));
-      var tx = el('span', 'vtx');
-      tx.appendChild(el('span', 'vn', t.episode + ' ' + (i + 1)));
-      tx.appendChild(el('span', 'vt', title(i)));
-      a.appendChild(tx); feat.appendChild(a);
-    });
-    var cats = $('cats');
-    var open = {}; cats.querySelectorAll('details').forEach(function (d, k) { if (d.open) open[k] = true; });
-    cats.textContent = '';
-    CATS.forEach(function (c, k) {
-      var d = el('details', 'cat'); if (open[k]) d.open = true;
-      var s = el('summary');
-      var ci = el('span', 'cic'); ci.appendChild(icon(c[1])); s.appendChild(ci);
-      s.appendChild(el('span', 'ct', t[c[0]]));
-      s.appendChild(el('span', 'cn ltr', String(c[2].length)));
-      var ch = icon('i-chev'); ch.setAttribute('class', 'ic chev'); s.appendChild(ch);
-      d.appendChild(s);
-      var ol = el('ol');
-      c[2].forEach(function (i) {
-        var li = el('li');
-        var a = videoLink(el('a', 'row'), i);
-        a.appendChild(thumb(i));
-        a.appendChild(el('span', 'rt', title(i)));
-        var rd = el('span', 'rd'); rd.appendChild(icon('i-play', true)); rd.appendChild(el('span', null, mmss(VIDEOS[i][4])));
-        a.appendChild(rd);
-        li.appendChild(a); ol.appendChild(li);
-      });
-      d.appendChild(ol); cats.appendChild(d);
+    var box = $('vids'); box.textContent = '';
+    VIDEOS.forEach(function (v, i) {
+      var a = el('a', 'vcard');
+      a.href = videoUrl(i); a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('data-v', i);
+      var t = el('span', 'thumb');
+      var img = el('img'); img.src = 'https://i.ytimg.com/vi/' + v[0] + '/hq720.jpg';
+      img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.width = 9; img.height = 16;
+      t.appendChild(img);
+      var pl = el('span', 'pl'), c = el('span'); c.appendChild(icon('i-play')); pl.appendChild(c); t.appendChild(pl);
+      t.appendChild(el('span', 'dur', mmss(v[4])));
+      a.appendChild(t);
+      a.appendChild(el('span', 'vt', title(i)));
+      box.appendChild(a);
     });
   }
 
   // Video player: the YouTube player loads only after a click (youtube-nocookie).
-  // Ctrl/middle click, or a browser without <dialog>, opens the video on YouTube as before.
+  // Ctrl/middle click, or a browser without <dialog>, opens the video on YouTube.
   var player = $('player');
   var canDialog = typeof player.showModal === 'function';
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[data-v]');
     if (!a) return;
     var i = +a.getAttribute('data-v');
-    track('tutorial_clicked', { tutorial_id: VIDEOS[i][0], tutorial_category: VIDEOS[i][5], tutorial_position: i + 1 });
+    track('tutorial_clicked', { tutorial_id: VIDEOS[i][0], tutorial_category: VIDEOS[i][5], tutorial_position: VIDEOS[i][6] });
     if (!canDialog || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
     e.preventDefault();
     $('player-title').textContent = title(i);
@@ -1076,36 +621,9 @@
   });
 
   // ---- WhatsApp support ----
-  document.querySelectorAll('.js-wa').forEach(function (a) {
-    a.addEventListener('click', function () {
-      track('whatsapp_support_clicked', { link_type: 'whatsapp', method: a.getAttribute('data-place') });
-    });
+  $('wa-btn').addEventListener('click', function () {
+    track('whatsapp_support_clicked', { link_type: 'whatsapp', method: 'section' });
   });
-
-  // Floating WhatsApp (phones, and screens of 1320px and more where it sits beside the content;
-  // CSS hides it in between). It shows after the download cards scrolled away and never near the
-  // support box or while the consent banner is open. On phones it also hides while scrolling down.
-  if ('IntersectionObserver' in window) {
-    var past = false, nearSupport = false, goingDown = false, lastY = window.scrollY, fl = $('wa-float');
-    var upd = function () {
-      var y = window.scrollY;
-      if (Math.abs(y - lastY) > 6) { goingDown = y > lastY; lastY = y; }
-      var banner = document.querySelector('.dk-consent');
-      var phone = window.innerWidth < 768;
-      var on = past && !(phone && goingDown) && !nearSupport && !(banner && banner.offsetParent !== null);
-      fl.classList.toggle('on', on); fl.tabIndex = on ? 0 : -1;
-      $('footer').classList.toggle('room', on);
-    };
-    new IntersectionObserver(function (es) {
-      es.forEach(function (x) { past = !x.isIntersecting && x.boundingClientRect.top < 0; }); upd();
-    }).observe($('download'));
-    new IntersectionObserver(function (es) {
-      es.forEach(function (x) { nearSupport = x.isIntersecting; }); upd();
-    }).observe($('support'));
-    window.addEventListener('scroll', upd, { passive: true });
-  }
-  var topBar = $('top');
-  window.addEventListener('scroll', function () { topBar.classList.toggle('scrolled', window.scrollY > 4); }, { passive: true });
 
   setLang(pickLang());
 
