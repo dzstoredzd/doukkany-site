@@ -228,7 +228,15 @@
     license_selected: 1,
     quick_course_viewed: 1,
     quick_course_skipped: 1,
-    purchase_requested: 1
+    purchase_requested: 1,
+    // Funnel v2 (2026-11-27, owner brief section 21). The first names above stay: the GTM
+    // triggers use them (start/app.js sends both while the container is not updated).
+    funnel_viewed: 1, trial_journey_selected: 1, purchase_journey_selected: 1,
+    direct_download_selected: 1, challenges_selected: 1, challenges_skipped: 1, step_viewed: 1,
+    step_completed: 1, step_back: 1, recommendation_viewed: 1, offer_viewed: 1, faq_opened: 1,
+    video_played: 1, video_completed: 1, download_clicked: 1, checkout_started: 1,
+    payment_method_selected: 1, checkout_validation_failed: 1, order_submitted: 1,
+    order_submission_failed: 1, whatsapp_clicked: 1, calculator_used: 1
   };
   var PARAMS = [
     'event_id', 'platform', 'page_language', 'tutorial_id', 'tutorial_category',
@@ -237,7 +245,9 @@
     'ad_campaign', 'ad_content', 'ad_term',
     // /start/ funnel. `activity` and `pain` are fixed ids (never the visitor's "other" text).
     'funnel_step', 'step_number', 'intention', 'activity', 'pain', 'selected',
-    'pain_count', 'device_count', 'license_type'
+    'pain_count', 'device_count', 'license_type',
+    // Funnel v2: fixed values only (never a name, a phone or an address).
+    'funnel_version', 'journey', 'pay', 'purpose', 'faq_id', 'video_kind', 'field', 'field_count'
   ];
 
   function newEventId() {

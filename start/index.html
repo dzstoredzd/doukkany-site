@@ -97,25 +97,6 @@
   .choice .cd { color: var(--muted); font-size: .95rem; font-weight: 600; }
   .choice .tag { align-self: flex-start; margin-top: 4px; font-size: .78rem; font-weight: 700; color: var(--green); background: var(--mint); padding: 1px 8px; border-radius: 999px; }
   .choice .go { flex: none; color: var(--green); }
-  /* Welcome: the two big choices, side by side at the bottom. A picture area on top, the
-     words on a white bar below. "Try" is the main one: green, with a green ring. */
-  .picks { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .pick { display: flex; flex-direction: column; padding: 0; overflow: hidden; text-align: start; background: #fff; border: 2px solid var(--line); border-radius: 20px; box-shadow: var(--shadow); cursor: pointer; transition: transform .1s, border-color .15s; }
-  .pick:hover { border-color: #9FD3B8; }
-  .pick:active { transform: scale(.98); }
-  /* width/align-self: older Chrome (124 on Android) does not stretch a button's inner parts. */
-  .pick .pv, .pick .pl { align-self: stretch; width: 100%; }
-  .pick .pv { flex: 1; min-height: 92px; display: grid; place-items: center; background: var(--mint); color: var(--green); }
-  .pick .pv .ic { width: 46px; height: 46px; stroke-width: 1.8; }
-  .pick .pl { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 56px; padding: 10px 14px; background: #fff; }
-  .pick .pl b { font-size: 1.05rem; line-height: 1.3; }
-  .pick .pl .ic { flex: none; color: var(--green); }
-  .pick.primary { border-color: var(--green); box-shadow: 0 0 0 3px rgba(17,122,75,.18), 0 10px 22px rgba(17,122,75,.18); }
-  .pick.primary .pv { background: linear-gradient(150deg, #0B5C38 0%, #117A4B 100%); color: #fff; }
-  /* Welcome middle: pills and the prices link, centred in the free space. */
-  .mid { text-align: center; }
-  .mid .facts { justify-content: center; }
-
   /* Shop type tiles */
   .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
   .tile { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 14px 12px; min-height: 104px; text-align: start; background: var(--card); border: 2px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow); cursor: pointer; font-weight: 700; line-height: 1.35; transition: border-color .15s, background .15s; }
@@ -283,6 +264,7 @@
   .sum .v { font-weight: 700; text-align: end; }
   .sum .edit { font-size: .9rem; min-height: 40px; }
   .sum .total .v { font-size: 1.35rem; color: var(--deep); }
+  .sum .total small.once { display: block; font-size: .82rem; color: var(--green); font-weight: 700; }
   .card { background: #fff; border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow); padding: 18px 16px; margin-top: 16px; }
   .card h2 { font-size: 1.2rem; font-weight: 700; line-height: 1.35; display: flex; align-items: center; gap: 8px; }
   .card h2 .ic { color: var(--green); }
@@ -310,10 +292,109 @@
   .sent { margin-top: 14px; }
 
 
+  /* ---- Funnel v2 (2026-11-27, owner brief "Interactive Sales Funnel") ---- */
+  .btn.small { min-height: 44px; padding: 6px 16px; font-size: .95rem; }
+  .btn.soft.block { box-shadow: none; }
+  /* Welcome: real app screens (PC + phone), the benefits, three light links */
+  .mock { position: relative; width: min(100%, 300px); aspect-ratio: 300 / 168; margin: 10px auto 0; }
+  .mock .lap { position: absolute; top: 0; inset-inline-start: 0; width: 86%; padding: 5px 5px 0; background: #1D2421; border-radius: 10px 10px 3px 3px; box-shadow: 0 10px 24px rgba(20,45,32,.18); }
+  .mock .lap::after { content: ""; display: block; height: 7px; margin: 0 -12px; background: #C9D2CD; border-radius: 0 0 8px 8px; }
+  .mock .lap-scr { display: block; overflow: hidden; border-radius: 4px 4px 0 0; background: #fff; }
+  .mock .lap img { display: block; width: 100%; height: auto; aspect-ratio: 760 / 475; }
+  .mock .mphn { position: absolute; bottom: 0; inset-inline-end: 0; width: 25%; padding: 3px; background: #121816; border-radius: 12px; box-shadow: 0 10px 20px rgba(20,45,32,.25); }
+  .mock .mphn img { display: block; width: 100%; height: auto; aspect-ratio: 360 / 780; border-radius: 9px; object-fit: cover; object-position: top; }
+  .benefits { justify-content: center; gap: 6px; margin-top: 12px; }
+  .benefits li { font-size: .86rem; padding: 3px 10px; }
+  .quick { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 14px; margin-top: 6px; }
+  .quick .link { font-size: .92rem; min-height: 40px; }
+  .quick .link .ic { width: 18px; height: 18px; }
+  .pitch { display: flex; gap: 8px; align-items: flex-start; text-align: start; background: #fff; border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; margin-top: 10px; font-weight: 600; font-size: .95rem; }
+  .resume { justify-content: center; }
+  /* Device cards: the price when buying */
+  .choice .cp { font-weight: 700; color: var(--deep); font-size: .95rem; }
+  .choice .cp s { color: var(--muted); font-weight: 600; margin-inline-end: 4px; }
+  .dots { list-style: disc; padding-inline-start: 20px; margin-top: 6px; display: grid; gap: 4px; }
+  .tip .ic { width: 18px; height: 18px; }
+  .tip.block { background: #fff; border: 1px solid var(--line); border-radius: var(--r-sm); padding: 6px 12px 10px; }
+  /* Ready screen */
+  .answers { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: .9rem; font-weight: 600; color: var(--muted); }
+  .answers span { background: var(--mint); color: var(--deep); border-radius: 999px; padding: 1px 10px; }
+  .answers .link { min-height: 36px; font-size: .9rem; }
+  .dl-card h2 { margin-bottom: 4px; }
+  .dl-h { font-size: 1.02rem; margin-top: 14px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .advice p { margin-top: 6px; font-weight: 600; }
+  .advice .incl b { font-weight: 700; }
+  .incl .why-tag { display: inline-block; margin-inline-start: 4px; font-size: .78rem; font-weight: 700; color: var(--deep); background: var(--mint); padding: 0 8px; border-radius: 999px; }
+  .offer-mini .om { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 8px; }
+  .offer-mini .om b { font-size: 1.08rem; }
+  .offer-mini .pp { white-space: nowrap; font-weight: 700; font-size: 1.2rem; color: var(--deep); text-align: end; }
+  .offer-mini .pp small { display: block; font-size: .78rem; color: var(--muted); font-weight: 600; }
+  .card .row, p.row { display: flex; flex-wrap: wrap; gap: 0 16px; margin-top: 6px; }
+  h3.mini { font-size: .95rem; margin-top: 12px; color: var(--muted); }
+  details.more > summary { color: var(--green); font-weight: 700; }
+  .lesson .pcv { display: inline-flex; align-items: center; gap: 2px; }
+  .lesson .pcv .ic { width: 14px; height: 14px; }
+  /* Prices */
+  .trialbar { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; font-weight: 700; color: var(--deep); background: var(--mint); border-radius: 999px; padding: 4px 14px; }
+  .plan-cards { display: grid; gap: 14px; margin-top: 16px; }
+  .plan-card { position: relative; background: #fff; border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px; }
+  .plan-card.rec { border: 2px solid var(--green); }
+  .plan-card .ribbon { position: absolute; top: -12px; inset-inline-start: 14px; background: var(--green); color: #fff; font-weight: 700; font-size: .8rem; padding: 2px 10px; border-radius: 999px; }
+  .plan-card h2 { font-size: 1.15rem; }
+  .plan-card .price { margin-top: 4px; }
+  .plan-card .amt { font-size: 1.9rem; }
+  .plan-card .btn { margin-top: 12px; }
+  .plan-card .incl li { font-size: .93rem; }
+  /* Trust, FAQ, calculator */
+  .trust .incl li { font-weight: 600; }
+  .quotes blockquote { margin: 10px 0 0; padding: 10px 12px; border-inline-start: 3px solid var(--green); background: var(--mint-2); border-radius: 8px; }
+  .faq-i { border-top: 1px solid var(--line); }
+  .faq-i:first-of-type { margin-top: 8px; }
+  .faq-i summary { cursor: pointer; font-weight: 700; min-height: 48px; display: flex; align-items: center; padding: 6px 0; }
+  .faq-i p { padding: 0 0 12px; color: var(--ink); }
+  .faq details.more { border-top: 1px solid var(--line); }
+  .faq details.more > summary { min-height: 48px; display: flex; align-items: center; cursor: pointer; }
+  .calc summary { cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 8px; min-height: 40px; font-size: 1.05rem; }
+  .calc-in { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+  .calc-in .field input { min-height: 48px; width: 100%; }
+  .calc-out { margin: 10px 0; font-weight: 600; }
+  .calc-out:empty { display: none; }
+  .calc-out b { color: var(--deep); font-size: 1.1rem; }
+  /* Checkout */
+  .ref { margin-top: 8px; font-weight: 700; font-size: 1.05rem; }
+  .ref bdi { background: var(--mint); padding: 2px 10px; border-radius: 8px; letter-spacing: .04em; }
+  .err { color: #A33A1C; font-weight: 600; font-size: .92rem; margin-top: 4px; }
+  .card.invalid { border: 2px solid #D9573A; }
+  .field.invalid input, .field.invalid select, [aria-invalid="true"] { border-color: #D9573A !important; background: #FFF6F3; }
+  .msg.bad { font-weight: 700; }
+  .dock .msg { text-align: center; }
+  .winhelp .keys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0; direction: ltr; justify-content: center; }
+  .winhelp kbd { font: inherit; font-weight: 700; font-size: .9rem; background: #fff; border: 1px solid #B9C6BF; border-bottom-width: 3px; border-radius: 8px; padding: 2px 10px; }
+  .winhelp kbd.typed { font-family: Consolas, monospace; }
+  .winhelp .arrow { color: var(--muted); }
+  .winhelp .msinfo { direction: ltr; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 8px; font-size: .85rem; margin: 6px 0; }
+  .winhelp .msinfo div { display: flex; justify-content: space-between; gap: 10px; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  .winhelp .msinfo div:last-child { border-bottom: 0; }
+  .winhelp .msinfo span { color: var(--muted); }
+  .winhelp .msinfo b { color: var(--deep); }
+  .winhelp p + p, .winhelp b { margin-top: 6px; display: block; }
+  .seg .choice .ci { width: 44px; height: 44px; }
+  @media (min-width: 900px) {
+    .plan-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mock { width: 440px; }
+  }
+  @media (max-height: 700px) and (max-width: 599px) {
+    .mock { width: 240px; }
+  }
+  @media (max-height: 600px) and (max-width: 599px) {
+    .mock { width: 190px; margin-top: 6px; }
+    html.app .step[data-step="welcome"] h1 { font-size: 1.2rem; }
+    html.app .step[data-step="welcome"] .lead { font-size: .92rem; }
+    .benefits { margin-top: 8px; }
+  }
+
   @media (min-width: 600px) {
     :root { --pad: 24px; }
-    .pick .pv { min-height: 130px; }
-    .pick .pv .ic { width: 56px; height: 56px; }
     .choices.four { grid-template-columns: 1fr 1fr; }
     .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .tiles.list { grid-template-columns: 1fr; }
@@ -360,26 +441,35 @@
   html.app .step > .head, html.app .step > .scroll, html.app .step > .dock { padding-inline: max(var(--pad), calc((100% - 760px) / 2 + var(--pad))); }
   html.app .step > .head { flex: none; padding-top: 8px; padding-bottom: 10px; position: relative; z-index: 2; transition: box-shadow .2s; }
   html.app .step.scrolled > .head { box-shadow: 0 8px 12px -10px rgba(23,33,43,.35); }
-  html.app .step > .scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: 16px; }
+  /* position: relative = the list holds its own absolute children (the order form's hidden
+     robot field), else they stretch the page and it scrolls. */
+  html.app .step > .scroll { position: relative; flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: 16px; }
   html.app .step > .scroll > :first-child { margin-top: 6px; }
   html.app .step > .scroll > .offer:first-child { margin-top: 20px; } /* room for its "best for you" label */
   /* Soft fade at the bottom of the list: there is more below. */
   html.app .step > .scroll::after { content: ""; position: sticky; bottom: -16px; display: block; height: 28px; margin-top: -12px; background: linear-gradient(rgba(245,248,246,0), var(--bg)); pointer-events: none; }
   html.app .step > .dock { flex: none; position: relative; bottom: auto; z-index: 3; margin: 0; padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); backdrop-filter: none; }
-  /* Welcome: title in the middle-top, pills centred in the free space, choices at the bottom. */
-  html.app .step[data-step="welcome"] > .head { text-align: center; padding-top: 18px; }
-  html.app .step[data-step="welcome"] > .scroll { display: flex; flex-direction: column; }
-  html.app .step[data-step="welcome"] > .scroll > .mid { margin-block: auto; }
+  /* Welcome (v2): headline, the app on a PC and a phone, benefits and links, then the two
+     buttons fixed at the bottom so the main one is always in reach (owner brief §3). */
+  html.app .step[data-step="welcome"] > .head { text-align: center; padding-top: 12px; padding-bottom: 0; }
+  html.app .step[data-step="welcome"] > .scroll { text-align: center; }
   html.app .step[data-step="welcome"] > .scroll::after { display: none; }
+  html.app.at-welcome .step[data-step="welcome"] > .dock { position: sticky; bottom: var(--consent-h); }
+  /* Wide screens: no empty band between the content and the buttons; the whole group sits
+     in the middle of the screen. */
+  @media (min-width: 600px) {
+    html.app .step[data-step="welcome"] { justify-content: center; }
+    html.app .step[data-step="welcome"] > .scroll { flex: none; }
+    html.app .step[data-step="welcome"] > .dock { border-top: 0; padding-top: 18px; }
+    html.app .step[data-step="welcome"] > .dock .btn { width: 380px; min-width: 0; }
+  }
   /* The first page stays a normal page: no lock, so slide-down-to-refresh works. Its cards
      still sit at the bottom; on a very short screen the whole page scrolls instead. */
   html.app.at-welcome, html.app.at-welcome body { overflow: visible; overscroll-behavior: auto; }
   html.app.at-welcome body { height: auto; min-height: var(--app-h, 100vh); }
   html.app.at-welcome .step[data-step="welcome"] > .scroll { overflow: visible; min-height: auto; overscroll-behavior: auto; }
-  html.app .step > .dock.picks { display: grid; border-top: 0; padding-top: 4px; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
   @media (min-width: 600px) {
     html.app .step > .dock { align-items: center; }
-    html.app .step > .dock.picks { padding-inline: max(var(--pad), calc((100% - 560px) / 2)); }
   }
   @media (max-width: 599px) {
     html.app .top-in { min-height: 52px; }
@@ -489,12 +579,12 @@
   <div class="frame" id="player-frame"></div>
 </dialog>
 
-<script src="../js/offer.js?v=3"></script>
+<script src="../js/offer.js?v=4"></script>
 <script src="../js/lessons.js?v=1"></script>
-<script src="funnel.js?v=8"></script>
-<script src="counter.js?v=1"></script>
-<script src="../js/tracking.js?v=2"></script>
-<script src="texts.js?v=23"></script>
-<script src="app.js?v=34"></script>
+<script src="funnel.js?v=10"></script>
+<script src="counter.js?v=2"></script>
+<script src="../js/tracking.js?v=3"></script>
+<script src="texts.js?v=27"></script>
+<script src="app.js?v=38"></script>
 </body>
 </html>

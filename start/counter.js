@@ -17,7 +17,11 @@
   var KEYS = ['funnel_step', 'step_number', 'intention', 'activity', 'pain', 'selected', 'pain_count',
     'device_count', 'license_type', 'platform', 'method', 'link_type', 'download_trigger', 'app_version',
     'tutorial_id', 'tutorial_category', 'tutorial_position', 'page_language', 'from_language',
-    'to_language', 'device'];
+    'to_language', 'device',
+    // Funnel v2 (2026-11-27): version and journey, payment choice, WhatsApp purpose, FAQ and
+    // video ids, the checkout field that blocked, the Windows answer, the referring site's host.
+    'funnel_version', 'journey', 'pay', 'purpose', 'faq_id', 'video_kind', 'field', 'field_count',
+    'windows', 'referrer'];
   var AD = { utm_source: 'ad_source', utm_medium: 'ad_medium', utm_campaign: 'ad_campaign', utm_content: 'ad_content' };
 
   // Same rule as the server: short, no markup, nothing like an email or a phone number.

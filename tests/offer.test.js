@@ -57,14 +57,18 @@ test('an offer always covers the devices asked for', () => {
   }
 });
 
-test('buying a PC offer: 1 000 DA off when paid first by BaridiMob / CCP, normal price at delivery', () => {
-  assert.equal(OFFER.prepaidDiscount, 1000);
-  assert.equal(OFFER.orderTotal('pc', 'prepaid'), 11000);
-  assert.equal(OFFER.orderTotal('pc', 'cod'), 12000);
-  assert.equal(OFFER.orderTotal('shop', 'prepaid'), 13000);
-  assert.equal(OFFER.orderTotal('shop', 'cod'), 14000);
-  assert.equal(OFFER.orderTotal('shop', ''), 14000, 'no payment chosen yet: normal price');
-  assert.equal(OFFER.orderTotal('phone', 'prepaid'), 9000, 'the phone offer has no USB key and no discount');
+test('buying a PC offer: + 1 500 DA home delivery of the USB key at delivery, no discount (owner 2026-11-27)', () => {
+  assert.equal(OFFER.deliveryFee, 1500);
+  assert.equal(OFFER.prepaidDiscount, undefined, 'no discount any more');
+  assert.equal(OFFER.orderTotal('pc', 'prepaid'), 12000, 'paying first: the code on WhatsApp, nothing sent home');
+  assert.equal(OFFER.orderTotal('pc', 'cod'), 13500);
+  assert.equal(OFFER.orderTotal('shop', 'prepaid'), 14000);
+  assert.equal(OFFER.orderTotal('shop', 'cod'), 15500);
+  assert.equal(OFFER.orderTotal('shop', ''), 14000, 'no payment chosen yet: the licence price');
+  assert.equal(OFFER.orderTotal('phone', 'prepaid'), 9000, 'the phone offer has no USB key');
+  assert.equal(OFFER.orderTotal('phone', 'cod'), 9000);
+  assert.equal(OFFER.deliveryFor('pc', 'cod'), 1500);
+  assert.equal(OFFER.deliveryFor('pc', 'prepaid'), 0);
   assert.equal(OFFER.orderTotal('nope', 'cod'), 0);
 });
 

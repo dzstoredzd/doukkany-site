@@ -7,6 +7,7 @@
  *   - One PC:      one Windows PC + the phone app free, linked to it.         12 000
  *   - Shop pack:   main PC + 2nd PC + the phone app free, all linked.         14 000
  * More devices than that: the shop talks to us on WhatsApp.
+ * PC offers paid at delivery: + 1 500 delivery of the USB key (owner, 2026-11-27). No discount.
  *
  * Licence server note: the `pc` code kind gave 0 phones (DECISIONS 2026-11-23). "One PC + free
  * phone" needs the server to give it 1 phone place; see doukkany/DOUKKANY-MARKETING/SALES_FUNNEL.md.
@@ -32,17 +33,23 @@
     plans: PLANS,
     // Order shown on the "all prices" list.
     listOrder: ['phone', 'pc', 'shop'],
-    // PC offers come on a Doukkany USB key sent home (owner, 2026-11-26). Paying first by
-    // BaridiMob / CCP takes this much off; paying at delivery is the normal price.
-    prepaidDiscount: 1000,
+    // PC offers paid at delivery come on a Doukkany USB key sent home. Home delivery of the key
+    // costs this much on top of the licence (owner, 2026-11-27: "التوصيل للمنزل مع الفلاشة
+    // 1500 دج", "لا تستعمل التخفيض": no discount any more for paying first). Paying first by
+    // BaridiMob / CCP = the code on WhatsApp, no key, no delivery: the licence price only.
+    deliveryFee: 1500,
     usbPlans: ['pc', 'shop'],
 
     // What the shop pays for an offer: `pay` = 'prepaid' (BaridiMob / CCP first) or 'cod'
-    // (at delivery). The discount is only for the USB offers.
+    // (at delivery, with the USB key and its delivery).
     orderTotal: function (type, pay) {
       var p = PLANS[type];
       if (!p) return 0;
-      return p.price - (pay === 'prepaid' && OFFER.usbPlans.indexOf(type) !== -1 ? OFFER.prepaidDiscount : 0);
+      return p.price + OFFER.deliveryFor(type, pay);
+    },
+    // The delivery fee in an order (0 when nothing is sent home).
+    deliveryFor: function (type, pay) {
+      return pay === 'cod' && OFFER.usbPlans.indexOf(type) !== -1 ? OFFER.deliveryFee : 0;
     },
 
     /* The offer for the devices a shop wants (all on the same products and sales).

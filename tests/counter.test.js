@@ -75,14 +75,14 @@ test('every detail the counter sends is one the server accepts (same list both s
   assert.ok(sentNames.size > 15);
   for (const name of sentNames) assert.ok(server.includes(`'${name}'`), 'server does not accept event ' + name);
   // Values the page builds from its own lists: device choices (device_selected `platform`)
-  // and WhatsApp buttons (`method`). The server drops an unknown value, so a renamed choice
+  // and WhatsApp buttons (`purpose`). The server drops an unknown value, so a renamed choice
   // would silently disappear from the Admin page: catch it here.
   const listOf = key => (server.match(new RegExp(key + ": oneOf\\(\\[([^\\]]*)\\]")) || [, ''])[1];
   const F = require('../start/funnel.js');
   const modes = (fs.readFileSync(path.join(__dirname, '../start/funnel.js'), 'utf8').match(/var MODES = \[([^\]]*)\]/) || [, ''])[1];
   for (const m of modes.match(/'[a-z_]+'/g) || []) assert.ok(listOf('platform').includes(m), 'server platform list misses ' + m);
   for (const m of new Set([...app.matchAll(/data-wa="([a-z_]+)"/g)].map(x => x[1]))) {
-    assert.ok(listOf('method').includes(`'${m}'`), 'server method list misses ' + m);
+    assert.ok(listOf('purpose').includes(`'${m}'`), 'server purpose list misses ' + m);
   }
   for (const s of F.STEPS) assert.ok(listOf('funnel_step').includes(`'${s}'`), 'server funnel_step list misses ' + s);
 });
