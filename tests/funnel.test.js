@@ -32,6 +32,47 @@ test('no feature that is untested or hidden in the app is offered', () => {
   }
 });
 
+test('pains: every answer points to real features and has words in every language', () => {
+  const T = loadTexts();
+  assert.ok(F.PAINS.length >= 5);
+  for (const p of F.PAINS) {
+    for (const f of p.features) assert.ok(f in F.FEATURE_IMG, p.id + ' ' + f);
+    for (const lang of ['ar', 'fr', 'en']) assert.ok(T[lang].pain[p.id], lang + ' pain ' + p.id);
+  }
+  for (const lang of ['ar', 'fr', 'en']) assert.deepEqual(Object.keys(T[lang].pain).sort(), F.PAINS.map((p) => p.id).sort());
+});
+
+test('pains: only the ones that fit the shop type are offered', () => {
+  const ids = (a) => F.painsFor(a).map((p) => p.id);
+  assert.ok(ids('grocery').includes('expiry'));
+  assert.ok(!ids('clothes').includes('expiry'), 'no expiry dates in a clothes shop');
+  assert.ok(!ids('grocery').includes('repairs'));
+  assert.ok(ids('phones').includes('repairs'));
+  for (const a of F.ACTIVITIES) {
+    for (const general of ['credit', 'profit', 'stockout', 'slow', 'cash']) assert.ok(ids(a.id).includes(general), a.id + ' ' + general);
+  }
+});
+
+test('features: the fixes for the chosen pains come first, at most 6, each with its reason', () => {
+  const s = { ...F.cleanState(null), activity: 'grocery' };
+  assert.deepEqual(F.featuresFor(s), { list: F.activity('grocery').features, why: {} }, 'no pain: the shop type list as before');
+  const r = F.featuresFor({ ...s, pains: ['cash', 'credit'] });
+  assert.deepEqual(r.list.slice(0, 2), ['cash', 'credit']);
+  assert.deepEqual(r.why, { cash: 'cash', credit: 'credit' });
+  assert.ok(r.list.length <= 6);
+  assert.equal(new Set(r.list).size, r.list.length);
+  // A pain uses the tool the shop type already lists: clothes has no low-stock alert, so plain stock.
+  assert.equal(F.featuresFor({ ...s, activity: 'clothes', pains: ['stockout'] }).list[0], 'stock');
+  // Produce has no barcode: slow checkout is fixed by selling by weight.
+  assert.equal(F.featuresFor({ ...s, activity: 'produce', pains: ['slow'] }).list[0], 'weight');
+  // A pain that does not fit the shop type (left from an earlier shop type) is ignored.
+  assert.deepEqual(F.featuresFor({ ...s, activity: 'clothes', pains: ['expiry'] }).why, {});
+  for (const a of F.ACTIVITIES) {
+    const all = F.featuresFor({ ...s, activity: a.id, pains: F.PAINS.map((p) => p.id) });
+    assert.ok(all.list.length >= 4 && all.list.length <= 6, a.id);
+  }
+});
+
 test('feature screens exist for every language', () => {
   for (const img of new Set(Object.values(F.FEATURE_IMG).filter(Boolean))) {
     for (const lang of ['ar', 'fr', 'en']) {
@@ -100,6 +141,9 @@ test('saved answers are checked before use', () => {
   assert.ok(!/[<>]/.test(s.other));
   assert.ok(s.other.length <= 60);
   assert.deepEqual(s.watched, ['l487p3PcKrs']);
+  assert.deepEqual(F.cleanState({ v: 1, pains: ['credit', 'credit', 'nope', 5, 'cash'] }).pains, ['credit', 'cash']);
+  assert.deepEqual(F.cleanState({ v: 1, pains: 'credit' }).pains, []);
+  assert.deepEqual(F.cleanState({ v: 1, intent: 'trial', activity: 'grocery', mode: 'pc' }).pains, [], 'answers saved before this change still load');
   assert.deepEqual(F.cleanState({ v: 2, intent: 'trial' }).intent, null, 'unknown version is ignored');
   assert.equal(F.cleanState('{}').intent, null);
 });
@@ -109,8 +153,10 @@ test('steps cannot be skipped: missing answers send back to the right step', () 
   assert.equal(F.allowedStep(s, 'price', OFFER), 'activity');
   assert.equal(F.allowedStep(s, 'prices', OFFER), 'prices');
   assert.equal(F.allowedStep(s, 'nope', OFFER), 'welcome');
+  assert.equal(F.allowedStep(s, 'pain', OFFER), 'activity');
   const a = { ...s, activity: 'grocery' };
-  assert.equal(F.allowedStep(a, 'order', OFFER), 'devices');
+  assert.equal(F.allowedStep(a, 'pain', OFFER), 'pain');
+  assert.equal(F.allowedStep(a, 'order', OFFER), 'devices', 'the pain step can be skipped');
   assert.equal(F.allowedStep({ ...a, mode: 'both' }, 'order', OFFER), 'order');
   assert.equal(F.allowedStep({ ...a, mode: 'several', pcs: 0, phones: 3, shared: true }, 'price', OFFER), 'several');
   assert.equal(F.allowedStep({ ...a, mode: 'several', pcs: 0, phones: 3, shared: false }, 'price', OFFER), 'price');
@@ -122,4 +168,6 @@ test('back goes one step back', () => {
   assert.equal(F.previousStep({ ...s, mode: 'pc' }, 'features'), 'devices');
   assert.equal(F.previousStep(s, 'order'), 'course');
   assert.equal(F.previousStep(s, 'activity'), 'welcome');
+  assert.equal(F.previousStep(s, 'pain'), 'activity');
+  assert.equal(F.previousStep(s, 'devices'), 'pain');
 });

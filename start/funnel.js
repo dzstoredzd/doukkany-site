@@ -34,6 +34,20 @@
     repairs: null, services: 'cart', loyalty: 'cart', search: 'stock'
   };
 
+  // "What bothers you most?" answers. `features`: the tool that fixes it, best first; the first
+  // one the shop type already lists wins, else the first one here. `only`: shown only to shop
+  // types that list one of these features (expiry dates mean nothing in a clothes shop).
+  var PAINS = [
+    { id: 'credit',   icon: 'i-book',   features: ['credit'] },
+    { id: 'profit',   icon: 'i-chart',  features: ['profit'] },
+    { id: 'stockout', icon: 'i-box',    features: ['lowstock', 'stock'] },
+    { id: 'expiry',   icon: 'i-clock',  features: ['expiry'], only: true },
+    { id: 'slow',     icon: 'i-bolt',   features: ['barcode', 'search', 'weight'] },
+    { id: 'cash',     icon: 'i-cash',   features: ['cash'] },
+    { id: 'repairs',  icon: 'i-tool',   features: ['repairs'], only: true }
+  ];
+  var MAX_FEATURES = 6;
+
   var LESSON_FIRST_START = 0;  // "First start of Doukkany on PC"
   var LESSON_DEVICES = 14;     // "A second computer and a phone in the shop"
   var MODES = ['pc', 'phone', 'both', 'several'];
@@ -42,6 +56,41 @@
   function activity(id) {
     for (var i = 0; i < ACTIVITIES.length; i++) if (ACTIVITIES[i].id === id) return ACTIVITIES[i];
     return null;
+  }
+
+  function pain(id) {
+    for (var i = 0; i < PAINS.length; i++) if (PAINS[i].id === id) return PAINS[i];
+    return null;
+  }
+
+  // The answers that make sense for this shop type.
+  function painsFor(activityId) {
+    var a = activity(activityId) || activity('other');
+    return PAINS.filter(function (p) {
+      return !p.only || p.features.some(function (f) { return a.features.indexOf(f) !== -1; });
+    });
+  }
+
+  // The tool that fixes a pain in this shop type.
+  function painFeature(p, a) {
+    for (var i = 0; i < p.features.length; i++) if (a.features.indexOf(p.features[i]) !== -1) return p.features[i];
+    return p.features[0];
+  }
+
+  // Features to show: the ones that fix the visitor's pains first (in their order), then the
+  // shop type's own list. At most 6. `why[feature]` = the pain it answers.
+  function featuresFor(state) {
+    var a = activity(state.activity) || activity('other');
+    var list = [], why = {};
+    var allowed = painsFor(a.id);
+    (state.pains || []).forEach(function (id) {
+      var p = pain(id);
+      if (!p || allowed.indexOf(p) === -1) return;
+      var f = painFeature(p, a);
+      if (list.indexOf(f) === -1) { list.push(f); why[f] = id; }
+    });
+    a.features.forEach(function (f) { if (list.indexOf(f) === -1) list.push(f); });
+    return { list: list.slice(0, MAX_FEATURES), why: why };
   }
 
   // How many devices of each kind, and whether they share data, for a device choice.
@@ -81,11 +130,14 @@
 
   // The saved answers (localStorage), checked: anything unknown is dropped.
   function cleanState(raw) {
-    var s = { v: 1, intent: null, activity: null, other: '', mode: null, pcs: 2, phones: 1, shared: true, watched: [] };
+    var s = { v: 1, intent: null, activity: null, other: '', pains: [], mode: null, pcs: 2, phones: 1, shared: true, watched: [] };
     if (!raw || typeof raw !== 'object' || raw.v !== 1) return s;
     if (INTENTS.indexOf(raw.intent) !== -1) s.intent = raw.intent;
     if (activity(raw.activity)) s.activity = raw.activity;
     if (typeof raw.other === 'string') s.other = raw.other.replace(/[\u0000-\u001F<>]/g, ' ').trim().slice(0, 60);
+    if (Array.isArray(raw.pains)) {
+      raw.pains.forEach(function (id) { if (pain(id) && s.pains.indexOf(id) === -1) s.pains.push(id); });
+    }
     if (MODES.indexOf(raw.mode) !== -1) s.mode = raw.mode;
     if (raw.pcs != null) s.pcs = clampCount(raw.pcs);
     if (raw.phones != null) s.phones = clampCount(raw.phones);
@@ -97,8 +149,9 @@
   }
 
   // Steps in order. 'several' belongs to the devices step; 'trial' and 'order' are the end.
-  var PROGRESS = ['welcome', 'activity', 'devices', 'features', 'price', 'course', 'final'];
-  var STEPS = ['welcome', 'activity', 'devices', 'several', 'features', 'price', 'course', 'trial', 'order', 'prices'];
+  // 'pain' can be skipped, so later steps never wait for it.
+  var PROGRESS = ['welcome', 'activity', 'pain', 'devices', 'features', 'price', 'course', 'final'];
+  var STEPS = ['welcome', 'activity', 'pain', 'devices', 'several', 'features', 'price', 'course', 'trial', 'order', 'prices'];
 
   function progressIndex(step) {
     if (step === 'several') return PROGRESS.indexOf('devices');
@@ -111,7 +164,7 @@
     if (STEPS.indexOf(step) === -1) return 'welcome';
     if (step === 'welcome' || step === 'prices' || step === 'activity') return step;
     if (!state.activity) return 'activity';
-    if (step === 'devices') return step;
+    if (step === 'pain' || step === 'devices') return step;
     if (step === 'several') return step;
     if (!state.mode) return 'devices';
     if (state.mode === 'several') {
@@ -125,7 +178,8 @@
   function previousStep(state, step) {
     switch (step) {
       case 'activity': return 'welcome';
-      case 'devices': return 'activity';
+      case 'pain': return 'activity';
+      case 'devices': return 'pain';
       case 'several': return 'devices';
       case 'features': return state.mode === 'several' ? 'several' : 'devices';
       case 'price': return 'features';
@@ -136,8 +190,8 @@
   }
 
   var FUNNEL = {
-    ACTIVITIES: ACTIVITIES, FEATURE_IMG: FEATURE_IMG, PROGRESS: PROGRESS, STEPS: STEPS,
-    activity: activity, devices: devices, lessonsFor: lessonsFor, cleanState: cleanState,
+    ACTIVITIES: ACTIVITIES, FEATURE_IMG: FEATURE_IMG, PAINS: PAINS, PROGRESS: PROGRESS, STEPS: STEPS,
+    activity: activity, pain: pain, painsFor: painsFor, painFeature: painFeature, featuresFor: featuresFor, devices: devices, lessonsFor: lessonsFor, cleanState: cleanState,
     progressIndex: progressIndex, allowedStep: allowedStep, previousStep: previousStep
   };
   if (typeof module === 'object' && module.exports) module.exports = FUNNEL;

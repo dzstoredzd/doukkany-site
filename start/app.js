@@ -30,6 +30,7 @@
   var current = null;
   var depth = 0;          // our own history entries above the first one
   var selectedFeature = null;
+  var unsureOpen = false;   // devices screen: the "not sure yet" helper is open
 
   // ---------------------------------------------------------------------------------
   // Saved answers
@@ -190,8 +191,27 @@
         '<div class="field"><label for="other">' + esc(t.otherLabel) + '</label>' +
         '<input id="other" type="text" maxlength="60" autocomplete="off" placeholder="' + esc(t.otherPh) + '" value="' + esc(state.other) + '">' +
         '<small>' + esc(t.otherHint) + '</small></div>' +
-        '<div class="dock"><button type="button" class="btn block" data-act="go:devices">' + esc(t.next) + '</button></div>' : '';
+        '<div class="dock"><button type="button" class="btn block" data-act="go:pain">' + esc(t.next) + '</button></div>' : '';
       return '<h1>' + esc(t.aTitle) + '</h1><p class="q-sub">' + esc(t.aSub) + '</p><div class="tiles">' + tiles + '</div>' + other;
+    },
+
+    // "What bothers you most?": several answers or none. A chosen answer shows its fix at once.
+    pain: function () {
+      var a = F.activity(state.activity);
+      var shown = F.painsFor(state.activity);
+      var chosen = 0;
+      var tiles = shown.map(function (p) {
+        var on = state.pains.indexOf(p.id) !== -1;
+        if (on) chosen += 1;
+        return '<button type="button" class="tile pain" data-act="pain:' + p.id + '" aria-pressed="' + on + '">' +
+          '<span class="ci">' + ic(p.icon) + '</span><span>' + esc(t.pain[p.id]) + '</span>' +
+          (on ? '<span class="fix">' + ic('i-check') + esc(fill(t.painFix, { feature: t.feat[F.painFeature(p, a)][0] })) + '</span>' : '') +
+          '</button>';
+      }).join('');
+      return '<h1>' + esc(t.painTitle) + '</h1><p class="q-sub">' + esc(t.painSub) + '</p>' +
+        '<p class="chip">' + ic(a.icon) + esc(fill(t.painIntro, { n: a.features.length, activity: activityName() })) + '</p>' +
+        '<div class="tiles">' + tiles + '</div>' +
+        '<div class="dock"><button type="button" class="btn block" data-act="go:devices">' + esc(chosen ? t.next : t.painSkip) + '</button></div>';
     },
 
     devices: function () {
@@ -207,6 +227,11 @@
         choice('mode:both', 'i-pcphone', t.modeBothT, t.modeBothD, { pressed: state.mode === 'both' }) +
         choice('mode:several', 'i-devices', t.modeSeveralT, t.modeSeveralD, { pressed: state.mode === 'several' }) +
         '</div>' +
+        '<div class="choices">' + choice('unsure', 'i-help', t.modeUnsureT, t.modeUnsureD, { pressed: unsureOpen }) + '</div>' +
+        (unsureOpen ? '<div class="note block" id="unsure"><b>' + esc(t.unsureQ) + '</b><div class="seg">' +
+          choice('mode:pc', 'i-win', t.unsurePcT, t.unsurePcD, { fillIcon: true }) +
+          choice('mode:phone', 'i-phone', t.unsurePhoneT, t.unsurePhoneD) +
+          '</div><p class="q-sub">' + esc(t.unsureNote) + '</p></div>' : '') +
         (DEVICE !== 'other' && DEVICE !== 'ios' ? '<p class="q-sub block">' + esc(fill(t.hereNote, { device: devName })) + '</p>' : '');
     },
 
@@ -236,10 +261,12 @@
 
     features: function () {
       var a = F.activity(state.activity);
-      if (!selectedFeature || a.features.indexOf(selectedFeature) === -1) selectedFeature = a.features[0];
-      var list = a.features.map(function (f) {
+      var ff = F.featuresFor(state);
+      if (!selectedFeature || ff.list.indexOf(selectedFeature) === -1) selectedFeature = ff.list[0];
+      var list = ff.list.map(function (f) {
+        var because = ff.why[f] ? '<span class="why-tag">' + esc(fill(t.becauseTag, { pain: t.pain[ff.why[f]] })) + '</span>' : '';
         return '<li><button type="button" class="feat" data-act="feat:' + f + '" aria-pressed="' + (f === selectedFeature) + '">' +
-          '<span class="ok">' + ic('i-check') + '</span><span><b>' + esc(t.feat[f][0]) + '</b><span class="fd">' + esc(t.feat[f][1]) + '</span></span></button>' +
+          '<span class="ok">' + ic('i-check') + '</span><span><b>' + esc(t.feat[f][0]) + '</b><span class="fd">' + esc(t.feat[f][1]) + '</span>' + because + '</span></button>' +
           '<div class="ishot">' + (f === selectedFeature ? inlineShot(f) : '') + '</div></li>';
       }).join('');
       return '<h1>' + esc(t.fTitle) + '</h1><span class="chip">' + ic(a.icon) + esc(activityName()) + '</span>' +
@@ -280,6 +307,7 @@
         '<li>' + ic('i-check') + '<span>' + esc(t.inclOffline) + '</span></li>' +
         '<li>' + ic('i-check') + '<span>' + esc(t.inclNoSub) + '</span></li>' +
         '<li>' + ic('i-check') + '<span>' + esc(t.inclTrial) + '</span></li></ul></div>' +
+        whyHtml(r, d) +
         extra +
         '<details class="cmp"><summary>' + esc(t.compare) + '</summary><div class="plans">' + plansHtml(r) + '<p class="q-sub">' + esc(t.addOnNote) + '</p></div></details>' +
         '<div class="dock">' + primary + '<button type="button" class="link" data-act="go:devices">' + esc(t.changeDevices) + '</button></div></div>';
@@ -356,6 +384,25 @@
   function sumRow(k, v, editAct) {
     return '<li><span><span class="k">' + esc(k) + '</span><br><span class="v" style="text-align:start">' + esc(v) + '</span></span>' +
       (editAct ? '<button type="button" class="link edit" data-act="' + editAct + '">' + esc(t.edit) + '</button>' : '') + '</li>';
+  }
+
+  // "Why this offer?": the reasons, built from the visitor's own answers.
+  function whyHtml(r, d) {
+    var why = [];
+    if (r.type === 'pc') why.push(fill(t.whyPc, { plan: t.plan.pc[0] }));
+    else if (r.type === 'phone') why.push(fill(t.whyPhone, { plan: t.plan.phone[0] }));
+    else if (r.type === 'separate') why.push(t.whySeparate);
+    else if (r.type === 'shop') {
+      why.push(fill(t.whyShop, { plan: t.plan.shop[0], pc: t.plan.pc[0], diff: num(OFFER.plans.shop.price - OFFER.plans.pc.price) }));
+      var extras = r.lines.filter(function (l) { return l.plan !== 'shop'; });
+      if (extras.length) why.push(fill(t.whyExtra, { extra: extras.map(lineText).join(t.sep) }));
+    }
+    var ff = F.featuresFor(state);
+    var fixed = ff.list.filter(function (f) { return ff.why[f]; }).map(function (f) { return t.feat[f][0]; });
+    if (fixed.length) why.push(fill(t.whyPains, { features: fixed.join(t.sep) }));
+    return '<div class="why block"><h2>' + ic('i-help') + esc(t.whyTitle) + '</h2>' +
+      '<p class="q-sub">' + esc(fill(t.whyFrom, { activity: activityName(), devices: devicesText(d) })) + '</p>' +
+      '<ul>' + why.map(function (s) { return '<li>' + ic('i-next', 'flip') + '<span>' + esc(s) + '</span></li>'; }).join('') + '</ul></div>';
   }
 
   function plansHtml(r) {
@@ -541,9 +588,25 @@
         state.activity = parts[1]; save();
         track('activity_selected', { activity: parts[1] });
         if (parts[1] === 'other') { render('activity', false); var inp = $('other'); if (inp) inp.focus(); }
-        else go('devices');
+        else go('pain');
+        break;
+      case 'pain':
+        var at = state.pains.indexOf(parts[1]);
+        if (at === -1) state.pains.push(parts[1]); else state.pains.splice(at, 1);
+        save();
+        selectedFeature = null; // the features screen then opens on the first fix
+
+        track('pain_selected', { pain: parts[1], selected: at === -1 });
+        rerenderKeepFocus(act);
+        break;
+      case 'unsure':
+        unsureOpen = !unsureOpen;
+        if (unsureOpen) track('device_unsure_clicked', {});
+        rerenderKeepFocus(act);
+        if (unsureOpen && $('unsure')) $('unsure').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         break;
       case 'mode':
+        unsureOpen = false;
         state.mode = parts[1]; save();
         track('device_selected', { platform: parts[1] });
         go(parts[1] === 'several' ? 'several' : 'features');
