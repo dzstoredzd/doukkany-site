@@ -5,6 +5,7 @@
 (function () {
   'use strict';
   var OFFER = window.DK_OFFER, LESSONS = window.DK_LESSONS, F = window.DK_FUNNEL, TEXT = window.DK_START_TEXT;
+  var COUNTER = window.DK_COUNTER || null;
   var tracking = window.dkTracking || null;
 
   var WA_NUMBER = '213775452101'; // same as the app (kSupportPhone) and /download/
@@ -14,11 +15,12 @@
   var API_URL = 'https://api.github.com/repos/dzstoredzd/doukkany-releases/releases/latest';
   var STORE_KEY = 'dk-start-v1';
 
-  // Funnel events are written at every step but not sent yet (owner, 2026-11-26: "start with
-  // the website, then we add events"). Turning this on also needs the names in js/tracking.js
-  // EVENTS and GTM triggers.
-  var EVENTS_ON = false;
+  // Funnel events (owner, 2026-11-26: "events next"). They go to js/tracking.js, which sends
+  // nothing before the visitor says OK on the consent bar, and only names/params it lists.
+  var EVENTS_ON = true;
   function track(name, p) {
+    // Our own anonymous counter: every visitor (counter.js says what it sends).
+    try { if (ownCounter) ownCounter.count(name, p); } catch (e) {}
     if (!EVENTS_ON) return;
     try { if (tracking) tracking.track(name, p); } catch (e) {}
   }
@@ -67,8 +69,34 @@
   })();
   var IS_PHONE = DEVICE === 'android' || DEVICE === 'ios';
 
+  // Own counter (owner, 2026-11-26). Real site only; with ?dk_debug=1 elsewhere it keeps the
+  // batches in window.__dkCounterSent and sends nothing (for checks).
+  var ownCounter = (function () {
+    if (!COUNTER) return null;
+    var live = location.hostname === 'yousoft.site';
+    var debug = !live && params.get('dk_debug') === '1';
+    var internal = false;
+    try { internal = localStorage.getItem('dk_internal') === '1'; } catch (e) {}
+    var ad = COUNTER.campaignFrom(location.search);
+    var c = COUNTER.createCounter({
+      on: live || debug, internal: internal,
+      base: function () {
+        var b = { page_language: lang, device: DEVICE };
+        Object.keys(ad).forEach(function (k) { b[k] = ad[k]; });
+        return b;
+      },
+      post: live ? COUNTER.browserPost : function (url, body) {
+        (window.__dkCounterSent = window.__dkCounterSent || []).push(JSON.parse(body));
+      }
+    });
+    function leave() { c.flush(true); }
+    window.addEventListener('pagehide', leave);
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') leave(); });
+    return c;
+  })();
+
   function devices() { return F.devices(state); }
-  function rec() { var d = devices(); return d ? OFFER.recommend(d.pcs, d.phones, d.shared) : { ok: false, reason: 'none' }; }
+  function rec() { var d = devices(); return d ? OFFER.recommend(d.pcs, d.phones) : { ok: false, reason: 'none' }; }
 
   function activityName() {
     var name = t.act[state.activity] || '';
@@ -82,15 +110,10 @@
     if (d.pcs) parts.push(t.devPc + ' × ' + d.pcs);
     if (d.phones) parts.push(t.devPhone + ' × ' + d.phones);
     var s = parts.join(' · ');
-    if (d.pcs + d.phones > 1) s += ' (' + (d.shared ? t.sharedYes : t.sharedNo) + ')';
+    if (d.pcs + d.phones > 1) s += ' (' + t.sharedYes + ')';
     return s;
   }
-  function offerName(r) {
-    if (!r.ok) return '';
-    if (r.type === 'separate') return t.separateT;
-    return t.plan[r.type][0];
-  }
-  function lineText(l) { return l.qty + ' × ' + t.plan[l.plan][0]; }
+  function offerName(r) { return r.ok ? t.plan[r.type][0] : ''; }
 
   function waLink(text) { return 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text); }
   function campaignQuery(via) { try { return tracking ? tracking.campaignQuery(via) : ''; } catch (e) { return ''; } }
@@ -126,17 +149,43 @@
   // ---------------------------------------------------------------------------------
   // Screens
   // ---------------------------------------------------------------------------------
+  // `focus` = the visitor moved to this screen (not a redraw: language, +/−, closing a video).
+  var firstRender = true;
   function render(step, focus) {
     current = step;
     var html = SCREENS[step]();
-    view.innerHTML = '<section class="step" data-step="' + step + '">' + html + helpLine(step) + '</section>';
+    view.innerHTML = '<section class="step" data-step="' + step + '"><div class="scroll">' + html + helpLine(step) + '</div></section>';
+    shapeScreen(step);
     renderProgress(step);
-    afterRender(step);
+    afterRender(step, focus || firstRender);
+    firstRender = false;
     if (focus) {
       var h = view.querySelector('h1');
       if (h) { h.setAttribute('tabindex', '-1'); try { h.focus({ preventScroll: true }); } catch (e) { h.focus(); } }
       window.scrollTo(0, 0);
     }
+  }
+
+  // The page itself never scrolls (owner, 2026-11-26): the question stays at the top, the
+  // answers are the only part that scrolls, the buttons stay at the bottom. The site footer
+  // (privacy, terms, consent) shows only at the end of the welcome and prices screens.
+  var footer = document.querySelector('footer');
+  function shapeScreen(step) {
+    var sec = view.firstChild, scroll = sec.firstChild;
+    var head = document.createElement('div');
+    head.className = 'head';
+    if (scroll.firstElementChild && scroll.firstElementChild.matches('h1')) {
+      head.appendChild(scroll.firstElementChild);
+      if (scroll.firstElementChild && scroll.firstElementChild.matches('.lead, .q-sub')) head.appendChild(scroll.firstElementChild);
+    }
+    sec.insertBefore(head, scroll);
+    var dock = scroll.querySelector(':scope > .dock');
+    if (dock) sec.appendChild(dock);
+    if (footer) {
+      if (step === 'welcome' || step === 'prices') { scroll.appendChild(footer); footer.hidden = false; }
+      else { footer.hidden = true; document.body.appendChild(footer); }
+    }
+    scroll.addEventListener('scroll', function () { sec.classList.toggle('scrolled', scroll.scrollTop > 2); }, { passive: true });
   }
 
   function renderProgress(step) {
@@ -146,7 +195,9 @@
     if (!show) return;
     var total = F.PROGRESS.length;
     var n = i < 0 ? 0 : i + 1;
-    $('bar').style.width = (i < 0 ? 0 : Math.round(n / total * 100)) + '%';
+    var seg = '';
+    if (i >= 0) for (var k = 1; k <= total; k++) seg += '<i' + (k <= n ? ' class="on"' : '') + '></i>'; // none on the prices page
+    $('bar').innerHTML = seg;
     $('prog-txt').textContent = i < 0 ? '' : fill(t.stepOf, { n: n, t: total });
     $('back-txt').textContent = t.back;
   }
@@ -223,40 +274,18 @@
       return '<h1>' + esc(t.dTitle) + '</h1><p class="q-sub">' + esc(t.dSub) + '</p>' +
         '<div class="choices four">' +
         choice('mode:pc', 'i-win', t.modePcT, t.modePcD, { pressed: state.mode === 'pc', tag: hereTag('pc'), fillIcon: true }) +
-        choice('mode:phone', 'i-phone', t.modePhoneT, t.modePhoneD, { pressed: state.mode === 'phone', tag: hereTag('phone') }) +
         choice('mode:both', 'i-pcphone', t.modeBothT, t.modeBothD, { pressed: state.mode === 'both' }) +
-        choice('mode:several', 'i-devices', t.modeSeveralT, t.modeSeveralD, { pressed: state.mode === 'several' }) +
+        choice('mode:phone', 'i-phone', t.modePhoneT, t.modePhoneD, { pressed: state.mode === 'phone', tag: hereTag('phone') }) +
+        choice('mode:two', 'i-devices', t.modeTwoT, t.modeTwoD, { pressed: state.mode === 'two' }) +
         '</div>' +
         '<div class="choices">' + choice('unsure', 'i-help', t.modeUnsureT, t.modeUnsureD, { pressed: unsureOpen }) + '</div>' +
         (unsureOpen ? '<div class="note block" id="unsure"><b>' + esc(t.unsureQ) + '</b><div class="seg">' +
           choice('mode:pc', 'i-win', t.unsurePcT, t.unsurePcD, { fillIcon: true }) +
           choice('mode:phone', 'i-phone', t.unsurePhoneT, t.unsurePhoneD) +
           '</div><p class="q-sub">' + esc(t.unsureNote) + '</p></div>' : '') +
-        (DEVICE !== 'other' && DEVICE !== 'ios' ? '<p class="q-sub block">' + esc(fill(t.hereNote, { device: devName })) + '</p>' : '');
-    },
-
-    several: function () {
-      var r = OFFER.recommend(state.pcs, state.phones, state.shared);
-      function counter(key, icon, label, value) {
-        return '<div class="count"><span class="cl">' + ic(icon, icon === 'i-win' ? 'f' : '') + '<span id="l-' + key + '">' + esc(label) + '</span></span>' +
-          '<span class="stepper" role="group" aria-labelledby="l-' + key + '">' +
-          '<button type="button" data-act="count:' + key + ':-1" aria-label="' + esc(t.minus + ' · ' + label) + '"' + (value <= 0 ? ' disabled' : '') + '>−</button>' +
-          '<output aria-live="polite">' + value + '</output>' +
-          '<button type="button" data-act="count:' + key + ':1" aria-label="' + esc(t.plus + ' · ' + label) + '"' + (value >= OFFER.maxDevices ? ' disabled' : '') + '>+</button></span></div>';
-      }
-      var problem = '';
-      if (!r.ok && r.reason === 'needs_pc') problem = '<div class="warn block">' + esc(t.needsPc) + '<div class="actions"><button type="button" class="btn soft" data-act="addpc">' + esc(t.addPc) + '</button></div></div>';
-      else if (!r.ok && r.reason === 'none') problem = '<div class="warn block">' + esc(t.noneErr) + '</div>';
-      else if (!r.ok && r.reason === 'too_many') problem = '<div class="warn block">' + esc(t.tooMany) + '</div>';
-      var multi = state.pcs + state.phones > 1;
-      return '<h1>' + esc(t.sTitle) + '</h1>' +
-        counter('pcs', 'i-win', t.pcsL, state.pcs) + counter('phones', 'i-phone', t.phonesL, state.phones) +
-        (multi ? '<h2 class="block" style="font-size:1.1rem">' + esc(t.shareQ) + '</h2><div class="seg">' +
-          choice('shared:1', 'i-wifi', t.shareYesT, t.shareYesD, { pressed: state.shared }) +
-          choice('shared:0', 'i-devices', t.shareNoT, t.shareNoD, { pressed: !state.shared }) + '</div>' : '') +
-        (multi && state.shared ? '<div class="note block"><b>' + esc(t.netTitle) + '</b>' + esc(t.netNote) + '</div>' : '') +
-        problem +
-        '<div class="dock"><button type="button" class="btn block" data-act="go:features"' + (r.ok ? '' : ' disabled') + '>' + esc(t.next) + '</button></div>';
+        (DEVICE !== 'other' && DEVICE !== 'ios' ? '<p class="q-sub block">' + esc(fill(t.hereNote, { device: devName })) + '</p>' : '') +
+        // More than the shop pack: no add-ons on the website any more, we talk with the shop.
+        '<p class="q-sub block">' + esc(t.moreQ) + ' <a class="link" data-wa="more" href="' + esc(waLink(t.waMore)) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.helpBtn) + '</a></p>';
     },
 
     features: function () {
@@ -281,42 +310,34 @@
       var r = rec();
       var d = devices();
       var sub = state.intent === 'buy' ? t.pSubBuy : t.pSubTrial;
-      var lines = r.lines.length > 1 || r.lines[0].qty > 1 ?
-        '<ul class="lines">' + r.lines.map(function (l) { return '<li><span>' + esc(lineText(l)) + '</span><span>' + money(l.total) + ' ' + esc(t.da) + '</span></li>'; }).join('') + '</ul>' : '';
-      var desc = r.type === 'separate' ? t.separateD : t.plan[r.type][1];
+      var desc = t.plan[r.type][1];
       var extra = '';
-      if (r.type === 'shop' && d.phones === 0) extra += '<p class="note block">' + esc(t.giftNote) + '</p>';
-      if (r.type === 'separate' && d.pcs > 0) {
-        var shared = OFFER.recommend(d.pcs, d.phones, true);
-        if (shared.ok && shared.total < r.total) {
-          extra += '<div class="note block">' + esc(fill(t.cheaperShared, { price: num(shared.total) })) +
-            '<div class="actions" style="margin-top:8px"><button type="button" class="btn soft" data-act="makeshared">' + esc(t.makeShared) + '</button></div></div>';
-        }
-      }
-      if (r.type === 'shop' || (state.mode === 'several' && d.shared)) extra += '<p class="q-sub block">' + esc(t.trialRoom) + '</p>';
+      // A PC offer links its phone (and the 2nd PC) over the shop network: say how, plainly.
+      if (r.type !== 'phone') extra += '<div class="note block"><b>' + esc(t.netTitle) + '</b>' + esc(t.netNote) + '</div>';
+      if (r.type === 'shop') extra += '<p class="q-sub block">' + esc(t.trialRoom) + '</p>';
       var primary = state.intent === 'buy' ?
-        '<button type="button" class="btn block" data-act="path:buy">' + esc(t.goBuy) + '</button><div class="row"><button type="button" class="link" data-act="path:trial">' + esc(t.altTrial) + '</button>' :
-        '<button type="button" class="btn block" data-act="path:trial">' + esc(t.goTrial) + '</button><div class="row"><button type="button" class="link" data-act="path:buy">' + esc(t.altBuy) + '</button>';
+        buyLink('btn block', t.goBuy) + '<div class="row"><button type="button" class="link" data-act="path:trial">' + esc(t.altTrial) + '</button>' :
+        '<button type="button" class="btn block" data-act="path:trial">' + esc(t.goTrial) + '</button><div class="row">' + buyLink('link', t.altBuy);
       return '<h1>' + esc(t.pTitle) + '</h1><p class="lead">' + esc(sub) + '</p>' +
         '<div class="offer"><span class="ribbon">' + esc(t.recTag) + '</span>' +
         '<h2>' + esc(offerName(r)) + '</h2><p class="od">' + esc(desc) + '</p>' +
         '<div class="price"><span class="amt">' + money(r.total) + '</span><span class="cur">' + esc(t.da) + '</span><span class="once">' + esc(t.once) + '</span></div>' +
-        lines +
-        '<ul class="incl"><li>' + ic('i-devices') + '<span>' + esc(fill(t.worksOn, { devices: devicesText(r.includes && { pcs: r.includes.pcs, phones: r.includes.phones, shared: d.shared }) })) + '</span></li>' +
+        '<ul class="incl"><li>' + ic('i-devices') + '<span>' + esc(fill(t.worksOn, { devices: devicesText(r.includes) })) + '</span></li>' +
         '<li>' + ic('i-check') + '<span>' + esc(t.inclAll) + '</span></li>' +
         '<li>' + ic('i-check') + '<span>' + esc(t.inclOffline) + '</span></li>' +
         '<li>' + ic('i-check') + '<span>' + esc(t.inclNoSub) + '</span></li>' +
         '<li>' + ic('i-check') + '<span>' + esc(t.inclTrial) + '</span></li></ul></div>' +
         whyHtml(r, d) +
         extra +
-        '<details class="cmp"><summary>' + esc(t.compare) + '</summary><div class="plans">' + plansHtml(r) + '<p class="q-sub">' + esc(t.addOnNote) + '</p></div></details>' +
+        '<details class="cmp"><summary>' + esc(t.compare) + '</summary><div class="plans">' + plansHtml(r) + '<p class="q-sub">' + esc(t.moreQ) + '</p></div></details>' +
         '<div class="dock">' + primary + '<button type="button" class="link" data-act="go:devices">' + esc(t.changeDevices) + '</button></div></div>';
     },
 
     prices: function () {
       return '<h1>' + esc(t.pricesTitle) + '</h1><p class="lead">' + esc(t.pricesSub) + '</p>' +
         '<p class="block"><span class="trial-tag"><span class="n ltr">' + OFFER.trialDays + '</span>' + esc(t.vTrial.replace(/^\d+\s*/, '')) + '</span></p>' +
-        '<div class="plans block">' + plansHtml(null) + '</div><p class="q-sub block">' + esc(t.addOnNote) + '</p>' +
+        '<div class="plans block">' + plansHtml(null) + '</div>' +
+        '<p class="q-sub block">' + esc(t.moreQ) + ' <a class="link" data-wa="more" href="' + esc(waLink(t.waMore)) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.helpBtn) + '</a></p>' +
         '<ul class="incl block"><li>' + ic('i-check') + '<span>' + esc(t.inclAll) + '</span></li><li>' + ic('i-check') + '<span>' + esc(t.inclOffline) + '</span></li><li>' + ic('i-check') + '<span>' + esc(t.inclNoSub) + '</span></li></ul>' +
         '<div class="dock"><button type="button" class="btn block" data-act="help-choose">' + esc(t.pricesHelp) + '</button>' +
         '<div class="row"><button type="button" class="link" data-act="try-from-prices">' + esc(t.pricesTry) + '</button><a class="link" href="../download/">' + esc(t.fDownload) + '</a></div></div>';
@@ -343,7 +364,7 @@
       var inst = '';
       if (wantPc) inst += '<ol class="steps-list">' + t.instPc.map(function (s) { return '<li><span>' + esc(s) + '</span></li>'; }).join('') + '</ol>';
       else inst += '<ol class="steps-list">' + t.instPhone.map(function (s) { return '<li><span>' + esc(s) + '</span></li>'; }).join('') + '</ol>';
-      if (d.shared && d.pcs > 0 && d.pcs + d.phones > 1) inst += '<p class="q-sub block">' + esc(t.instLink) + '</p>';
+      if (d.pcs > 0 && d.pcs + d.phones > 1) inst +='<p class="q-sub block">' + esc(t.instLink) + '</p>';
       var ids = F.lessonsFor(state).slice(0, 3);
       return '<h1>' + esc(t.tTitle) + '</h1><p class="lead">' + esc(t.tSub) + '</p>' +
         '<ul class="sum">' +
@@ -358,26 +379,57 @@
         '<p class="block"><a class="link" href="../learn/">' + esc(t.moreLessons) + '</a></p></div></div>' +
         '<div class="help"><h2>' + esc(t.helpTitle) + '</h2><p>' + esc(t.helpText) + '</p>' +
         '<a class="btn wa" data-wa="trial" href="' + esc(waLink(fill(t.waTrial, { activity: activityName(), devices: devicesText() }))) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.helpBtn) + '</a></div>' +
-        '<div class="actions"><div class="row"><button type="button" class="link" data-act="path:buy">' + esc(t.buyNow) + '</button></div></div>';
+        '<div class="actions"><div class="row">' + buyLink('link', t.buyNow) + '</div></div>';
     },
 
     order: function () {
       var r = rec();
-      var rows = r.lines.map(function (l) { return '<li><span class="k">' + esc(lineText(l)) + '</span><span class="v">' + money(l.total) + ' ' + esc(t.da) + '</span></li>'; }).join('');
-      return '<h1>' + esc(t.oTitle) + '</h1><p class="lead">' + esc(t.oSub) + '</p>' +
-        '<ul class="sum">' +
+      var total = r.type === 'phone' ? r.total : OFFER.orderTotal(r.type, buyer.pay);
+      var sum = '<ul class="sum">' +
         sumRow(t.kActivity, activityName(), 'go:activity') +
         sumRow(t.kDevices, devicesText(), 'go:devices') +
-        rows +
-        '<li class="total"><span class="k">' + esc(t.kTotal) + '</span><span class="v">' + money(r.total) + ' ' + esc(t.da) + '<br><small class="once" style="color:var(--green);font-size:.85rem">' + esc(t.once) + '</small></span></li>' +
-        '</ul>' +
-        '<div class="card"><h2>' + esc(t.payTitle) + '</h2><p>' + esc(t.payText) + '</p><div class="pay"><span>CCP</span><span>BaridiMob</span></div>' +
-        '<p class="warn block">' + esc(t.paySafe) + '</p></div>' +
+        '<li><span class="k">' + esc(offerName(r)) + '</span><span class="v">' + money(r.total) + ' ' + esc(t.da) + '</span></li>' +
+        (total !== r.total ? '<li><span class="k">' + esc(t.payPreT) + '</span><span class="v"><bdi class="ltr">−' + OFFER.format(r.total - total) + '</bdi> ' + esc(t.da) + '</span></li>' : '') +
+        '<li class="total"><span class="k">' + esc(t.kTotal) + '</span><span class="v">' + money(total) + ' ' + esc(t.da) + '<br><small class="once" style="color:var(--green);font-size:.85rem">' + esc(t.once) + '</small></span></li>' +
+        '</ul>';
+      var dockEnd = '<p class="msg" id="order-msg" role="status"></p>' +
+        '<div class="row"><button type="button" class="link" data-act="path:trial">' + esc(t.tryFirst) + '</button></div></div>';
+
+      // Phone offer: nothing to fill, the WhatsApp message says it all.
+      if (r.type === 'phone') {
+        return '<h1>' + esc(t.oTitle) + '</h1><p class="lead">' + esc(t.phoneBuyText) + '</p>' + sum +
+          '<p class="warn block">' + esc(t.paySafe) + '</p>' +
+          '<div class="dock"><a class="btn wa block" id="order-btn" data-wa="order" href="' + esc(waLink(phoneOrderMessage())) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.buyWa) + '</a>' + dockEnd;
+      }
+
+      // PC offers: Windows check, the USB key, where to send it, how to pay.
+      loadPlaces();
+      var win = '<div class="card"><h2>' + ic('i-win', 'f') + esc(t.winQ) + '</h2><div class="pills">' +
+        pill('win:yes', t.winYes, buyer.win === 'yes') + pill('win:no', t.winNo, buyer.win === 'no') + pill('win:unknown', t.winUnknown, buyer.win === 'unknown') + '</div>' +
+        (buyer.win === 'unknown' ? '<p class="note block">' + esc(t.winHow) + (winInfo ? '<b style="margin-top:6px">' + esc(fill(t.winThis, { os: winInfo })) + '</b>' : '') + '</p>' : '') +
+        (buyer.win === 'no' ? '<div class="warn block">' + esc(t.winNoText) + '<div class="actions" style="margin-top:10px"><button type="button" class="btn soft" data-act="tophone">' + esc(t.toPhoneOffer) + '</button>' +
+          '<a class="link" data-wa="help" href="' + esc(waLink(t.waHelp)) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.helpBtn) + '</a></div></div>' : '') +
+        '</div>';
+      if (buyer.win === 'no') {
+        return '<h1>' + esc(t.oTitle) + '</h1><p class="lead">' + esc(t.oSub) + '</p>' + win + sum +
+          '<div class="dock"><button type="button" class="btn block" data-act="tophone">' + esc(t.toPhoneOffer) + '</button>' + dockEnd;
+      }
+      var usb = '<div class="card"><h2>' + ic('i-usb') + esc(t.usbTitle) + '</h2><ul class="incl">' +
+        t.usbItems.map(function (s) { return '<li>' + ic('i-check') + '<span>' + esc(s) + '</span></li>'; }).join('') + '</ul>' +
+        '<p class="q-sub block">' + esc(t.usbPhone) + ' ' + esc(t.usbNote) + '</p></div>';
+      var details = '<div class="card"><h2>' + ic('i-home') + esc(t.detailsTitle) + '</h2>' +
+        field('b-name', t.fName, '<input id="b-name" type="text" maxlength="60" autocomplete="name" value="' + esc(buyer.name) + '">') +
+        field('b-phone', t.fPhone, '<input id="b-phone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" dir="ltr" placeholder="' + esc(t.fPhonePh) + '" value="' + esc(buyer.phone) + '">') +
+        placeFields() + '</div>';
+      var pay = '<div class="card"><h2>' + ic('i-cash') + esc(t.payTitle) + '</h2><div class="seg">' +
+        choice('pay:prepaid', 'i-cash', t.payPreT, t.payPreD, { pressed: buyer.pay === 'prepaid', tag: fill(t.youSave, { discount: num(OFFER.prepaidDiscount) }) }) +
+        choice('pay:cod', 'i-home', t.payCodT, t.payCodD, { pressed: buyer.pay === 'cod' }) + '</div>' +
+        '<p class="warn block">' + esc(t.paySafe) + '</p></div>';
+      return '<h1>' + esc(t.oTitle) + '</h1><p class="lead">' + esc(t.oSub) + '</p>' +
+        sum + win + usb + details + pay +
         '<div class="card"><h2>' + esc(t.nextTitle) + '</h2><ol class="steps-list">' + t.nextSteps.map(function (s) { return '<li><span>' + esc(s) + '</span></li>'; }).join('') + '</ol></div>' +
         '<p class="q-sub block">' + esc(t.noData) + '</p>' +
-        '<div class="dock"><a class="btn wa block" id="order-btn" data-wa="order" href="' + esc(waLink(orderMessage(r))) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.sendOrder) + '</a>' +
-        '<p class="msg" id="order-msg" role="status"></p>' +
-        '<div class="row"><button type="button" class="link" data-act="path:trial">' + esc(t.tryFirst) + '</button></div></div>';
+        '<div class="dock"><a class="btn wa block" id="order-btn" data-wa="order" href="' + esc(waLink(pcOrderMessage())) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(t.sendOrder) + '</a>' + dockEnd;
     }
   };
 
@@ -391,12 +443,7 @@
     var why = [];
     if (r.type === 'pc') why.push(fill(t.whyPc, { plan: t.plan.pc[0] }));
     else if (r.type === 'phone') why.push(fill(t.whyPhone, { plan: t.plan.phone[0] }));
-    else if (r.type === 'separate') why.push(t.whySeparate);
-    else if (r.type === 'shop') {
-      why.push(fill(t.whyShop, { plan: t.plan.shop[0], pc: t.plan.pc[0], diff: num(OFFER.plans.shop.price - OFFER.plans.pc.price) }));
-      var extras = r.lines.filter(function (l) { return l.plan !== 'shop'; });
-      if (extras.length) why.push(fill(t.whyExtra, { extra: extras.map(lineText).join(t.sep) }));
-    }
+    else if (r.type === 'shop') why.push(fill(t.whyShop, { plan: t.plan.shop[0], pc: t.plan.pc[0], diff: num(OFFER.plans.shop.price - OFFER.plans.pc.price) }));
     var ff = F.featuresFor(state);
     var fixed = ff.list.filter(function (f) { return ff.why[f]; }).map(function (f) { return t.feat[f][0]; });
     if (fixed.length) why.push(fill(t.whyPains, { features: fixed.join(t.sep) }));
@@ -406,12 +453,11 @@
   }
 
   function plansHtml(r) {
-    var recPlans = r && r.ok ? r.lines.map(function (l) { return l.plan; }) : [];
+    var recPlan = r && r.ok ? r.type : null;
     return OFFER.listOrder.map(function (id) {
       var p = OFFER.plans[id];
-      var addon = id === 'add_pc' || id === 'add_phone';
-      return '<div class="plan' + (recPlans.indexOf(id) !== -1 ? ' rec' : '') + '"><div><b>' + esc(t.plan[id][0]) + '</b><span class="pd">' + esc(t.plan[id][1]) + '</span></div>' +
-        '<div class="pp">' + money(p.price) + ' ' + esc(t.da) + '<small>' + esc(addon ? t.perDevice : t.vOnce) + '</small></div></div>';
+      return '<div class="plan' + (id === recPlan ? ' rec' : '') + '"><div><b>' + esc(t.plan[id][0]) + '</b><span class="pd">' + esc(t.plan[id][1]) + '</span></div>' +
+        '<div class="pp">' + money(p.price) + ' ' + esc(t.da) + '<small>' + esc(t.vOnce) + '</small></div></div>';
     }).join('');
   }
 
@@ -467,15 +513,162 @@
     return 'mailto:?subject=' + encodeURIComponent('Doukkany') + '&body=' + encodeURIComponent(t.shareText + '\n' + winLink('email'));
   }
 
-  function orderMessage(r) {
-    return fill(t.waOrder, {
-      offer: offerName(r),
-      // One plan once: the "offer" line already says it all.
-      lines: r.lines.length === 1 && r.lines[0].qty === 1 ? '' :
-        r.lines.map(function (l) { return '- ' + lineText(l) + ': ' + num(l.total) + ' ' + t.da + '\n'; }).join(''),
-      total: num(r.total),
-      devices: devicesText(),
-      activity: activityName()
+  // ---------------------------------------------------------------------------------
+  // Buying (owner, 2026-11-26). Phone offer: straight to WhatsApp with a Darija message.
+  // PC offers: a Doukkany USB key sent home; the order form below. Nothing is sent to us by
+  // the page: the details go only into the WhatsApp message the visitor sends.
+  // ---------------------------------------------------------------------------------
+  var WA_DZ = window.DK_WA_DZ;
+  var AR = TEXT.ar; // the WhatsApp messages are in Darija whatever the page language
+
+  function activityAr() {
+    var name = AR.act[state.activity] || '';
+    if (state.activity === 'other' && state.other) name += ': ' + state.other;
+    return name;
+  }
+  function phoneOrderMessage() {
+    return fill(WA_DZ.phone, { offer: AR.plan.phone[0], total: num(OFFER.plans.phone.price), activity: activityAr() });
+  }
+  // A buy button: a WhatsApp link for the phone offer, the order form for the PC offers.
+  function buyLink(cls, label) {
+    var r = rec();
+    if (r.ok && r.type === 'phone') {
+      return '<a class="' + cls + (cls.indexOf('btn') !== -1 ? ' wa' : '') + '" data-wa="order" href="' + esc(waLink(phoneOrderMessage())) + '" target="_blank" rel="noopener">' + ic('i-wa', 'f') + esc(cls.indexOf('btn') !== -1 ? t.buyWa : label) + '</a>';
+    }
+    return '<button type="button" class="' + cls + '" data-act="path:buy">' + esc(label) + '</button>';
+  }
+
+  // The buyer's answers: kept in this tab only (sessionStorage), cleared when the tab closes.
+  var BUYER_KEY = 'dk-start-buyer';
+  var buyer = (function () {
+    var raw = null;
+    try { raw = JSON.parse(sessionStorage.getItem(BUYER_KEY) || 'null'); } catch (e) {}
+    raw = raw && typeof raw === 'object' ? raw : {};
+    function txt(v, n) { return typeof v === 'string' ? v.replace(/[\u0000-\u001F<>]/g, ' ').slice(0, n) : ''; }
+    return {
+      win: ['yes', 'no', 'unknown'].indexOf(raw.win) !== -1 ? raw.win : '',
+      name: txt(raw.name, 60), phone: txt(raw.phone, 20),
+      wilaya: (raw.wilaya | 0) >= 1 && (raw.wilaya | 0) <= 99 ? raw.wilaya | 0 : 0, wilayaTxt: txt(raw.wilayaTxt, 60),
+      commune: txt(raw.commune, 60), communeOther: txt(raw.communeOther, 60),
+      pay: ['prepaid', 'cod'].indexOf(raw.pay) !== -1 ? raw.pay : ''
+    };
+  })();
+  function saveBuyer() { try { sessionStorage.setItem(BUYER_KEY, JSON.stringify(buyer)); } catch (e) {} }
+
+  // Wilayas and communes (../js/dz-places.json), loaded only when the order form is shown.
+  var places = null, placesState = 'idle';
+  function loadPlaces() {
+    if (placesState !== 'idle') return;
+    placesState = 'loading';
+    fetch('../js/dz-places.json?v=1').then(function (r) { if (!r.ok) throw new Error('places'); return r.json(); })
+      .then(function (d) { places = d.w; placesState = 'ok'; }, function () { placesState = 'failed'; })
+      .then(function () { if (current === 'order') redrawOrder(document.activeElement && document.activeElement.id); });
+  }
+  function wilayaOf(code) { if (!places) return null; for (var i = 0; i < places.length; i++) if (places[i][0] === code) return places[i]; return null; }
+  function wilayaText() {
+    if (placesState === 'failed') return buyer.wilayaTxt.trim();
+    var w = wilayaOf(buyer.wilaya);
+    return w ? w[0] + ' - ' + w[2] + ' (' + w[1] + ')' : '';
+  }
+  function communeText() {
+    if (placesState === 'failed' || buyer.commune === 'other') return buyer.communeOther.trim();
+    var w = wilayaOf(buyer.wilaya);
+    if (!w) return '';
+    for (var i = 0; i < w[3].length; i++) if (w[3][i][0] === buyer.commune) return w[3][i][1] + (w[3][i][1] !== w[3][i][0] ? ' (' + w[3][i][0] + ')' : '');
+    return '';
+  }
+  function phoneOk(p) { return /^(?:\+213|00213|0)[5-7]\d{8}$/.test(String(p).replace(/[\s.\-()]/g, '')); }
+
+  // What is still missing before the order can go: [field id or act, its name].
+  function orderMissing() {
+    var miss = [];
+    if (buyer.win !== 'yes') miss.push(['win:yes', 'Windows 10 · 64']);
+    if (buyer.name.trim().length < 3) miss.push(['b-name', t.fName]);
+    if (!phoneOk(buyer.phone)) miss.push(['b-phone', t.fPhone]);
+    if (!wilayaText()) miss.push([placesState === 'failed' ? 'b-wilaya-txt' : 'b-wilaya', t.fWilaya]);
+    if (!communeText()) miss.push([placesState === 'failed' || buyer.commune === 'other' ? 'b-commune-txt' : 'b-commune', t.fCommune]);
+    if (!buyer.pay) miss.push(['pay:prepaid', t.payTitle]);
+    return miss;
+  }
+  function pcOrderMessage() {
+    var r = rec();
+    return fill(WA_DZ.pc, {
+      offer: AR.plan[r.type][0],
+      pay: buyer.pay === 'prepaid' ? fill(WA_DZ.payPrepaid, { discount: num(OFFER.prepaidDiscount) }) : WA_DZ.payCod,
+      total: num(OFFER.orderTotal(r.type, buyer.pay)),
+      name: buyer.name.trim(), phone: buyer.phone.trim(), wilaya: wilayaText(), commune: communeText(),
+      activity: activityAr()
+    });
+  }
+  function refreshOrderLink() { var a = $('order-btn'); if (a && rec().type !== 'phone') a.href = waLink(pcOrderMessage()); }
+  function redrawOrder(focusId) {
+    var old = view.querySelector('.scroll');
+    var y = old ? old.scrollTop : 0;
+    render('order', false);
+    var list = view.querySelector('.scroll');
+    if (list) list.scrollTop = y;
+    var f = focusId && ($(focusId) || view.querySelector('[data-act="' + focusId + '"]'));
+    if (f) f.focus();
+  }
+
+  // "The computer you are on" for the Windows question (Chromium browsers on Windows only).
+  var winInfo = null;
+  if (DEVICE === 'windows' && navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+    navigator.userAgentData.getHighEntropyValues(['platformVersion', 'bitness']).then(function (v) {
+      var major = parseInt(v.platformVersion, 10);
+      if (isNaN(major)) return;
+      winInfo = (major >= 13 ? 'Windows 11' : major >= 1 ? 'Windows 10' : 'Windows 7 / 8') + (v.bitness ? ' · ' + v.bitness + '-bit' : '');
+    }, function () {});
+  }
+
+  function pill(act, label, pressed) {
+    return '<button type="button" class="pill" data-act="' + act + '" aria-pressed="' + pressed + '">' + esc(label) + '</button>';
+  }
+  function field(id, label, control) {
+    return '<div class="field"><label for="' + id + '">' + esc(label) + '</label>' + control + '</div>';
+  }
+  function placeFields() {
+    if (placesState === 'failed') {
+      return field('b-wilaya-txt', t.fWilaya, '<input id="b-wilaya-txt" type="text" maxlength="60" autocomplete="address-level1" value="' + esc(buyer.wilayaTxt) + '">') +
+        field('b-commune-txt', t.fCommune, '<input id="b-commune-txt" type="text" maxlength="60" autocomplete="address-level2" value="' + esc(buyer.communeOther) + '">');
+    }
+    if (placesState !== 'ok') {
+      return field('b-wilaya', t.fWilaya, '<select id="b-wilaya" disabled><option>' + esc(t.fLoading) + '</option></select>');
+    }
+    var nameAt = lang === 'ar' ? 2 : 1;
+    var wOpts = '<option value="">' + esc(t.fChoose) + '</option>' + places.map(function (w) {
+      return '<option value="' + w[0] + '"' + (w[0] === buyer.wilaya ? ' selected' : '') + '>' + w[0] + ' - ' + esc(w[nameAt]) + '</option>';
+    }).join('');
+    var out = field('b-wilaya', t.fWilaya, '<select id="b-wilaya" autocomplete="address-level1">' + wOpts + '</select>');
+    var w = wilayaOf(buyer.wilaya);
+    if (w) {
+      var cAt = lang === 'ar' ? 1 : 0;
+      var cOpts = '<option value="">' + esc(t.fChoose) + '</option>' + w[3].map(function (c) {
+        return '<option value="' + esc(c[0]) + '"' + (c[0] === buyer.commune ? ' selected' : '') + '>' + esc(c[cAt]) + '</option>';
+      }).join('') + '<option value="other"' + (buyer.commune === 'other' ? ' selected' : '') + '>' + esc(t.fOtherCommune) + '</option>';
+      out += field('b-commune', t.fCommune, '<select id="b-commune" autocomplete="address-level2">' + cOpts + '</select>');
+      if (buyer.commune === 'other') out += field('b-commune-txt', t.fOtherPh, '<input id="b-commune-txt" type="text" maxlength="60" value="' + esc(buyer.communeOther) + '">');
+    }
+    return out;
+  }
+
+  function bindOrderForm() {
+    function onInput(id, key) {
+      var el = $(id);
+      if (el) el.addEventListener('input', function () { buyer[key] = el.value.replace(/[\u0000-\u001F<>]/g, ' ').slice(0, key === 'phone' ? 20 : 60); saveBuyer(); refreshOrderLink(); });
+    }
+    onInput('b-name', 'name');
+    onInput('b-phone', 'phone');
+    onInput('b-wilaya-txt', 'wilayaTxt');
+    onInput('b-commune-txt', 'communeOther');
+    var ws = $('b-wilaya');
+    if (ws) ws.addEventListener('change', function () { buyer.wilaya = ws.value | 0; buyer.commune = ''; saveBuyer(); redrawOrder('b-commune'); });
+    var cs = $('b-commune');
+    if (cs) cs.addEventListener('change', function () {
+      var wasOther = buyer.commune === 'other';
+      buyer.commune = cs.value; saveBuyer();
+      if (wasOther || buyer.commune === 'other') redrawOrder(buyer.commune === 'other' ? 'b-commune-txt' : 'b-commune');
+      else refreshOrderLink();
     });
   }
 
@@ -483,13 +676,21 @@
   // After a screen is drawn
   // ---------------------------------------------------------------------------------
   var STEP_EVENTS = { welcome: 'sales_funnel_viewed', features: 'personalized_features_viewed', price: 'pricing_viewed', prices: 'pricing_viewed', course: 'quick_course_viewed' };
-  function afterRender(step) {
-    if (STEP_EVENTS[step]) track(STEP_EVENTS[step], eventParams(step));
+  function afterRender(step, viewed) {
+    if (viewed) {
+      // One event per screen shown, with its place in the bar: the drop-off chart.
+      var n = F.progressIndex(step);
+      var p = eventParams(step);
+      p.step_number = n < 0 ? undefined : n + 1;
+      track('funnel_step_viewed', p);
+      if (STEP_EVENTS[step]) track(STEP_EVENTS[step], eventParams(step));
+    }
     if (step === 'activity') {
       var input = $('other');
       if (input) input.addEventListener('input', function () { state.other = F.cleanState({ v: 1, other: input.value }).other; save(); });
     }
     if (step === 'trial' && devices().pcs > 0 && !IS_PHONE) resolveLatest();
+    if (step === 'order') bindOrderForm();
   }
 
   function eventParams(step) {
@@ -497,7 +698,8 @@
     return {
       funnel_step: step, intention: state.intent || undefined, activity: state.activity || undefined,
       platform: d ? (d.pcs && d.phones ? 'both' : d.pcs ? 'windows' : 'android') : undefined,
-      device_count: d ? d.pcs + d.phones : undefined, license_type: r.ok ? r.type : undefined
+      device_count: d ? d.pcs + d.phones : undefined, license_type: r.ok ? r.type : undefined,
+      pain_count: state.activity ? state.pains.length : undefined
     };
   }
 
@@ -556,8 +758,23 @@
 
     var wa = e.target.closest && e.target.closest('a[data-wa]');
     if (wa) {
+      // The PC order form: say what is missing instead of opening WhatsApp half empty.
+      if (wa.id === 'order-btn' && current === 'order' && rec().type !== 'phone') {
+        var miss = orderMissing();
+        if (miss.length) {
+          e.preventDefault();
+          var om = $('order-msg');
+          if (om) { om.textContent = fill(t.fixMissing, { fields: miss.map(function (m) { return m[1]; }).join(t.sep) }); om.classList.add('bad'); }
+          var first = $(miss[0][0]) || view.querySelector('[data-act="' + miss[0][0] + '"]');
+          if (first) { first.scrollIntoView({ block: 'center' }); first.focus({ preventScroll: true }); }
+          return;
+        }
+        refreshOrderLink();
+      }
+      if (wa.getAttribute('data-wa') === 'order' && state.intent !== 'buy') { state.intent = 'buy'; save(); }
       track('whatsapp_support_clicked', { method: wa.getAttribute('data-wa'), funnel_step: current });
       if (wa.getAttribute('data-wa') === 'order') {
+        var om2 = $('order-msg'); if (om2) om2.classList.remove('bad');
         track('purchase_requested', eventParams('order'));
         var m = $('order-msg'); if (m) m.textContent = t.orderOpened;
       }
@@ -609,16 +826,8 @@
         unsureOpen = false;
         state.mode = parts[1]; save();
         track('device_selected', { platform: parts[1] });
-        go(parts[1] === 'several' ? 'several' : 'features');
+        go('features');
         break;
-      case 'count':
-        var key = parts[1];
-        state[key] = Math.max(0, Math.min(OFFER.maxDevices, state[key] + (+parts[2]))); save();
-        rerenderKeepFocus(act);
-        break;
-      case 'shared': state.shared = parts[1] === '1'; save(); rerenderKeepFocus(act); break;
-      case 'addpc': state.pcs = Math.max(1, state.pcs); save(); rerenderKeepFocus('count:pcs:1'); break;
-      case 'makeshared': state.mode = 'several'; var dd = devices(); state.pcs = dd.pcs; state.phones = dd.phones; state.shared = true; save(); render('price', false); break;
       case 'feat':
         selectedFeature = parts[1];
         view.querySelectorAll('.feat').forEach(function (b) {
@@ -631,8 +840,12 @@
       case 'path':
         state.intent = parts[1]; save();
         track('license_selected', eventParams(current));
-        if (current === 'price') go('course'); else go(parts[1] === 'buy' ? 'order' : 'trial');
+        // Buying goes straight to the order (the lessons come on the USB key); a trial shows them first.
+        if (parts[1] === 'buy') go('order'); else go(current === 'price' ? 'course' : 'trial');
         break;
+      case 'win': buyer.win = parts[1]; saveBuyer(); redrawOrder(act); break;
+      case 'pay': buyer.pay = parts[1]; saveBuyer(); redrawOrder(act); break;
+      case 'tophone': state.mode = 'phone'; save(); go('price'); break;
       case 'finish':
         track('quick_course_skipped', eventParams('course'));
         finishStep();
@@ -656,9 +869,11 @@
   });
 
   function rerenderKeepFocus(act) {
-    var y = window.scrollY;
+    var old = view.querySelector('.scroll');
+    var y = old ? old.scrollTop : 0;
     render(current, false);
-    window.scrollTo(0, y);
+    var list = view.querySelector('.scroll');
+    if (list) list.scrollTop = y;
     var again = view.querySelector('[data-act="' + act + '"]');
     if (again && !again.disabled) again.focus();
   }
@@ -747,6 +962,12 @@
   // ---------------------------------------------------------------------------------
   // Start
   // ---------------------------------------------------------------------------------
+  // Full-screen layout (index.html "App shell"). The real visible height, because 100vh is
+  // taller than the screen in some phone browsers (address bar) and older ones have no dvh.
+  function setAppHeight() { document.documentElement.style.setProperty('--app-h', window.innerHeight + 'px'); }
+  document.documentElement.classList.add('app');
+  setAppHeight();
+  window.addEventListener('resize', setAppHeight);
   setLang(pickLang());
   if (params.get('go') === 'prices' && !location.hash) history.replaceState(null, '', '#prices');
   var first = F.allowedStep(state, stepFromHash(), OFFER);

@@ -210,13 +210,34 @@
     download_link_shared: 1,
     tutorial_clicked: 1,
     whatsapp_support_clicked: 1,
-    language_changed: 1
+    language_changed: 1,
+    // /start/ funnel (start/app.js). Clicks and screens, never a real order: an order is
+    // only real once the visitor sends the WhatsApp message and pays.
+    sales_funnel_started: 1,
+    sales_funnel_viewed: 1,
+    funnel_step_viewed: 1,
+    intention_selected: 1,
+    trial_selected: 1,
+    purchase_selected: 1,
+    activity_selected: 1,
+    pain_selected: 1,
+    device_unsure_clicked: 1,
+    device_selected: 1,
+    personalized_features_viewed: 1,
+    pricing_viewed: 1,
+    license_selected: 1,
+    quick_course_viewed: 1,
+    quick_course_skipped: 1,
+    purchase_requested: 1
   };
   var PARAMS = [
     'event_id', 'platform', 'page_language', 'tutorial_id', 'tutorial_category',
     'tutorial_position', 'app_version', 'link_type', 'download_trigger', 'method',
     'from_language', 'to_language', 'arrived_via', 'ad_source', 'ad_medium',
-    'ad_campaign', 'ad_content', 'ad_term'
+    'ad_campaign', 'ad_content', 'ad_term',
+    // /start/ funnel. `activity` and `pain` are fixed ids (never the visitor's "other" text).
+    'funnel_step', 'step_number', 'intention', 'activity', 'pain', 'selected',
+    'pain_count', 'device_count', 'license_type'
   ];
 
   function newEventId() {

@@ -50,7 +50,10 @@
 
   var LESSON_FIRST_START = 0;  // "First start of Doukkany on PC"
   var LESSON_DEVICES = 14;     // "A second computer and a phone in the shop"
-  var MODES = ['pc', 'phone', 'both', 'several'];
+  // Device choices, one per offer (owner 2026-11-26, three offers only): 'phone' = phone only;
+  // 'pc' and 'both' = the One PC offer (its phone is free); 'two' = the shop pack.
+  // ('several', with counts and add-ons, was removed; old saved answers with it ask again.)
+  var MODES = ['pc', 'both', 'phone', 'two'];
   var INTENTS = ['trial', 'buy'];
 
   function activity(id) {
@@ -93,13 +96,14 @@
     return { list: list.slice(0, MAX_FEATURES), why: why };
   }
 
-  // How many devices of each kind, and whether they share data, for a device choice.
+  // How many devices of each kind the shop will use, for a device choice. Linked devices always
+  // share the same products and sales (the PC is the main one).
   function devices(state) {
     switch (state.mode) {
-      case 'pc': return { pcs: 1, phones: 0, shared: true };
-      case 'phone': return { pcs: 0, phones: 1, shared: true };
-      case 'both': return { pcs: 1, phones: 1, shared: true };
-      case 'several': return { pcs: state.pcs, phones: state.phones, shared: state.shared };
+      case 'pc': return { pcs: 1, phones: 0 };
+      case 'both': return { pcs: 1, phones: 1 };
+      case 'phone': return { pcs: 0, phones: 1 };
+      case 'two': return { pcs: 2, phones: 1 };
       default: return null;
     }
   }
@@ -108,12 +112,12 @@
   // the "second computer and a phone" lesson when devices are linked. At most 6.
   function lessonsFor(state) {
     var a = activity(state.activity) || activity('other');
-    var d = devices(state) || { pcs: 0, phones: 0, shared: false };
+    var d = devices(state) || { pcs: 0, phones: 0 };
     var out = [];
     function add(i) { if (out.indexOf(i) === -1) out.push(i); }
     if (d.pcs > 0) add(LESSON_FIRST_START);
     a.lessons.forEach(add);
-    if (d.shared && d.pcs > 0 && d.pcs + d.phones > 1) add(LESSON_DEVICES);
+    if (d.pcs > 0 && d.pcs + d.phones > 1) add(LESSON_DEVICES);
     if (out.length > 6) {
       var keep = out.slice(0, 5);
       if (out.indexOf(LESSON_DEVICES) > 4) keep.push(LESSON_DEVICES); else keep.push(out[5]);
@@ -122,15 +126,9 @@
     return out;
   }
 
-  function clampCount(n) {
-    n = Math.floor(+n);
-    if (!isFinite(n) || n < 0) return 0;
-    return Math.min(n, 10);
-  }
-
   // The saved answers (localStorage), checked: anything unknown is dropped.
   function cleanState(raw) {
-    var s = { v: 1, intent: null, activity: null, other: '', pains: [], mode: null, pcs: 2, phones: 1, shared: true, watched: [] };
+    var s = { v: 1, intent: null, activity: null, other: '', pains: [], mode: null, watched: [] };
     if (!raw || typeof raw !== 'object' || raw.v !== 1) return s;
     if (INTENTS.indexOf(raw.intent) !== -1) s.intent = raw.intent;
     if (activity(raw.activity)) s.activity = raw.activity;
@@ -139,38 +137,29 @@
       raw.pains.forEach(function (id) { if (pain(id) && s.pains.indexOf(id) === -1) s.pains.push(id); });
     }
     if (MODES.indexOf(raw.mode) !== -1) s.mode = raw.mode;
-    if (raw.pcs != null) s.pcs = clampCount(raw.pcs);
-    if (raw.phones != null) s.phones = clampCount(raw.phones);
-    if (typeof raw.shared === 'boolean') s.shared = raw.shared;
     if (Array.isArray(raw.watched)) {
       s.watched = raw.watched.filter(function (x) { return typeof x === 'string' && /^[\w-]{6,20}$/.test(x); }).slice(0, 30);
     }
     return s;
   }
 
-  // Steps in order. 'several' belongs to the devices step; 'trial' and 'order' are the end.
+  // Steps in order. 'trial' and 'order' are the end.
   // 'pain' can be skipped, so later steps never wait for it.
   var PROGRESS = ['welcome', 'activity', 'pain', 'devices', 'features', 'price', 'course', 'final'];
-  var STEPS = ['welcome', 'activity', 'pain', 'devices', 'several', 'features', 'price', 'course', 'trial', 'order', 'prices'];
+  var STEPS = ['welcome', 'activity', 'pain', 'devices', 'features', 'price', 'course', 'trial', 'order', 'prices'];
 
   function progressIndex(step) {
-    if (step === 'several') return PROGRESS.indexOf('devices');
     if (step === 'trial' || step === 'order') return PROGRESS.indexOf('final');
     return PROGRESS.indexOf(step);
   }
 
   // The first step whose answer is missing before `step` can be shown, or `step` itself.
-  function allowedStep(state, step, offer) {
+  function allowedStep(state, step) {
     if (STEPS.indexOf(step) === -1) return 'welcome';
     if (step === 'welcome' || step === 'prices' || step === 'activity') return step;
     if (!state.activity) return 'activity';
     if (step === 'pain' || step === 'devices') return step;
-    if (step === 'several') return step;
     if (!state.mode) return 'devices';
-    if (state.mode === 'several') {
-      var d = devices(state);
-      if (!offer.recommend(d.pcs, d.phones, d.shared).ok) return 'several';
-    }
     return step;
   }
 
@@ -180,11 +169,11 @@
       case 'activity': return 'welcome';
       case 'pain': return 'activity';
       case 'devices': return 'pain';
-      case 'several': return 'devices';
-      case 'features': return state.mode === 'several' ? 'several' : 'devices';
+      case 'features': return 'devices';
       case 'price': return 'features';
       case 'course': return 'price';
-      case 'trial': case 'order': return 'course';
+      case 'trial': return 'course';
+      case 'order': return 'price'; // buying skips the lessons (they come on the USB key)
       default: return 'welcome';
     }
   }

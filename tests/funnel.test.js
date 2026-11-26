@@ -73,6 +73,34 @@ test('features: the fixes for the chosen pains come first, at most 6, each with 
   }
 });
 
+test('WhatsApp order messages: Darija, every detail asked, no price written in them', () => {
+  const sandbox = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../start/texts.js'), 'utf8'), sandbox);
+  const W = sandbox.window.DK_WA_DZ;
+  for (const k of ['{offer}', '{total}', '{activity}']) assert.ok(W.phone.includes(k), 'phone ' + k);
+  for (const k of ['{offer}', '{pay}', '{total}', '{name}', '{phone}', '{wilaya}', '{commune}', '{activity}']) assert.ok(W.pc.includes(k), 'pc ' + k);
+  assert.ok(W.payPrepaid.includes('{discount}'));
+  assert.ok(/[؀-ۿ]/.test(W.pc) && /[؀-ۿ]/.test(W.phone), 'Arabic script');
+});
+
+test('wilayas and communes list: 69 wilayas, each with its communes, no duplicates', () => {
+  const d = JSON.parse(fs.readFileSync(path.join(__dirname, '../js/dz-places.json'), 'utf8'));
+  assert.equal(d.w.length, 69);
+  d.w.forEach((w, i) => {
+    assert.equal(w[0], i + 1, 'codes 1..69 in order');
+    assert.ok(w[1] && w[2], 'latin and arabic name ' + w[0]);
+    assert.ok(w[3].length >= 2, 'communes of ' + w[1]);
+    const names = w[3].map((c) => c[0].toLowerCase());
+    assert.equal(new Set(names).size, names.length, 'no duplicate commune in ' + w[1]);
+    for (const c of w[3]) assert.ok(c[0] && c[1] && !/[<>]/.test(c[0] + c[1]));
+  });
+  // The source file had the names of 49-58 in the wrong order; the official order is kept here.
+  assert.equal(d.w[48][1], 'Timimoun');
+  assert.ok(d.w[48][3].some((c) => c[0] === 'Aougrout'));
+  assert.equal(d.w[56][1], "El M'Ghair");
+  assert.equal(d.w[15][1], 'Alger');
+});
+
 test('feature screens exist for every language', () => {
   for (const img of new Set(Object.values(F.FEATURE_IMG).filter(Boolean))) {
     for (const lang of ['ar', 'fr', 'en']) {
@@ -106,10 +134,19 @@ test('texts never write a price, a payment account or a fake promise', () => {
 test('devices for each choice', () => {
   const s = F.cleanState(null);
   assert.equal(F.devices(s), null);
-  assert.deepEqual(F.devices({ ...s, mode: 'pc' }), { pcs: 1, phones: 0, shared: true });
-  assert.deepEqual(F.devices({ ...s, mode: 'phone' }), { pcs: 0, phones: 1, shared: true });
-  assert.deepEqual(F.devices({ ...s, mode: 'both' }), { pcs: 1, phones: 1, shared: true });
-  assert.deepEqual(F.devices({ ...s, mode: 'several', pcs: 3, phones: 2, shared: false }), { pcs: 3, phones: 2, shared: false });
+  assert.deepEqual(F.devices({ ...s, mode: 'pc' }), { pcs: 1, phones: 0 });
+  assert.deepEqual(F.devices({ ...s, mode: 'both' }), { pcs: 1, phones: 1 });
+  assert.deepEqual(F.devices({ ...s, mode: 'phone' }), { pcs: 0, phones: 1 });
+  assert.deepEqual(F.devices({ ...s, mode: 'two' }), { pcs: 2, phones: 1 });
+});
+
+test('every device choice gets one of the three offers', () => {
+  const s = F.cleanState(null);
+  const offerOf = (mode) => { const d = F.devices({ ...s, mode }); return OFFER.recommend(d.pcs, d.phones).type; };
+  assert.equal(offerOf('phone'), 'phone');
+  assert.equal(offerOf('pc'), 'pc');
+  assert.equal(offerOf('both'), 'pc');
+  assert.equal(offerOf('two'), 'shop');
 });
 
 test('lessons: PC start first, linking lesson when devices share, at most 6', () => {
@@ -120,9 +157,10 @@ test('lessons: PC start first, linking lesson when devices share, at most 6', ()
   assert.ok(linked.includes(14));
   assert.ok(linked.length <= 6);
   assert.equal(linked[0], 0);
-  assert.ok(!F.lessonsFor({ ...s, activity: 'grocery', mode: 'several', pcs: 2, phones: 0, shared: false }).includes(14));
+  assert.ok(F.lessonsFor({ ...s, activity: 'grocery', mode: 'two' }).includes(14));
+  assert.ok(!F.lessonsFor({ ...s, activity: 'grocery', mode: 'pc' }).includes(14));
   for (const a of F.ACTIVITIES) {
-    for (const mode of ['pc', 'phone', 'both']) {
+    for (const mode of ['pc', 'phone', 'both', 'two']) {
       const l = F.lessonsFor({ ...s, activity: a.id, mode });
       assert.ok(l.length >= 3 && l.length <= 6, a.id + mode);
       assert.equal(new Set(l).size, l.length);
@@ -135,9 +173,9 @@ test('saved answers are checked before use', () => {
   assert.equal(s.intent, null);
   assert.equal(s.activity, null);
   assert.equal(s.mode, null);
-  assert.equal(s.pcs, 10);
-  assert.equal(s.phones, 0);
-  assert.equal(s.shared, true);
+  assert.equal(s.pcs, undefined, 'device counts are gone with the add-ons');
+  assert.equal(F.cleanState({ v: 1, mode: 'several', pcs: 3, phones: 2, shared: true }).mode, null, 'old "several" answer: ask the devices again');
+  assert.equal(F.cleanState({ v: 1, mode: 'both' }).mode, 'both', 'old PC + phone answer still loads');
   assert.ok(!/[<>]/.test(s.other));
   assert.ok(s.other.length <= 60);
   assert.deepEqual(s.watched, ['l487p3PcKrs']);
@@ -158,15 +196,15 @@ test('steps cannot be skipped: missing answers send back to the right step', () 
   assert.equal(F.allowedStep(a, 'pain', OFFER), 'pain');
   assert.equal(F.allowedStep(a, 'order', OFFER), 'devices', 'the pain step can be skipped');
   assert.equal(F.allowedStep({ ...a, mode: 'both' }, 'order', OFFER), 'order');
-  assert.equal(F.allowedStep({ ...a, mode: 'several', pcs: 0, phones: 3, shared: true }, 'price', OFFER), 'several');
-  assert.equal(F.allowedStep({ ...a, mode: 'several', pcs: 0, phones: 3, shared: false }, 'price', OFFER), 'price');
+  assert.equal(F.allowedStep({ ...a, mode: 'two' }, 'price', OFFER), 'price');
+  assert.equal(F.allowedStep({ ...a, mode: 'pc' }, 'several', OFFER), 'welcome', 'the old "several" screen is gone');
 });
 
 test('back goes one step back', () => {
-  const s = { ...F.cleanState(null), activity: 'grocery', mode: 'several' };
-  assert.equal(F.previousStep(s, 'features'), 'several');
-  assert.equal(F.previousStep({ ...s, mode: 'pc' }, 'features'), 'devices');
-  assert.equal(F.previousStep(s, 'order'), 'course');
+  const s = { ...F.cleanState(null), activity: 'grocery', mode: 'two' };
+  assert.equal(F.previousStep(s, 'features'), 'devices');
+  assert.equal(F.previousStep(s, 'order'), 'price', 'buying goes price -> order');
+  assert.equal(F.previousStep(s, 'trial'), 'course');
   assert.equal(F.previousStep(s, 'activity'), 'welcome');
   assert.equal(F.previousStep(s, 'pain'), 'activity');
   assert.equal(F.previousStep(s, 'devices'), 'pain');

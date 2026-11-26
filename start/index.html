@@ -59,8 +59,10 @@
   .prog { display: flex; align-items: center; gap: 10px; min-height: 48px; }
   .back { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; min-width: 44px; padding: 0 10px 0 6px; border: 0; border-radius: 12px; background: transparent; color: var(--green); font-weight: 700; cursor: pointer; }
   .back:hover { background: var(--mint-2); }
-  .bar { flex: 1; height: 8px; border-radius: 8px; background: #E1EAE4; overflow: hidden; }
-  .bar span { display: block; height: 100%; width: 0; background: var(--green); border-radius: 8px; transition: width .3s; }
+  /* One small segment per step, filled up to the current one */
+  .bar { flex: 1; display: flex; gap: 4px; height: 6px; }
+  .bar i { flex: 1; border-radius: 6px; background: #E1EAE4; transition: background .3s; }
+  .bar i.on { background: var(--green); }
   .prog-txt { font-size: .85rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
 
   /* ---- Steps ---- */
@@ -138,6 +140,16 @@
   .field label { font-weight: 700; }
   .field input { font: inherit; font-size: 1.05rem; min-height: 52px; padding: 10px 14px; border: 2px solid var(--line); border-radius: var(--r-sm); background: #fff; color: var(--ink); }
   .field input:focus { border-color: var(--green); outline: none; }
+  /* Order form (PC offers) */
+  .card .field:first-of-type { margin-top: 12px; }
+  .field select { font: inherit; font-size: 1.05rem; min-height: 52px; padding: 10px 14px; border: 2px solid var(--line); border-radius: var(--r-sm); background: #fff; color: var(--ink); width: 100%; }
+  .field select:focus { border-color: var(--green); outline: none; }
+  .field select[disabled] { color: var(--muted); }
+  .field input[dir="ltr"] { text-align: left; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .pill { min-height: 48px; min-width: 72px; padding: 8px 18px; border: 2px solid var(--line); border-radius: 999px; background: #fff; font-weight: 700; cursor: pointer; }
+  .pill[aria-pressed="true"] { border-color: var(--green); background: var(--mint-2); color: var(--deep); }
+  .msg.bad { color: #A33A1C; }
   .field small { color: var(--muted); }
 
   /* Device counts */
@@ -298,6 +310,48 @@
     .choice { padding: 14px 12px; gap: 10px; }
     .choice .ci { width: 44px; height: 44px; }
   }
+  /* ---- App shell (app.js adds html.app): the page never scrolls, like an app screen.
+     Header at the top, then each step = question (.head) + answers (.scroll, the only part
+     that scrolls) + buttons (.dock). Without JavaScript the page stays a normal page. ---- */
+  html.app, html.app body { overflow: hidden; overscroll-behavior: none; }
+  html.app body { height: var(--app-h, 100vh); min-height: 0; padding-bottom: var(--consent-h); }
+  html.app header { flex: none; }
+  html.app main { flex: 1; min-height: 0; display: flex; flex-direction: column; padding-bottom: 0; }
+  html.app #view { flex: 1; min-height: 0; display: flex; flex-direction: column; max-width: none; padding: 0; }
+  html.app .step { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 0; animation: none; }
+  /* Only the question and the list slide in: if a browser pauses animations, the buttons
+     must still sit fully on the screen. */
+  html.app .step > .head, html.app .step > .scroll { animation: in .22s ease-out; }
+  /* Same text width as the old .wrap (760px), but the list scrolls edge to edge. */
+  html.app .step > .head, html.app .step > .scroll, html.app .step > .dock { padding-inline: max(var(--pad), calc((100% - 760px) / 2 + var(--pad))); }
+  html.app .step > .head { flex: none; padding-top: 8px; padding-bottom: 10px; position: relative; z-index: 2; transition: box-shadow .2s; }
+  html.app .step.scrolled > .head { box-shadow: 0 8px 12px -10px rgba(23,33,43,.35); }
+  html.app .step > .scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-bottom: 16px; }
+  html.app .step > .scroll > :first-child { margin-top: 6px; }
+  html.app .step > .scroll > .offer:first-child { margin-top: 20px; } /* room for its "best for you" label */
+  /* Soft fade at the bottom of the list: there is more below. */
+  html.app .step > .scroll::after { content: ""; position: sticky; bottom: -16px; display: block; height: 28px; margin-top: -12px; background: linear-gradient(rgba(245,248,246,0), var(--bg)); pointer-events: none; }
+  html.app .step > .dock { flex: none; position: relative; bottom: auto; z-index: 3; margin: 0; padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); backdrop-filter: none; }
+  html.app .scroll > footer { margin-top: 28px; padding: 16px 0 4px; }
+  html.app .scroll > footer .wrap { padding: 0; max-width: none; }
+  @media (min-width: 600px) {
+    html.app .step > .dock { align-items: center; }
+  }
+  @media (max-width: 599px) {
+    html.app .top-in { min-height: 52px; }
+    html.app .prog { min-height: 44px; }
+    html.app .step h1 { font-size: clamp(1.3rem, 5.8vw, 1.9rem); }
+    html.app .lead { font-size: 1rem; margin-top: 4px; }
+    html.app .choices { gap: 10px; margin-top: 12px; }
+    html.app .choice { min-height: 72px; padding: 12px 14px; }
+    html.app .choice.hero { min-height: 88px; }
+    html.app .tiles { margin-top: 10px; }
+    html.app .tile { min-height: 92px; }
+    html.app .step > .dock { padding-top: 10px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); gap: 2px; }
+    html.app .dock .row { gap: 0 12px; }
+    html.app .dock .link { min-height: 40px; font-size: .92rem; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; animation: none !important; }
   }
@@ -343,6 +397,7 @@
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
   <symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="1.5"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v.01M18 14.5v.01"/></symbol>
+  <symbol id="i-usb" viewBox="0 0 24 24"><rect x="7" y="9" width="10" height="13" rx="2"/><path d="M9 9V3h6v6M10.5 5.5h.01M13.5 5.5h.01"/></symbol>
   <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7M12 17h.01"/></symbol>
 </svg>
 
@@ -360,7 +415,7 @@
   </div>
   <div class="wrap prog" id="prog" hidden>
     <button type="button" class="back" id="back"><svg class="ic flip" aria-hidden="true"><use href="#i-back"/></svg><span id="back-txt">رجوع</span></button>
-    <div class="bar" aria-hidden="true"><span id="bar"></span></div>
+    <div class="bar" id="bar" aria-hidden="true"></div>
     <span class="prog-txt" id="prog-txt"></span>
   </div>
 </header>
@@ -396,11 +451,12 @@
   <div class="frame" id="player-frame"></div>
 </dialog>
 
-<script src="../js/offer.js?v=1"></script>
+<script src="../js/offer.js?v=3"></script>
 <script src="../js/lessons.js?v=1"></script>
-<script src="funnel.js?v=3"></script>
-<script src="../js/tracking.js"></script>
-<script src="texts.js?v=4"></script>
-<script src="app.js?v=8"></script>
+<script src="funnel.js?v=5"></script>
+<script src="counter.js?v=1"></script>
+<script src="../js/tracking.js?v=2"></script>
+<script src="texts.js?v=6"></script>
+<script src="app.js?v=13"></script>
 </body>
 </html>
