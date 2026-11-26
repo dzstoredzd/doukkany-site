@@ -285,6 +285,8 @@
   .get { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
   .share-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .share-row .btn { min-height: 48px; font-size: .95rem; padding: 8px 10px; }
+  /* An odd button out (5 with the phone's Share) takes the whole last row. */
+  @media (max-width: 599px) { .share-row > :last-child:nth-child(odd) { grid-column: 1 / -1; } }
   .play-badge { display: inline-block; line-height: 0; align-self: flex-start; }
   .play-badge img { height: 74px; width: auto; margin: -9px; display: block; }
   .msg { font-weight: 600; color: var(--green); font-size: .95rem; }
@@ -444,7 +446,7 @@
 
 <header>
   <div class="wrap wide top-in">
-    <a class="logo" href="../download/" id="logo" aria-label="دكّاني">
+    <a class="logo" href="./" id="logo" data-act="go:welcome" aria-label="دكّاني">
       <img class="ar" src="../download/assets/doukkany-wordmark-ar.png" width="360" height="154" alt="دكّاني">
       <img class="lat" src="../download/assets/doukkany-wordmark-latin.png" width="400" height="98" alt="Doukkany">
     </a>
@@ -484,7 +486,7 @@
 <script src="funnel.js?v=8"></script>
 <script src="counter.js?v=1"></script>
 <script src="../js/tracking.js?v=2"></script>
-<script src="texts.js?v=17"></script>
-<script src="app.js?v=29"></script>
+<script src="texts.js?v=20"></script>
+<script src="app.js?v=30"></script>
 </body>
 </html>

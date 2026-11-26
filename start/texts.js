@@ -3,7 +3,7 @@
  * Prices are never written here: they come from ../js/offer.js. */
 window.DK_START_TEXT = {
   ar: {
-    title: 'ابدا مع دكّاني · Doukkany', home: 'دكّاني: صفحة التحميل',
+    title: 'ابدا مع دكّاني · Doukkany', home: 'دكّاني: صفحة البداية',
     back: 'رجوع', stepOf: '{n} من {t}', next: 'كمّل', edit: 'بدّل', da: 'دج', sep: '، ',
     helpBtn: 'كلّمنا في واتساب',
     openYt: 'فتح على YouTube', close: 'غلق',
@@ -53,7 +53,7 @@ window.DK_START_TEXT = {
     whyPains: 'واش قلت يتعبك، الحل تاعو داخل في الرخصة: {features}.',
 
     netTitle: 'كيفاش يتربطو؟',
-    netNote: 'في شبكة الحانوت (Wi-Fi ولا كابل). الحاسوب الرئيسي فيه السلع والمبيعات ولازم يكون مشعول. ما كاش مزامنة عبر الأنترنت، والبيع ما يحتاجش أنترنت.',
+    netNote: 'في شبكة الحانوت (Wi-Fi ولا كابل بين الحواسيب). الحاسوب الرئيسي فيه السلع والمبيعات ولازم يكون مشعول. ما تحتاجش أنترنت، المهم يكونو على نفس الشبكة.',
 
     fTitle: 'دكّاني مناسب لخدمة حانوتك', fSub: 'هذا واش يعاونك أكثر:',
     feat: {
@@ -114,7 +114,7 @@ window.DK_START_TEXT = {
     smartTitle: 'ظهرت رسالة حماية من Windows؟',
     smartBody: 'هذا يصرا مع البرامج الجداد. اضغط «مزيد من المعلومات» (More info)، ومن بعد «تشغيل على أي حال» (Run anyway).',
     onPhonePc: 'راك على الهاتف. ابعث رابط الحاسوب لروحك وافتحو في الحاسوب:',
-    shareBtn: 'بارطاجي', waShare: 'واتساب', copyBtn: 'انسخ', mailBtn: 'إيميل',
+    shareBtn: 'بارطاجي', waShare: 'واتساب', copyBtn: 'انسخ', mailBtn: 'إيميل', dlBtn: 'تحميل',
     copied: 'تنسخ الرابط.', shared: 'تم. افتح الرابط في الحاسوب والتحميل يبدا وحدو.',
     shareText: 'رابط تحميل دكّاني للحاسوب (Windows 10 وما بعده):',
     phoneBlock: 'للهاتف ولا الطابلات', phoneReq: 'Android', playAlt: 'احصل عليه من Google Play',
@@ -187,7 +187,7 @@ window.DK_START_TEXT = {
   },
 
   fr: {
-    title: 'Bien commencer avec Doukkany', home: 'Doukkany : page de téléchargement',
+    title: 'Bien commencer avec Doukkany', home: 'Doukkany : accueil',
     back: 'Retour', stepOf: '{n} sur {t}', next: 'Continuer', edit: 'Modifier', da: 'DA', sep: ', ',
     helpBtn: 'Écrivez-nous sur WhatsApp',
     openYt: 'Ouvrir sur YouTube', close: 'Fermer',
@@ -237,7 +237,7 @@ window.DK_START_TEXT = {
     whyPains: 'Ce qui vous pèse est réglé dans la licence : {features}.',
 
     netTitle: 'Comment ils se relient ?',
-    netNote: 'Par le réseau du magasin (Wi-Fi ou câble). Le PC principal garde les produits et les ventes et doit rester allumé. Pas de synchronisation par internet, et la vente n’a pas besoin d’internet.',
+    netNote: 'Par le réseau du magasin (Wi-Fi ou câble entre les ordinateurs). Le PC principal garde les produits et les ventes et doit rester allumé. Pas besoin d’internet : il suffit qu’ils soient sur le même réseau.',
 
     fTitle: 'Doukkany convient à votre magasin', fSub: 'Ce qui vous aidera le plus :',
     feat: {
@@ -298,7 +298,7 @@ window.DK_START_TEXT = {
     smartTitle: 'Windows affiche un avertissement ?',
     smartBody: 'Cela arrive avec les nouveaux logiciels. Cliquez sur « Informations complémentaires », puis sur « Exécuter quand même ».',
     onPhonePc: 'Vous êtes sur un téléphone. Envoyez-vous le lien PC et ouvrez-le sur l’ordinateur :',
-    shareBtn: 'Partager', waShare: 'WhatsApp', copyBtn: 'Copier', mailBtn: 'E-mail',
+    shareBtn: 'Partager', waShare: 'WhatsApp', copyBtn: 'Copier', mailBtn: 'E-mail', dlBtn: 'Télécharger',
     copied: 'Lien copié.', shared: 'C’est fait. Ouvrez le lien sur le PC : le téléchargement démarre tout seul.',
     shareText: 'Lien de téléchargement de Doukkany pour PC (Windows 10 et plus) :',
     phoneBlock: 'Pour téléphone ou tablette', phoneReq: 'Android', playAlt: 'Disponible sur Google Play',
@@ -371,7 +371,7 @@ window.DK_START_TEXT = {
   },
 
   en: {
-    title: 'Get started with Doukkany', home: 'Doukkany: download page',
+    title: 'Get started with Doukkany', home: 'Doukkany: start page',
     back: 'Back', stepOf: '{n} of {t}', next: 'Continue', edit: 'Change', da: 'DA', sep: ', ',
     helpBtn: 'Message us on WhatsApp',
     openYt: 'Open on YouTube', close: 'Close',
@@ -421,7 +421,7 @@ window.DK_START_TEXT = {
     whyPains: 'What bothers you is fixed in the licence: {features}.',
 
     netTitle: 'How do they link?',
-    netNote: 'Over the shop network (Wi-Fi or cable). The main PC holds the products and sales and must stay on. No sync over the internet, and selling never needs internet.',
+    netNote: 'Over the shop network (Wi-Fi or a cable between the computers). The main PC holds the products and sales and must stay on. No internet needed: they just have to be on the same network.',
 
     fTitle: 'Doukkany fits your shop', fSub: 'What helps you most:',
     feat: {
@@ -482,7 +482,7 @@ window.DK_START_TEXT = {
     smartTitle: 'Windows shows a warning?',
     smartBody: 'This happens with new software. Click “More info”, then “Run anyway”.',
     onPhonePc: 'You are on a phone. Send yourself the PC link and open it on the computer:',
-    shareBtn: 'Share', waShare: 'WhatsApp', copyBtn: 'Copy', mailBtn: 'Email',
+    shareBtn: 'Share', waShare: 'WhatsApp', copyBtn: 'Copy', mailBtn: 'Email', dlBtn: 'Download',
     copied: 'Link copied.', shared: 'Done. Open the link on your PC: the download starts by itself.',
     shareText: 'Doukkany download link for PC (Windows 10 and newer):',
     phoneBlock: 'For phone or tablet', phoneReq: 'Android', playAlt: 'Get it on Google Play',

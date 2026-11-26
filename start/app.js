@@ -499,6 +499,8 @@
         '<button type="button" class="btn soft" data-act="wa-pc">' + ic('i-wa', 'f') + esc(t.waShare) + '</button>' +
         '<button type="button" class="btn soft" data-act="copy-pc">' + ic('i-copy') + esc(t.copyBtn) + '</button>' +
         '<a class="btn soft" data-act="mail-pc" href="' + esc(mailLink()) + '">' + ic('i-mail') + esc(t.mailBtn) + '</a>' +
+        // The PC installer straight to this phone too (to copy it to the PC later; owner, 2026-11-26).
+        '<a class="btn soft" id="win-btn" href="' + esc(latest ? latest.url : RELEASE_PAGE) + '">' + ic('i-dl') + esc(t.dlBtn) + '</a>' +
         '</div><p class="msg" id="pc-msg" role="status"></p></div>';
     }
     return head + '<div class="get"><a class="btn block" id="win-btn" href="' + esc(latest ? latest.url : RELEASE_PAGE) + '">' + ic('i-win', 'f') + esc(t.winBtn) + '</a>' +
@@ -757,7 +759,7 @@
       var input = $('other');
       if (input) input.addEventListener('input', function () { state.other = F.cleanState({ v: 1, other: input.value }).other; save(); });
     }
-    if (step === 'trial' && devices().pcs > 0 && !IS_PHONE) resolveLatest();
+    if (step === 'trial' && devices().pcs > 0) resolveLatest();
     if (step === 'order') bindOrderForm();
   }
 
