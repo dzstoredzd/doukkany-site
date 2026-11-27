@@ -189,7 +189,7 @@
   </div>
 </footer>
 
-<script src="../js/tracking.js"></script>
+<script src="../js/tracking.js?v=4"></script>
 <script>
 (function () {
   'use strict';
@@ -260,8 +260,9 @@
     return q ? url + (url.indexOf('?') === -1 ? '?' : '&') + q : url;
   }
   // Google Play gives 'referrer' to the app on its first open (Play Install Referrer).
+  // With ads consent only, the referrer also carries dk_ads=1 + Meta's click id (tracking.js).
   function playUrl() {
-    var q = tracking ? tracking.campaignQuery() : '';
+    var q = tracking ? (tracking.playReferrer ? tracking.playReferrer() : tracking.campaignQuery()) : '';
     return q ? PLAY_URL + '&referrer=' + encodeURIComponent(q) : PLAY_URL;
   }
   // This page with ?get=windows: opened on a computer, the download starts by itself.
@@ -360,6 +361,7 @@
     startDownload('button');
   });
   $('play-btn').addEventListener('click', function () {
+    $('play-btn').href = playUrl(); // the consent answer may have come after the page was drawn
     track('google_play_clicked', { platform: 'android', link_type: 'play_store' });
   });
 

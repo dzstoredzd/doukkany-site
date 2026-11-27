@@ -107,38 +107,63 @@
     return c;
   })();
 
-  // The Google Tag Manager triggers were made for the first names (gtm/doukkany-gtm-import.json):
-  // they keep getting those, so GA4 and Meta keep working until the container is updated.
-  function legacyName(name, p) {
+  // Our counter keeps the funnel's own names (the site-events server accepts only those).
+  // Google Tag Manager (GA4 + Meta Pixel) gets the names of the event list in
+  // DOUKKANY-MARKETING/migration/01-website-tracking.md, once each: gtmEvents() maps them.
+  // Names with no entry here stay in our counter only.
+  function ext(p, more) { var q = {}; Object.keys(p).forEach(function (k) { q[k] = p[k]; }); Object.keys(more).forEach(function (k) { q[k] = more[k]; }); return q; }
+  var funnelStarted = false;
+  function started(list) {
+    if (funnelStarted) return list;
+    funnelStarted = true;
+    return [['sales_funnel_started', {}]].concat(list);
+  }
+  function gtmEvents(name, p) {
     switch (name) {
-      case 'funnel_viewed': return 'sales_funnel_started';
-      case 'step_viewed': return 'funnel_step_viewed';
-      case 'trial_journey_selected': return 'trial_selected';
-      case 'purchase_journey_selected': return 'purchase_selected';
-      case 'challenges_selected': return 'pain_selected';
-      case 'download_clicked': return p.platform === 'android' ? 'google_play_clicked' : 'windows_download_clicked';
-      case 'whatsapp_clicked': return p.purpose === 'order' ? 'purchase_requested' : 'whatsapp_support_clicked';
-      case 'order_submitted': return 'purchase_requested';
-      default: return null;
+      case 'funnel_viewed': return [['sales_funnel_viewed', p]];
+      case 'trial_journey_selected': return started([['intention_selected', ext(p, { intention: 'trial' })]]);
+      case 'purchase_journey_selected': return started([['intention_selected', ext(p, { intention: 'buy' })]]);
+      case 'direct_download_selected': return started([['intention_selected', ext(p, { intention: 'download' })]]);
+      case 'offer_viewed': return started([['license_selected', p]]);
+      case 'step_viewed': return [['funnel_step_viewed', p]];
+      case 'challenges_selected': return [['pain_selected', p]];
+      case 'video_played': return [['tutorial_clicked', p]];
+      case 'download_clicked':
+        return [[p.platform === 'android' ? 'google_play_clicked' : 'windows_download_clicked', ext(p, { download_trigger: 'button' })]];
+      case 'whatsapp_clicked':
+        return p.purpose === 'order' ?
+          [['purchase_requested', ext(ext(p, priceParams(p.license_type)), { method: 'whatsapp' })], ['funnel_completed', { method: 'whatsapp_order', pay: p.pay, license_type: p.license_type }]] :
+          [['whatsapp_support_clicked', ext(p, { method: p.purpose, link_type: 'whatsapp' })]];
+      case 'activity_selected': case 'device_selected': case 'pricing_viewed':
+      case 'download_link_shared': case 'download_link_copied': case 'download_email_app_opened':
+      case 'language_changed':
+        return [[name, p]];
+      default: return [];
     }
+  }
+  // GTM only (names our counter does not have).
+  function sendGtm(name, p, opts) {
+    try {
+      if (!tracking) return;
+      var q = ext(p || {}, { funnel_version: state.fv });
+      if (journey) q.journey = journey;
+      tracking.track(name, q, opts);
+    } catch (e) {}
   }
   function track(name, p) {
     p = p || {};
     try { if (ownCounter) ownCounter.count(name, p); } catch (e) {}
-    try {
-      if (!tracking) return;
-      var q = {};
-      Object.keys(p).forEach(function (k) { q[k] = p[k]; });
-      q.funnel_version = state.fv;
-      if (journey) q.journey = journey;
-      tracking.track(name, q);
-      var old = legacyName(name, p);
-      if (old) tracking.track(old, q);
-    } catch (e) {}
+    gtmEvents(name, p).forEach(function (ev) { sendGtm(ev[0], ev[1]); });
   }
   // Some events only once per page load (opening the same FAQ twice is one open).
   var once = {};
   function trackOnce(key, name, p) { if (once[key]) return; once[key] = true; track(name, p); }
+  function gtmOnce(key, name, p, opts) { if (once[key]) return; once[key] = true; sendGtm(name, p, opts); }
+  // The price of the offer on screen, from js/offer.js (Meta ViewContent / InitiateCheckout / Lead value).
+  function priceParams(type) {
+    var plan = OFFER.plans[type];
+    return plan ? { value: plan.price, currency: OFFER.currency, license_type: type } : {};
+  }
 
   // ---------------------------------------------------------------------------------
   // Helpers
@@ -179,7 +204,13 @@
   }
   function campaignQuery(via) { try { return tracking ? tracking.campaignQuery(via) : ''; } catch (e) { return ''; } }
   function withCampaign(url, via) { var q = campaignQuery(via); return q ? url + (url.indexOf('?') === -1 ? '?' : '&') + q : url; }
-  function playUrl() { var q = campaignQuery(); return q ? PLAY_URL + '&referrer=' + encodeURIComponent(q) : PLAY_URL; }
+  // Play gives `referrer` to the app on its first open (Play Install Referrer): campaign words,
+  // and with ads consent only, dk_ads=1 + Meta's click id (js/tracking.js playReferrer).
+  function playUrl() {
+    var q = '';
+    try { q = tracking && tracking.playReferrer ? tracking.playReferrer() : campaignQuery(); } catch (e) {}
+    return q ? PLAY_URL + '&referrer=' + encodeURIComponent(q) : PLAY_URL;
+  }
   // The same PC link as /download/'s "send the link to your PC": on a PC it starts the download.
   function winLink(via) { return withCampaign(new URL('../download/', location.href).href + '?get=windows&lang=' + lang, via); }
 
@@ -621,7 +652,7 @@
     var demo = F.demoFor(state);
     var more = F.moreDemosFor(state, 3);
     var tut = F.tutorialsFor(state);
-    return '<div class="card"><h2>' + cic('i-play-c', C.blue) + esc(t.demoTitle) + '</h2>' +
+    return '<div class="card videos"><h2>' + cic('i-play-c', C.blue) + esc(t.demoTitle) + '</h2>' +
       (d && d.pcs === 0 ? '<p class="q-sub">' + esc(t.pcVideoNote) + '</p>' : '') +
       '<ol class="lessons">' + lessonHtml(demo, true, 'demo') + '</ol>' +
       '<details class="tip more"><summary>' + esc(t.moreVideos) + '</summary>' +
@@ -801,6 +832,9 @@
       // Pay at delivery is chosen by default (owner, 2026-11-26).
       pay: ['prepaid', 'cod'].indexOf(raw.pay) !== -1 ? raw.pay : 'cod',
       requestId: typeof raw.requestId === 'string' && /^[0-9a-f-]{36}$/.test(raw.requestId) ? raw.requestId : '',
+      // The Meta Lead event id of this order (same lifetime as requestId): sent inside the
+      // order and used by the browser Lead, so Meta counts the order once.
+      leadEventId: typeof raw.leadEventId === 'string' && /^[0-9a-f-]{36}$/.test(raw.leadEventId) ? raw.leadEventId : '',
       tried: false // errors show only after a first try to send
     };
   })();
@@ -810,7 +844,7 @@
     try { sessionStorage.setItem(BUYER_KEY, JSON.stringify(copy)); } catch (e) {}
   }
   // The buyer changed the order: a new send is a new order.
-  function buyerEdited() { buyer.requestId = ''; saveBuyer(); }
+  function buyerEdited() { buyer.requestId = ''; buyer.leadEventId = ''; saveBuyer(); }
   function buyerForCheck() {
     return { win: buyer.win, pay: buyer.pay, name: buyer.name, phone: buyer.phone, wilaya: wilayaText(), commune: communeText() };
   }
@@ -867,22 +901,70 @@
     var el = firstProblemEl(probs);
     if (el) { el.scrollIntoView({ block: 'center' }); try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); } }
   }
-  function postOrder(body) {
-    if (!ORDER_LIVE) {
+  // Local checks: ?dk_order=fail (network error), ?dk_order=old (a site-order that does not know
+  // event_id / attribution yet: 422 invalid_order, then OK without them), ?dk_order_url=<local
+  // address> (a local fake server; only on localhost).
+  var LOCAL_ORDER_URL = (function () {
+    var u = params.get('dk_order_url');
+    return !ORDER_LIVE && u && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(u) ? u : '';
+  })();
+  function postOnce(body) {
+    if (!ORDER_LIVE && !LOCAL_ORDER_URL) {
       (window.__dkOrderSent = window.__dkOrderSent || []).push(body);
-      var fail = params.get('dk_order') === 'fail';
-      return new Promise(function (res) { setTimeout(function () { res(fail ? { ok: false } : { ok: true }); }, 400); });
+      var mode = params.get('dk_order');
+      var res = mode === 'fail' ? { ok: false, error: 'network' } :
+        mode === 'old' && (body.event_id || body.attribution) ? { ok: false, error: 'invalid_order' } : { ok: true };
+      return new Promise(function (done) { setTimeout(function () { done(res); }, 400); });
     }
-    return fetch(ORDER_URL, { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(body) })
+    return fetch(LOCAL_ORDER_URL || ORDER_URL, { method: 'POST', headers: { 'content-type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok && j && j.ok === true, error: j && j.error }; }, function () { return { ok: false }; }); },
         function () { return { ok: false, error: 'network' }; });
+  }
+  // A site-order deployed before it knew event_id / attribution refuses unknown fields
+  // (422 invalid_order): send the same order once more without them, so the order is never
+  // lost to a deploy order mistake. `lead` tells whether the server got the Lead event id.
+  function postOrder(body) {
+    return postOnce(body).then(function (res) {
+      if (res.ok || res.error !== 'invalid_order' || !(body.event_id || body.attribution)) { res.lead = !!body.event_id; return res; }
+      var plain = {};
+      Object.keys(body).forEach(function (k) { if (k !== 'event_id' && k !== 'attribution') plain[k] = body[k]; });
+      return postOnce(plain).then(function (res2) { res2.lead = false; return res2; });
+    });
+  }
+  // site-order refuses bodies over 4 KB: drop the least useful attribution parts first (the
+  // order itself always goes). fbclid is also inside fbc; the first touch is the oldest.
+  function fitOrder(body) {
+    function size() { var s = JSON.stringify(body); return window.TextEncoder ? new TextEncoder().encode(s).length : s.length * 3; }
+    var a = body.attribution;
+    if (!a || size() <= 3800) return;
+    a.fbclid = null;
+    if (size() <= 3800) return;
+    a.first_touch = null;
+    if (size() <= 3800) return;
+    delete body.attribution;
+  }
+  // What the order carries for ad attribution (js/tracking.js decides what consent allows).
+  function orderAttribution() {
+    try {
+      var a = tracking && tracking.attribution ? tracking.attribution() : null;
+      if (!a) return null;
+      a.funnel_version = state.fv;
+      a.journey = journey || null;
+      return a;
+    } catch (e) { return null; }
   }
   function sendCodOrder() {
     if (codOrder.state === 'sending') return; // a double tap sends once
     var r = rec();
     var probs = F.checkoutProblems(buyerForCheck(), r.type);
     if (probs.length) { showProblems(probs); return; }
-    if (!buyer.requestId) { buyer.requestId = newRequestId(); saveBuyer(); }
+    var firstTry = !buyer.requestId;
+    if (!buyer.requestId) {
+      buyer.requestId = newRequestId();
+      buyer.leadEventId = tracking && tracking.newEventId ? tracking.newEventId() : newRequestId();
+      if (!/^[0-9a-f-]{36}$/.test(buyer.leadEventId)) buyer.leadEventId = newRequestId();
+      saveBuyer();
+    }
     var trap = $('b-website');
     var total = OFFER.orderTotal(r.type, 'cod');
     var body = {
@@ -891,6 +973,15 @@
       offer: r.type, devices: state.mode, pay: 'cod', total_dzd: total,
       wilaya: wilayaText(), commune: communeText(), language: lang, website: trap ? trap.value : ''
     };
+    // Ad attribution (DOUKKANY-MARKETING/migration/01-website-tracking.md): the Lead event id
+    // and where the visit came from. Never a name or a phone in them.
+    if (buyer.leadEventId) body.event_id = buyer.leadEventId;
+    var attr = orderAttribution();
+    if (attr) body.attribution = attr;
+    fitOrder(body);
+    var leadId = buyer.leadEventId;
+    // A valid order asked for (a retry of the same order is not a new request).
+    if (firstTry) sendGtm('purchase_requested', ext(priceParams(r.type), { method: 'site_order', pay: 'cod' }));
     codOrder.state = 'sending';
     redrawOrder('cod-btn');
     postOrder(body).then(function (res) {
@@ -900,15 +991,18 @@
         redrawOrder('cod-btn');
         return;
       }
-      // Success only after the server said ok (owner brief §13).
+      // Success only after the server said ok (owner brief §13). Only now the Meta Lead
+      // (contact_form_submitted), with the event id the server got (when it got one).
       track('order_submitted', { license_type: r.type, pay: 'cod' });
+      sendGtm('contact_form_submitted', ext(eventParams(), ext(priceParams(r.type), { pay: 'cod', method: 'site_order' })), res.lead ? { eventId: leadId } : null);
+      sendGtm('funnel_completed', { method: 'site_order', pay: 'cod', license_type: r.type });
       codOrder.state = 'done';
       codOrder.phone = body.phone;
       codOrder.ref = F.orderRef(body.request_id);
       codOrder.total = total;
       // The order is with us now: forget the buyer's details in this tab.
       buyer.name = ''; buyer.phone = ''; buyer.wilaya = 0; buyer.wilayaTxt = ''; buyer.commune = '';
-      buyer.communeOther = ''; buyer.requestId = ''; buyer.tried = false; saveBuyer();
+      buyer.communeOther = ''; buyer.requestId = ''; buyer.leadEventId = ''; buyer.tried = false; saveBuyer();
       render('order', true);
     });
   }
@@ -1030,9 +1124,30 @@
       var n = F.progressIndex(step, state);
       track('step_viewed', { funnel_step: step, step_number: n < 0 ? undefined : n + 1 });
       var p = eventParams();
-      if (step === 'prices' || step === 'price') track('pricing_viewed', p);
+      var r = rec();
+      // A price on screen (Meta ViewContent, and "price seen" for QualifiedDownload). Once per
+      // screen per page load. The prices list shows three offers: no single value.
+      if (step === 'prices') trackOnce('price:prices', 'pricing_viewed', ext(p, { funnel_step: 'prices' }));
+      if (step === 'price' && r.ok) trackOnce('price:price', 'pricing_viewed', ext(p, ext(priceParams(r.type), { funnel_step: 'price' })));
+      if (step === 'devices' && F.isBuy(state)) trackOnce('price:devices', 'pricing_viewed', ext(p, { funnel_step: 'devices' }));
       if (step === 'ready' || step === 'trial') track('recommendation_viewed', p);
-      if (step === 'order' && codOrder.state !== 'done') track('checkout_started', p);
+      if (step === 'order' && codOrder.state !== 'done') {
+        track('checkout_started', p);
+        if (r.ok) {
+          trackOnce('price:order', 'pricing_viewed', ext(p, ext(priceParams(r.type), { funnel_step: 'order' })));
+          gtmOnce('checkout', 'purchase_form_started', ext(p, priceParams(r.type)));
+        }
+      }
+      if (step === 'course') gtmOnce('course', 'quick_course_viewed', ext(p, { funnel_step: 'course' }));
+    }
+    // v2 end screen: the offer and the videos sit below the download buttons. They count as
+    // seen only once they are really on screen (half visible).
+    if (step === 'ready') {
+      whenSeen(view.querySelector('.offer-mini'), function () {
+        var r2 = rec();
+        if (r2.ok) trackOnce('price:ready', 'pricing_viewed', ext(eventParams(), ext(priceParams(r2.type), { funnel_step: 'ready' })));
+      });
+      whenSeen(view.querySelector('.videos'), function () { gtmOnce('course', 'quick_course_viewed', ext(eventParams(), { funnel_step: 'ready' })); });
     }
     if (step === 'activity') {
       var input = $('other');
@@ -1047,6 +1162,18 @@
     if (step === 'prices') {
       ['c-day', 'c-days'].forEach(function (id) { var el = $(id); if (el) el.addEventListener('input', updateCalc); });
     }
+  }
+
+  // Calls fn once when el is at least half on screen (inside the scrolling list). Browsers
+  // without IntersectionObserver: never (a price we cannot see shown is not counted).
+  function whenSeen(el, fn) {
+    if (!el || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting && en.intersectionRatio >= 0.5) { io.disconnect(); fn(); }
+      });
+    }, { threshold: [0.5] });
+    io.observe(el);
   }
 
   function eventParams() {
@@ -1141,7 +1268,11 @@
       var pm = $('pc-msg'); if (pm) pm.textContent = t.starting;
       return;
     }
-    if (e.target.closest && e.target.closest('#play-btn')) { track('download_clicked', { platform: 'android', link_type: 'play_store', funnel_step: current }); return; }
+    if (e.target.closest && e.target.closest('#play-btn')) {
+      e.target.closest('#play-btn').href = playUrl(); // the consent answer may have come after the screen was drawn
+      track('download_clicked', { platform: 'android', link_type: 'play_store', funnel_step: current });
+      return;
+    }
 
     var el = e.target.closest && e.target.closest('[data-act]');
     if (!el) return;
@@ -1190,6 +1321,11 @@
         if (state.mode !== parts[1]) newOrder();
         state.mode = parts[1]; save();
         track('device_selected', { platform: parts[1] });
+        // Devices is the last question of both paths: the configuration is complete.
+        (function () {
+          var r = rec();
+          gtmOnce('config:' + (state.activity || '-') + ':' + parts[1], 'configuration_completed', ext(eventParams(), r.ok ? priceParams(r.type) : {}));
+        })();
         go(F.isBuy(state) ? 'order' : F.isV1(state) ? 'features' : 'ready');
         break;
       case 'plan':
@@ -1212,7 +1348,7 @@
         break;
       case 'tophone': newOrder(); state.mode = 'phone'; buyer.win = ''; save(); go(F.isBuy(state) ? 'order' : F.trialEnd(state)); break;
       case 'cod-send': sendCodOrder(); break;
-      case 'finish': go(state.intent === 'buy' ? 'order' : 'trial'); break;
+      case 'finish': sendGtm('quick_course_skipped', ext(eventParams(), { funnel_step: 'course' })); go(state.intent === 'buy' ? 'order' : 'trial'); break;
       case 'try-from-prices':
         state.intent = 'trial'; journey = 'trial'; save();
         track('trial_journey_selected', {});
@@ -1228,7 +1364,9 @@
         window.open('https://wa.me/?text=' + encodeURIComponent(t.shareText + '\n' + winLink('share')), '_blank', 'noopener');
         break;
       case 'copy-pc': copy(winLink('copy'), 'pc-msg', t.copied); track('download_link_copied', { method: 'clipboard' }); break;
-      case 'mail-pc': track('download_email_app_opened', { method: 'mailto' }); break;
+      // The link is built at the click (the campaign and the QualifiedDownload mark may have
+      // changed since the screen was drawn).
+      case 'mail-pc': el.href = mailLink(); track('download_email_app_opened', { method: 'mailto' }); break;
       case 'copy-play': copy(playUrl(), 'play-msg', t.copied); track('download_link_copied', { method: 'clipboard', platform: 'android' }); break;
       case 'wa-play':
         track('download_link_shared', { method: 'whatsapp', platform: 'android' });

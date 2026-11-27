@@ -186,85 +186,259 @@
   }
 
   // Query string to add to links we hand out (email, copy, share, Play referrer).
+  // A link handed out (via) by a visitor who is qualified for QualifiedDownload but has not
+  // downloaded yet also carries dk_q=1, so the download on the other device (the shop PC)
+  // still counts as qualified. dk_q holds no answer and no id: only "qualified".
   function campaignQuery(via) {
     var parts = [];
     if (campaign) {
       UTM.forEach(function (k) {
         if (campaign[k]) parts.push(k + '=' + encodeURIComponent(campaign[k]));
       });
+      if (campaign.placement) parts.push('placement=' + encodeURIComponent(campaign.placement));
     }
+    if (lastTouch) ID_KEYS.forEach(function (k) { if (lastTouch[k]) parts.push(k + '=' + lastTouch[k]); });
     if (via) parts.push('dk_via=' + encodeURIComponent(via));
+    if (via && qualified() && !qd.f) parts.push('dk_q=1');
     return parts.join('&');
+  }
+
+  // ---------------------------------------------------------------------------------
+  // Attribution for orders (Meta Conversions API in site-order, see
+  // DOUKKANY-MARKETING/migration/01-website-tracking.md). Two "touches", kept apart:
+  //   first touch = the first ad/campaign link seen on this device (never overwritten),
+  //   last touch  = the latest one.
+  // A touch is a page address with utm_*, placement or fbclid. Kept for this tab
+  // (sessionStorage) for everyone, on the device (localStorage, 90 days) only after "OK".
+  // fbclid (Meta's click id) is kept apart and only ever leaves the browser with ads consent.
+  // ---------------------------------------------------------------------------------
+  var FIRST_KEY = 'dk-touch-first', LAST_KEY = 'dk-touch-last', FBCLID_KEY = 'dk-fbclid';
+  var TOUCH_KEYS = UTM.concat(['placement']);
+  // Meta campaign / ad set / ad ids from the ads' URL parameters (ads plan, 2026-11-27):
+  // utm_id={{campaign.id}}&dk_adset={{adset.id}}&dk_ad={{ad.id}}. Digits only.
+  var ID_KEYS = ['utm_id', 'dk_adset', 'dk_ad'];
+
+  function hostOf(url) {
+    try { var h = new URL(url).hostname.toLowerCase(); return /^[a-z0-9.-]{1,100}$/.test(h) ? h : undefined; } catch (e) { return undefined; }
+  }
+  function touchFromUrl() {
+    var t = null;
+    TOUCH_KEYS.forEach(function (k) {
+      var v = clean(query.get(k));
+      if (k === 'placement' && v === undefined) v = clean(query.get('utm_placement'));
+      if (v !== undefined) { t = t || {}; t[k] = v; }
+    });
+    ID_KEYS.forEach(function (k) {
+      var v = query.get(k);
+      if (v && /^\d{5,20}$/.test(v)) { t = t || {}; t[k] = v; }
+    });
+    if (!t && !fbclidFromUrl) return null;
+    t = t || {};
+    t.landing_path = location.pathname.slice(0, 200);
+    var ref = d.referrer ? hostOf(d.referrer) : undefined;
+    if (ref && ref !== location.hostname) t.referrer_host = ref;
+    t.at = new Date().toISOString();
+    return t;
+  }
+  // Meta's click id: letters, digits, - and _ only (anything else is not a real one).
+  var fbclidFromUrl = (function () {
+    var v = query.get('fbclid');
+    return v && /^[A-Za-z0-9_-]{10,500}$/.test(v) ? v : null;
+  })();
+  var firstTouch = readJson(session, FIRST_KEY);
+  var lastTouch = readJson(session, LAST_KEY);
+  var fbclid = readJson(session, FBCLID_KEY); // { v, at (ms) }
+  (function () {
+    var now = touchFromUrl();
+    if (now) {
+      lastTouch = now;
+      if (!firstTouch) firstTouch = now;
+      session.set(LAST_KEY, JSON.stringify(lastTouch));
+      session.set(FIRST_KEY, JSON.stringify(firstTouch));
+    }
+    if (fbclidFromUrl && (!fbclid || fbclid.v !== fbclidFromUrl)) {
+      fbclid = { v: fbclidFromUrl, at: Date.now() };
+      session.set(FBCLID_KEY, JSON.stringify(fbclid));
+    }
+    // The last campaign link's placement goes on events as ad_placement.
+    if (campaign && lastTouch && lastTouch.placement && !campaign.placement) campaign.placement = lastTouch.placement;
+  })();
+
+  function fresh(t) { return t && t.at && Date.now() - Date.parse(t.at) < CONFIG.campaignDays * 864e5; }
+
+  // Called with the consent answer: keep the touches on the device, or forget them.
+  function rememberTouches(c) {
+    var keep = c.analytics || c.ads;
+    if (!keep) { [FIRST_KEY, LAST_KEY, FBCLID_KEY].forEach(function (k) { local.remove(k); }); return; }
+    var savedFirst = readJson(local, FIRST_KEY), savedLast = readJson(local, LAST_KEY);
+    if (fresh(savedFirst) && (!firstTouch || Date.parse(savedFirst.at) < Date.parse(firstTouch.at))) firstTouch = savedFirst;
+    if (!lastTouch && fresh(savedLast)) lastTouch = savedLast;
+    if (firstTouch) { local.set(FIRST_KEY, JSON.stringify(firstTouch)); session.set(FIRST_KEY, JSON.stringify(firstTouch)); }
+    if (lastTouch) { local.set(LAST_KEY, JSON.stringify(lastTouch)); session.set(LAST_KEY, JSON.stringify(lastTouch)); }
+    if (c.ads) {
+      var savedClick = readJson(local, FBCLID_KEY);
+      if (!fbclid && savedClick && savedClick.at && Date.now() - savedClick.at < CONFIG.campaignDays * 864e5) fbclid = savedClick;
+      if (fbclid) local.set(FBCLID_KEY, JSON.stringify(fbclid));
+    } else local.remove(FBCLID_KEY);
+  }
+
+  function cookie(name) {
+    var m = d.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+  // Real Meta cookies only. _fbc may be built from a real fbclid in Meta's documented
+  // format fb.1.<time the click id was seen, ms>.<fbclid>; never made up otherwise.
+  function metaIds() {
+    var fbp = cookie('_fbp'), fbc = cookie('_fbc');
+    if (fbp && !/^fb\.\d\.\d{10,}\.\d+$/.test(fbp)) fbp = null;
+    if (fbc && !/^fb\.\d\.\d{10,}\.[A-Za-z0-9_-]{10,500}$/.test(fbc)) fbc = null;
+    if (!fbc && fbclid) fbc = 'fb.1.' + fbclid.at + '.' + fbclid.v;
+    return { fbp: fbp, fbc: fbc, fbclid: fbclid ? fbclid.v : null };
+  }
+
+  // Google Play `referrer` (read by the app's Play Install Referrer, backend-capi contract):
+  // the campaign words, and only with ads consent dk_ads=1 + Meta's real click id.
+  function playReferrer() {
+    var q = campaignQuery();
+    if (consentNow && consentNow.ads) {
+      q += (q ? '&' : '') + 'dk_ads=1';
+      if (fbclid) q += '&fbclid=' + fbclid.v;
+    }
+    return q;
+  }
+
+  function consentWord(on) { return consentNow ? (on ? 'granted' : 'denied') : 'unset'; }
+
+  // What a website order (site-order) carries besides the order itself. Meta ids only with
+  // ads consent; never a name, phone or email (touches hold cleaned utm words only).
+  function attribution() {
+    var ads = !!(consentNow && consentNow.ads);
+    var ids = ads ? metaIds() : { fbp: null, fbc: null, fbclid: null };
+    function pick(t) {
+      if (!t) return null;
+      var o = {};
+      TOUCH_KEYS.concat(['landing_path', 'referrer_host', 'at']).forEach(function (k) { o[k] = t[k] == null ? null : String(t[k]).slice(0, 200); });
+      ID_KEYS.forEach(function (k) { if (t[k]) o[k] = String(t[k]); });
+      return o;
+    }
+    return {
+      consent_ads: consentWord(consentNow && consentNow.ads),
+      consent_analytics: consentWord(consentNow && consentNow.analytics),
+      first_touch: pick(firstTouch),
+      last_touch: pick(lastTouch),
+      fbclid: ids.fbclid, fbp: ids.fbp, fbc: ids.fbc,
+      event_source_url: (location.origin + location.pathname).slice(0, 200)
+    };
+  }
+
+  // ---------------------------------------------------------------------------------
+  // QualifiedDownload (owner, 2026-11-27): shop type chosen + device chosen + a price seen
+  // + an official Windows / Google Play button clicked. Fired once per visitor (browser).
+  // The answers come from the events themselves (activity_selected, device_selected,
+  // pricing_viewed), so every page that loads this file (/start/, /download/, /windows/)
+  // counts the same way. Every download click is still sent as its own event.
+  // Kept for this tab for everyone; on the device (30 days) only after "OK".
+  // ---------------------------------------------------------------------------------
+  var QD_KEY = 'dk-qd', QD_DAYS = 30;
+  var qd = readJson(session, QD_KEY) || {};
+  if (query.get('dk_q') === '1') { // a link handed out by a qualified visitor (see campaignQuery)
+    ['a', 'd', 'p'].forEach(function (k) { if (!qd[k]) qd[k] = 'link'; });
+    qd.at = Date.now();
+    session.set(QD_KEY, JSON.stringify(qd));
+  }
+  function qualified() {
+    return !!(qd.a && qd.d && qd.p) && !!qd.at && Date.now() - qd.at < QD_DAYS * 864e5;
+  }
+  function saveQd() {
+    session.set(QD_KEY, JSON.stringify(qd));
+    if (consentNow && (consentNow.analytics || consentNow.ads)) local.set(QD_KEY, JSON.stringify(qd));
+  }
+  function rememberQd(c) {
+    if (!(c.analytics || c.ads)) { local.remove(QD_KEY); return; }
+    var saved = readJson(local, QD_KEY);
+    if (saved) {
+      if (saved.f && !qd.f) qd.f = saved.f;
+      if (saved.at && Date.now() - saved.at < QD_DAYS * 864e5) {
+        ['a', 'd', 'p'].forEach(function (k) { if (!qd[k] && saved[k]) qd[k] = saved[k]; });
+        qd.at = Math.max(qd.at || 0, saved.at);
+      }
+    }
+    saveQd();
+  }
+  function markQd(k, v) {
+    if (v === undefined || v === null || v === '') return;
+    qd[k] = String(v).slice(0, 40);
+    qd.at = Date.now();
+    saveQd();
   }
 
   // ---------------------------------------------------------------------------------
   // Events
   // ---------------------------------------------------------------------------------
+  // The only names that reach the dataLayer (GTM → GA4, and the Meta Pixel for the ones
+  // mapped in GTM). Event definitions: DOUKKANY-MARKETING/migration/01-website-tracking.md.
+  // All are screens or clicks. Never StartTrial, Purchase or a first sale: those happen in
+  // the app or on the licence server, not on this website.
   var EVENTS = {
     windows_download_clicked: 1,
     google_play_clicked: 1,
-    // The email form opens the visitor's own email app; we can never know it was sent.
-    // 'download_email_sent' is kept for a future backend that confirms the send.
+    // The email button opens the visitor's own email app; we can never know it was sent,
+    // so 'download_email_sent' is NOT used (it needs a server that confirms the send).
     download_email_app_opened: 1,
     download_link_copied: 1,
     download_link_shared: 1,
     tutorial_clicked: 1,
     whatsapp_support_clicked: 1,
     language_changed: 1,
-    // /start/ funnel (start/app.js). Clicks and screens, never a real order: an order is
-    // only real once the visitor sends the WhatsApp message and pays.
-    sales_funnel_started: 1,
-    sales_funnel_viewed: 1,
-    funnel_step_viewed: 1,
-    intention_selected: 1,
-    trial_selected: 1,
-    purchase_selected: 1,
+    // /start/ funnel (start/app.js maps its own names to these).
+    sales_funnel_viewed: 1,      // the funnel page was opened
+    sales_funnel_started: 1,     // first journey choice (trial / buy / download / a plan)
+    funnel_step_viewed: 1,       // drop-off chart
+    intention_selected: 1,       // intention = trial | buy | download
     activity_selected: 1,
     pain_selected: 1,
-    device_unsure_clicked: 1,
     device_selected: 1,
-    personalized_features_viewed: 1,
-    pricing_viewed: 1,
-    license_selected: 1,
+    configuration_completed: 1,  // the last question (devices) answered
+    pricing_viewed: 1,           // a price was on screen
+    license_selected: 1,         // a plan picked on the prices list
     quick_course_viewed: 1,
     quick_course_skipped: 1,
-    purchase_requested: 1,
-    // Funnel v2 (2026-11-27, owner brief section 21). The first names above stay: the GTM
-    // triggers use them (start/app.js sends both while the container is not updated).
-    funnel_viewed: 1, trial_journey_selected: 1, purchase_journey_selected: 1,
-    direct_download_selected: 1, challenges_selected: 1, challenges_skipped: 1, step_viewed: 1,
-    step_completed: 1, step_back: 1, recommendation_viewed: 1, offer_viewed: 1, faq_opened: 1,
-    video_played: 1, video_completed: 1, download_clicked: 1, checkout_started: 1,
-    payment_method_selected: 1, checkout_validation_failed: 1, order_submitted: 1,
-    order_submission_failed: 1, whatsapp_clicked: 1, calculator_used: 1
+    qualified_download: 1,       // fired here only (see QualifiedDownload above)
+    purchase_form_started: 1,    // the order screen was opened
+    purchase_requested: 1,       // method = site_order (valid form sent) | whatsapp (click)
+    contact_form_submitted: 1,   // the order form was stored: site-order answered ok → Meta Lead
+    funnel_completed: 1          // method = qualified_download | site_order | whatsapp_order
   };
   var PARAMS = [
     'event_id', 'platform', 'page_language', 'tutorial_id', 'tutorial_category',
     'tutorial_position', 'app_version', 'link_type', 'download_trigger', 'method',
     'from_language', 'to_language', 'arrived_via', 'ad_source', 'ad_medium',
-    'ad_campaign', 'ad_content', 'ad_term',
+    'ad_campaign', 'ad_content', 'ad_term', 'ad_placement',
     // /start/ funnel. `activity` and `pain` are fixed ids (never the visitor's "other" text).
     'funnel_step', 'step_number', 'intention', 'activity', 'pain', 'selected',
     'pain_count', 'device_count', 'license_type',
     // Funnel v2: fixed values only (never a name, a phone or an address).
-    'funnel_version', 'journey', 'pay', 'purpose', 'faq_id', 'video_kind', 'field', 'field_count'
+    'funnel_version', 'journey', 'pay', 'purpose', 'faq_id', 'video_kind', 'field', 'field_count',
+    // Offer price shown or ordered, from js/offer.js only (never typed here).
+    'value', 'currency'
   ];
 
   function newEventId() {
     if (w.crypto && typeof w.crypto.randomUUID === 'function') return w.crypto.randomUUID();
     return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
   }
+  var EVENT_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-  function track(name, params) {
-    if (!EVENTS[name]) {
-      if (debug && w.console) console.warn('[dk-track] unknown event, not sent:', name);
-      return;
-    }
+  var completedOnce = false; // funnel_completed: once per page load
+
+  // opts.eventId: a caller's own id (the Lead uses the event_id sent with the order, so
+  // Meta can match the browser event with the server one).
+  function push(name, params, opts) {
     // Every key is written on every push. GTM merges pushes, so a key left out would
     // keep the value of the previous event (for example tutorial_id on a download).
     var out = { event: name };
     PARAMS.forEach(function (k) { out[k] = undefined; });
-    out.event_id = newEventId();
+    out.event_id = opts && typeof opts.eventId === 'string' && EVENT_ID.test(opts.eventId) ? opts.eventId : newEventId();
     out.page_language = d.documentElement.lang || undefined;
     out.arrived_via = arrivedVia;
     // Not named campaign_*: GA4 reserves those names and would turn them into the
@@ -276,6 +450,7 @@
       out.ad_campaign = campaign.utm_campaign;
       out.ad_content = campaign.utm_content;
       out.ad_term = campaign.utm_term;
+      out.ad_placement = campaign.placement;
     }
     params = params || {};
     PARAMS.forEach(function (k) {
@@ -284,6 +459,32 @@
     });
     w.dataLayer.push(out);
     if (debug && w.console) console.info('[dk-track]', name, out);
+    return out;
+  }
+
+  function track(name, params, opts) {
+    if (!EVENTS[name] || name === 'qualified_download') {
+      if (debug && w.console) console.warn('[dk-track] unknown event, not sent:', name);
+      return;
+    }
+    if (name === 'funnel_completed') { if (completedOnce) return; completedOnce = true; }
+    var out = push(name, params, opts);
+    // QualifiedDownload progress, from the events themselves.
+    if (name === 'activity_selected') markQd('a', out.activity);
+    else if (name === 'device_selected') markQd('d', out.platform);
+    else if (name === 'pricing_viewed') markQd('p', out.funnel_step || 'seen');
+    else if ((name === 'windows_download_clicked' || name === 'google_play_clicked') && qualified() && !qd.f) {
+      push('qualified_download', {
+        platform: out.platform, link_type: out.link_type, app_version: out.app_version,
+        download_trigger: out.download_trigger || 'button', funnel_step: out.funnel_step,
+        activity: qd.a !== 'link' ? qd.a : undefined, method: qd.a === 'link' ? 'shared_link' : 'same_device',
+        journey: out.journey, funnel_version: out.funnel_version
+      });
+      // Once per visitor. Before any consent answer GTM has not loaded and replays the
+      // event with consent "denied" (nothing sent), so the flag waits for an answer.
+      if (consentNow) { qd.f = Date.now(); saveQd(); }
+      track('funnel_completed', { method: 'qualified_download', platform: out.platform, journey: out.journey, funnel_version: out.funnel_version });
+    }
   }
 
   // ---------------------------------------------------------------------------------
@@ -291,6 +492,7 @@
   // ---------------------------------------------------------------------------------
   var CONSENT_KEY = 'dk-consent';
   var gtmLoaded = false;
+  var consentNow = null; // { analytics, ads } once the visitor answered (now or before)
 
   function readConsent() {
     var c = readJson(local, CONSENT_KEY);
@@ -310,6 +512,11 @@
     var s = d.createElement('script');
     s.async = true;
     s.src = 'https://www.googletagmanager.com/gtm.js?id=' + encodeURIComponent(CONFIG.gtmId);
+    // Development only (never on the real site): ?dk_debug=1&gtm_auth=…&gtm_preview=env-…
+    // loads an unpublished GTM workspace, to test it before anything is published.
+    if (!isProduction && debug && /^[\w-]{10,40}$/.test(query.get('gtm_auth') || '') && /^env-\d{1,4}$/.test(query.get('gtm_preview') || '')) {
+      s.src += '&gtm_auth=' + query.get('gtm_auth') + '&gtm_preview=' + query.get('gtm_preview') + '&gtm_cookies_win=x';
+    }
     d.head.appendChild(s);
   }
 
@@ -341,7 +548,10 @@
       ad_personalization: ad
     });
     w.dataLayer.push({ event: 'dk_consent', dk_consent_analytics: a, dk_consent_ads: ad });
+    consentNow = { analytics: !!c.analytics, ads: !!c.ads };
     rememberCampaign(c.analytics);
+    rememberTouches(consentNow);
+    rememberQd(consentNow);
     if (c.analytics || c.ads) loadGtm();
     else if (fromChoice) clearAnalyticsCookies();
   }
@@ -488,7 +698,16 @@
     track: track,
     campaign: function () { return campaign; },
     campaignQuery: campaignQuery,
-    openConsent: showBanner
+    playReferrer: playReferrer,
+    openConsent: showBanner,
+    newEventId: newEventId,
+    // For the order request (start/app.js → site-order): consent, first/last touch, Meta ids.
+    attribution: attribution,
+    // 'granted' | 'denied' | 'unset' for ads (Meta) and analytics (GA4).
+    consent: function () {
+      return { ads: consentWord(consentNow && consentNow.ads), analytics: consentWord(consentNow && consentNow.analytics) };
+    },
+    qualified: qualified
   };
 
   if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', start);
