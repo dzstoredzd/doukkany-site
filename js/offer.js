@@ -9,8 +9,9 @@
  * More devices than that: the shop talks to us on WhatsApp.
  * PC offers paid at delivery: + 1 500 delivery of the USB key (owner, 2026-11-27). No discount.
  *
- * Licence server note: the `pc` code kind gave 0 phones (DECISIONS 2026-11-23). "One PC + free
- * phone" needs the server to give it 1 phone place; see doukkany/DOUKKANY-MARKETING/SALES_FUNNEL.md.
+ * Licence server note: "One PC + free phone" uses the `pc_phone` code kind (main PC + 1 phone,
+ * live since 2026-11-26, Doukkany DECISIONS 2026-11-26). The older `pc` kind gives 0 phones:
+ * never give it for this offer.
  *
  * If a price changes, change it here only: every page reads this file.
  */
@@ -21,7 +22,7 @@
   // pcs / phones = the devices the offer covers (the phone is free in `pc` and `shop`).
   var PLANS = {
     phone: { code: 'phone', price: 9000,  pcs: 0, phones: 1 }, // one Android phone or tablet, alone
-    pc:    { code: 'pc',    price: 12000, pcs: 1, phones: 1 }, // one Windows PC + phone app free
+    pc:    { code: 'pc_phone', price: 12000, pcs: 1, phones: 1 }, // one Windows PC + phone app free
     shop:  { code: 'shop',  price: 14000, pcs: 2, phones: 1 }  // main PC + 2nd PC + phone app free
   };
 
