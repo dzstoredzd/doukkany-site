@@ -65,11 +65,8 @@
   h1 .g { color: var(--green); display: block; }
   /* What the app does, as pills under the title. */
   .pills { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .pills li.trial-pill { background: var(--green); color: #fff; border-color: var(--green); }
   .pills li { background: #fff; color: var(--green); border: 1.5px solid #BFE3CE; border-radius: 999px; padding: 4px 14px; font-weight: 700; font-size: clamp(.95rem, 3.4vw, 1.1rem); }
-  .trial { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 16px; }
-  .trial-badge { display: inline-flex; align-items: baseline; gap: 8px; background: var(--green); color: #fff; border-radius: 16px; padding: 3px 16px 5px; box-shadow: 0 10px 24px rgba(17,122,75,.25); }
-  .trial-num { font-size: 1.9rem; font-weight: 700; line-height: 1.1; }
-  .trial-word { font-size: 1.15rem; font-weight: 700; }
 
   /* Download buttons. The one for this device comes first (see data-device rules below). */
   .get { display: flex; flex-direction: column; gap: 18px; margin-top: 22px; max-width: 400px; }
@@ -192,8 +189,6 @@
     .hero { padding: 32px 0 44px; }
     .hero-in { grid-template-columns: 1fr 1fr; gap: 48px; }
     .devices { max-width: 540px; }
-    .trial-num { font-size: 2.4rem; }
-    .trial-word { font-size: 1.35rem; }
     .sec { padding-top: 48px; }
     .lessons { grid-template-columns: repeat(3, 1fr); }
   }
@@ -241,10 +236,7 @@
     <div class="wrap hero-in">
       <div>
         <h1 id="hero-title"><span data-t="h1a">دُكّاني:</span> <span class="g" data-t="h1b">برنامج تسيير المحلات الإحترافي</span></h1>
-        <ul class="pills"><li data-t="pill1">المبيعات</li><li data-t="pill2">الكريدي</li><li data-t="pill3">المخزون</li><li data-t="pill4">الأرباح</li><li data-t="pill5">يمشي بلا أنترنت</li></ul>
-        <div class="trial">
-          <span class="trial-badge"><span class="trial-num ltr">14</span><span class="trial-word" data-t="trialWord">يوم مجانا</span></span>
-        </div>
+        <ul class="pills"><li class="trial-pill"><bdi class="ltr">14</bdi> <span data-t="trialWord">يوم مجانا</span></li><li data-t="pill1">المبيعات</li><li data-t="pill2">الكريدي</li><li data-t="pill3">المخزون</li><li data-t="pill4">الأرباح</li><li data-t="pill6">الخدامين</li><li data-t="pill5">يمشي بلا أنترنت</li></ul>
 
         <div class="get" id="download">
           <p class="notice" id="phone-get-win" hidden data-t="phoneGetWin">هذا الرابط لتحميل نسخة الحاسوب. افتحه على حاسوبك، أو حمّل تطبيق الهاتف من Google Play.</p>
@@ -351,7 +343,7 @@
       title: 'تحميل دكّاني · Doukkany',
       skip: 'انتقل إلى التحميل', home: 'دكّاني: الصفحة الرئيسية',
       h1a: 'دُكّاني:', h1b: 'برنامج تسيير المحلات الإحترافي',
-      pill1: 'المبيعات', pill2: 'الكريدي', pill3: 'المخزون', pill4: 'الأرباح', pill5: 'يمشي بلا أنترنت',
+      pill1: 'المبيعات', pill2: 'الكريدي', pill3: 'المخزون', pill4: 'الأرباح', pill6: 'الخدامين', pill5: 'يمشي بلا أنترنت',
       trialWord: 'يوم مجانا',
       altPc: 'شاشة البيع في دكّاني على حاسوب Windows', altPhone: 'شاشة البيع في دكّاني على هاتف Android',
       winBtn: 'تحميل برنامج الحاسوب',
@@ -380,7 +372,7 @@
       title: 'Télécharger Doukkany',
       skip: 'Aller au téléchargement', home: 'Doukkany : accueil',
       h1a: 'Doukkany :', h1b: 'le logiciel professionnel de gestion de magasin',
-      pill1: 'Ventes', pill2: 'Crédit clients', pill3: 'Stock', pill4: 'Bénéfices', pill5: 'Marche sans internet',
+      pill1: 'Ventes', pill2: 'Crédit clients', pill3: 'Stock', pill4: 'Bénéfices', pill6: 'Employés', pill5: 'Marche sans internet',
       trialWord: 'jours gratuits',
       altPc: 'Écran de vente de Doukkany sur un PC Windows', altPhone: 'Écran de vente de Doukkany sur un téléphone Android',
       winBtn: 'Télécharger le logiciel PC',
@@ -409,7 +401,7 @@
       title: 'Download Doukkany',
       skip: 'Skip to download', home: 'Doukkany: home',
       h1a: 'Doukkany:', h1b: 'the professional shop management software',
-      pill1: 'Sales', pill2: 'Customer credit', pill3: 'Stock', pill4: 'Profit', pill5: 'Works offline',
+      pill1: 'Sales', pill2: 'Customer credit', pill3: 'Stock', pill4: 'Profit', pill6: 'Staff', pill5: 'Works offline',
       trialWord: 'days free',
       altPc: 'Doukkany sales screen on a Windows PC', altPhone: 'Doukkany sales screen on an Android phone',
       winBtn: 'Download the PC software',
