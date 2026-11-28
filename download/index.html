@@ -90,11 +90,17 @@
   .msg { font-size: .92rem; font-weight: 600; color: var(--green); }
   .notice { background: #FFF8E1; border: 1px solid #F3DC8B; color: #5B4300; border-radius: var(--r-sm); padding: 10px 12px; font-weight: 600; font-size: .95rem; }
 
-  /* Phones: the Google Play button first, and the computer row only sends the link to the PC. */
-  #send-btn { display: none; }
+  /* Phones: the Google Play button first. The PC button is a second (white) button there and
+     opens three choices (#win-opts): copy the link, send it by email, download here. */
   html[data-device="android"] #row-and, html[data-device="ios"] #row-and { order: -1; }
-  html[data-device="android"] #win-btn, html[data-device="ios"] #win-btn { display: none; }
-  html[data-device="android"] #send-btn, html[data-device="ios"] #send-btn { display: inline-flex; }
+  html[data-device="android"] #win-btn, html[data-device="ios"] #win-btn { background: #fff; color: var(--green); border: 2px solid var(--green); box-shadow: none; min-height: 50px; font-size: 1rem; padding: 8px 18px; }
+  html[data-device="android"] #win-btn:hover, html[data-device="ios"] #win-btn:hover { background: var(--mint-2); }
+  #win-btn .chev { width: 18px; height: 18px; transition: transform .15s; }
+  #win-btn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  html:not([data-device="android"]):not([data-device="ios"]) #win-btn .chev { display: none; }
+  .win-opts { display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 10px; background: #fff; border: 1px solid var(--line); border-radius: var(--r-md); }
+  .win-opts .btn { min-height: 48px; font-size: 1rem; padding: 8px 14px; justify-content: flex-start; }
+  .win-opts .get-note { margin: -2px 4px 0; font-size: .85rem; }
   #row-links { display: none; }
   #wa-links { font-size: 1rem; padding-inline: 14px; }
   /* Right under the phone download button (#row-and is moved first on phones too). */
@@ -207,7 +213,9 @@
   <symbol id="i-win" viewBox="0 0 24 24"><path d="M3 5.6 10.4 4.6v7H3zM11.4 4.4 21 3v8.6h-9.6zM3 12.6h7.4v7L3 18.4zM11.4 12.6H21V21l-9.6-1.4z"/></symbol>
   <symbol id="i-wa" viewBox="0 0 32 32"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3 29l6.6-2c1.9 1 4.1 1.6 6.4 1.6 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.3c-2.1 0-4-.6-5.7-1.6l-.4-.2-3.9 1.2 1.2-3.8-.3-.4c-1.1-1.7-1.8-3.6-1.8-5.7C5.1 10 10 5.2 16 5.2S26.9 10 26.9 15.8 22 26.3 16 26.3zm6-7.8c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.2 3.2 1.3 3.4c.2.2 2.3 3.6 5.7 5 2.8 1.1 3.4.9 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></symbol>
   <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></symbol>
-  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-gdrive" viewBox="0 0 87.3 78"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></symbol>
@@ -242,10 +250,16 @@
           <p class="notice" id="phone-get-win" hidden data-t="phoneGetWin">هذا الرابط لتحميل نسخة الحاسوب. افتحه على حاسوبك، أو حمّل تطبيق الهاتف من Google Play.</p>
 
           <div class="get-row" id="row-win">
-            <a class="btn block" id="win-btn" href="https://github.com/dzstoredzd/doukkany-releases/releases/latest"><svg class="ic f" aria-hidden="true"><use href="#i-win"/></svg><span data-t="winBtn">تحميل برنامج الحاسوب</span></a>
-            <button type="button" class="btn soft" id="send-btn"><svg class="ic" aria-hidden="true"><use href="#i-send"/></svg><span data-t="sendBtn">ابعث الرابط للحاسوب</span></button>
+            <a class="btn block" id="win-btn" href="https://github.com/dzstoredzd/doukkany-releases/releases/latest"><svg class="ic f" aria-hidden="true"><use href="#i-win"/></svg><span data-t="winBtn">تحميل برنامج الحاسوب</span><svg class="ic chev" aria-hidden="true"><use href="#i-chev"/></svg></a>
+            <!-- Phones only: the PC button opens these choices (a computer downloads at once). -->
+            <div class="win-opts" id="win-opts" hidden>
+              <button type="button" class="btn soft block" id="opt-copy"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg><span data-t="optCopy">انسخ رابط التحميل</span></button>
+              <a class="btn soft block" id="opt-mail" href="mailto:"><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg><span data-t="optMail">ابعث الرابط في الإيميل</span></a>
+              <button type="button" class="btn soft block" id="opt-here"><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg><span data-t="optHere">حمّل البرنامج هنا</span></button>
+              <p class="get-note" data-t="optHereNote">التحميل يبدأ في هذا الهاتف. البرنامج يخدم غير على حاسوب Windows.</p>
+            </div>
             <p class="status" id="status" role="status"></p>
-            <p class="msg" id="send-msg" role="status"></p>
+            <p class="msg" id="win-msg" role="status"></p>
           </div>
 
           <div class="get-row" id="row-and">
@@ -303,6 +317,7 @@
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f2">دفتر الكريدي</span></li>
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f3">اعرف شحال بقالك من كل سلعة</span></li>
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f4">اعرف شحال ربحت</span></li>
+          <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="fStaff">كل خدام الصلاحيات تاعو</span></li>
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f5">يخدم بلا أنترنت</span></li>
           <li><svg class="ck gd" aria-hidden="true"><use href="#i-gdrive"/></svg><span data-t="fDrive">بياناتك محفوظة عند الربط بـ Drive</span></li>
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f6">التحديثات الجديدة مجانية</span></li>
@@ -317,6 +332,7 @@
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f2">دفتر الكريدي</span></li>
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f3">اعرف شحال بقالك من كل سلعة</span></li>
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f4">اعرف شحال ربحت</span></li>
+          <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="fStaff">كل خدام الصلاحيات تاعو</span></li>
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f5">يخدم بلا أنترنت</span></li>
           <li><svg class="ck gd" aria-hidden="true"><use href="#i-gdrive"/></svg><span data-t="fDrive">بياناتك محفوظة عند الربط بـ Drive</span></li>
           <li><svg class="ck" aria-hidden="true"><use href="#i-check"/></svg><span data-t="f6">التحديثات الجديدة مجانية</span></li>
@@ -352,8 +368,9 @@
       playBtn: 'تحميل تطبيق الهاتف',
       iosReq: 'تطبيق الهاتف متوفر على Android فقط حاليًا.',
       phoneGetWin: 'هذا الرابط لتحميل نسخة الحاسوب. افتحه على حاسوبك، أو حمّل تطبيق الهاتف من Google Play.',
-      sendBtn: 'ابعث الرابط للحاسوب',
-      sent: 'تم. افتح الرابط على الحاسوب والتحميل يبدأ وحده.',
+      optCopy: 'انسخ رابط التحميل', optMail: 'ابعث الرابط في الإيميل', optHere: 'حمّل البرنامج هنا',
+      optHereNote: 'التحميل يبدأ في هذا الهاتف. البرنامج يخدم غير على حاسوب Windows.',
+      copied: 'تنسخ الرابط. افتحه على الحاسوب والتحميل يبدأ وحده.',
       shareText: 'رابط تحميل دكّاني للحاسوب (Windows 10 وما بعده):',
       supportTitle: 'تحتاج مساعدة ولا حاب تشري؟',
       supportText: 'تواصل معنا في الواتساب أو اتصل بنا',
@@ -366,7 +383,7 @@
       planPhone: 'هاتف برك',
       planPc: 'حاسوب Windows',
       da: 'دج',
-      fPhone: 'تطبيق هاتف مُرافق مجانا', f1: 'بيع بسرعة بالباركود', f2: 'دفتر الكريدي', f3: 'اعرف شحال بقالك من كل سلعة', f4: 'اعرف شحال ربحت', f5: 'يخدم بلا أنترنت', fDrive: 'بياناتك محفوظة عند الربط بـ Drive', f6: 'التحديثات الجديدة مجانية',
+      fPhone: 'تطبيق هاتف مُرافق مجانا', f1: 'بيع بسرعة بالباركود', f2: 'دفتر الكريدي', f3: 'اعرف شحال بقالك من كل سلعة', f4: 'اعرف شحال ربحت', fStaff: 'كل خدام الصلاحيات تاعو', f5: 'يخدم بلا أنترنت', fDrive: 'بياناتك محفوظة عند الربط بـ Drive', f6: 'التحديثات الجديدة مجانية',
 
     },
     fr: {
@@ -381,8 +398,9 @@
       playBtn: 'Télécharger l’app mobile',
       iosReq: 'L’application mobile n’existe que sur Android pour l’instant.',
       phoneGetWin: 'Ce lien sert à télécharger la version PC. Ouvrez-le sur votre ordinateur, ou installez l’application mobile depuis Google Play.',
-      sendBtn: 'Envoyer le lien au PC',
-      sent: 'C’est fait. Ouvrez le lien sur le PC : le téléchargement démarre tout seul.',
+      optCopy: 'Copier le lien de téléchargement', optMail: 'Envoyer le lien par e-mail', optHere: 'Télécharger le logiciel ici',
+      optHereNote: 'Le téléchargement démarre sur ce téléphone. Le logiciel ne marche que sur un PC Windows.',
+      copied: 'Lien copié. Ouvrez-le sur le PC : le téléchargement démarre tout seul.',
       shareText: 'Lien de téléchargement de Doukkany pour PC (Windows 10 et plus) :',
       supportTitle: 'Besoin d’aide ou envie d’acheter ?',
       supportText: 'Contactez-nous sur WhatsApp ou appelez-nous',
@@ -395,7 +413,7 @@
       planPhone: 'Téléphone seul',
       planPc: 'PC Windows',
       da: 'DA',
-      fPhone: 'Application mobile compagnon offerte', f1: 'Vente rapide par code-barres', f2: 'Carnet de crédit', f3: 'Le stock de chaque produit', f4: 'Votre vrai bénéfice', f5: 'Marche sans internet', fDrive: 'Données sauvegardées avec Google Drive', f6: 'Mises à jour gratuites',
+      fPhone: 'Application mobile compagnon offerte', f1: 'Vente rapide par code-barres', f2: 'Carnet de crédit', f3: 'Le stock de chaque produit', f4: 'Votre vrai bénéfice', fStaff: 'Chaque employé a ses droits', f5: 'Marche sans internet', fDrive: 'Données sauvegardées avec Google Drive', f6: 'Mises à jour gratuites',
 
     },
     en: {
@@ -410,8 +428,9 @@
       playBtn: 'Download the phone app',
       iosReq: 'The phone app is only on Android for now.',
       phoneGetWin: 'This link downloads the PC version. Open it on your computer, or get the phone app from Google Play.',
-      sendBtn: 'Send the link to your PC',
-      sent: 'Done. Open the link on your PC: the download starts by itself.',
+      optCopy: 'Copy the download link', optMail: 'Send the link by email', optHere: 'Download the software here',
+      optHereNote: 'The download starts on this phone. The software only runs on a Windows PC.',
+      copied: 'Link copied. Open it on your PC: the download starts by itself.',
       shareText: 'Doukkany download link for PC (Windows 10 and newer):',
       supportTitle: 'Need help, or ready to buy?',
       supportText: 'Contact us on WhatsApp or call us',
@@ -424,7 +443,7 @@
       planPhone: 'Phone only',
       planPc: 'Windows PC',
       da: 'DZD',
-      fPhone: 'Free companion phone app', f1: 'Fast barcode selling', f2: 'Customer credit book', f3: 'Stock left for every product', f4: 'Know your profit', f5: 'Works without internet', fDrive: 'Your data is safe when linked to Google Drive', f6: 'Free future updates',
+      fPhone: 'Free companion phone app', f1: 'Fast barcode selling', f2: 'Customer credit book', f3: 'Stock left for every product', f4: 'Know your profit', fStaff: 'Each staff member has their own permissions', f5: 'Works without internet', fDrive: 'Your data is safe when linked to Google Drive', f6: 'Free future updates',
 
     }
   };
@@ -544,7 +563,7 @@
     $('wa-buy').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(t.waBuyMessage);
     $('wa-links').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(t.linksMessage);
     if ($('status').textContent) $('status').textContent = t.starting;
-    $('send-msg').textContent = '';
+    $('win-msg').textContent = '';
     renderLessons();
     try { localStorage.setItem('doukkany-lang', lang); } catch (e) {}
   }
@@ -650,6 +669,14 @@
   }
 
   $('win-btn').addEventListener('click', function (e) {
+    // Phones: open or close the three choices (copy, email, download here). Nothing starts.
+    if (IS_PHONE) {
+      e.preventDefault();
+      var open = $('win-opts').hidden;
+      $('win-opts').hidden = !open;
+      $('win-btn').setAttribute('aria-expanded', String(open));
+      return;
+    }
     if (latest) { trackWindows('button', latest); return; } // the link already points to the newest installer
     e.preventDefault();
     startDownload('button');
@@ -660,26 +687,42 @@
     track('google_play_clicked', { platform: 'android', link_type: 'play_store' });
   });
 
-  // ---- Phones: send the PC link to yourself (share sheet, else WhatsApp) ----
-  $('send-btn').addEventListener('click', function () {
-    var t = TEXT[lang];
-    if (navigator.share) {
-      navigator.share({ title: t.title, text: t.shareText, url: winLink('share') }).then(function () {
-        $('send-msg').textContent = t.sent;
-        track('download_link_shared', { method: 'web_share' });
-      }, function (err) {
-        if (err && err.name === 'AbortError') return; // closed without sharing: not counted
-        shareByWhatsApp();
-      });
-    } else {
-      shareByWhatsApp();
+  // ---- Phones: the PC button's three choices ----
+  // The link handed out is this page with ?get=windows (winLink): opened on a computer it starts
+  // the newest installer by itself, and it keeps the ad words. Not the .exe address: that one
+  // would stay on today's version and skip our counter.
+  if (IS_PHONE) $('win-btn').setAttribute('aria-expanded', 'false');
+  $('win-btn').setAttribute('aria-controls', 'win-opts');
+
+  // Copy: the clipboard, else the old copy command. Counted only when it worked.
+  $('opt-copy').addEventListener('click', function () {
+    var text = winLink('copy');
+    function done(how) {
+      $('win-msg').textContent = TEXT[lang].copied;
+      track('download_link_copied', { method: how, link_type: 'copy' });
     }
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { if (document.execCommand('copy')) done('exec_command'); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function () { done('clipboard'); }, fallback);
+    } else fallback();
   });
-  // WhatsApp opens with the link written in; we cannot know it was sent.
-  function shareByWhatsApp() {
-    track('download_link_shared', { method: 'whatsapp' });
-    window.open('https://wa.me/?text=' + encodeURIComponent(TEXT[lang].shareText + '\n' + winLink('share')), '_blank', 'noopener');
-  }
+
+  // Email: opens the phone's email app with the link written in; we cannot know it was sent.
+  $('opt-mail').addEventListener('click', function () {
+    var t = TEXT[lang];
+    $('opt-mail').href = 'mailto:?subject=' + encodeURIComponent('Doukkany') +
+      '&body=' + encodeURIComponent(t.shareText + '\n' + winLink('email'));
+    track('download_email_app_opened', { method: 'mailto' });
+  });
+
+  // Download here: the installer goes to this phone (same as the computer button).
+  $('opt-here').addEventListener('click', function () { startDownload('button'); });
 
   // ---- WhatsApp support ----
   $('wa-btn').addEventListener('click', function () {
