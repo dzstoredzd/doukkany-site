@@ -63,12 +63,13 @@
   .hero-in { display: grid; gap: 22px; align-items: center; }
   h1 { font-weight: 700; font-size: clamp(1.85rem, 7.4vw, 3rem); line-height: 1.2; }
   h1 .g { color: var(--green); display: block; }
-  .sub { font-size: clamp(1.05rem, 3.6vw, 1.3rem); font-weight: 600; color: var(--muted); margin-top: 8px; }
+  /* What the app does, as pills under the title. */
+  .pills { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .pills li { background: #fff; color: var(--green); border: 1.5px solid #BFE3CE; border-radius: 999px; padding: 4px 14px; font-weight: 700; font-size: clamp(.95rem, 3.4vw, 1.1rem); }
   .trial { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 16px; }
   .trial-badge { display: inline-flex; align-items: baseline; gap: 8px; background: var(--green); color: #fff; border-radius: 16px; padding: 3px 16px 5px; box-shadow: 0 10px 24px rgba(17,122,75,.25); }
   .trial-num { font-size: 1.9rem; font-weight: 700; line-height: 1.1; }
   .trial-word { font-size: 1.15rem; font-weight: 700; }
-  .perks { font-size: 1rem; font-weight: 600; color: var(--ink); }
 
   /* Download buttons. The one for this device comes first (see data-device rules below). */
   .get { display: flex; flex-direction: column; gap: 18px; margin-top: 22px; max-width: 400px; }
@@ -83,6 +84,7 @@
   .btn.soft:hover { background: var(--mint-2); }
   .btn.wa { background: var(--wa); color: #06331A; box-shadow: 0 10px 22px rgba(37,211,102,.28); }
   .btn.wa:hover { background: #1FBE5B; }
+  .btn .ic.gplay { width: 26px; height: 28px; }
   /* Phone download (Google Play): white with green text and border, same size as the PC button. */
   .btn.alt { background: #fff; color: var(--green); border: 2px solid var(--green); box-shadow: 0 6px 16px rgba(17,122,75,.10); }
   .btn.alt:hover { background: var(--mint-2); }
@@ -92,11 +94,14 @@
   .notice { background: #FFF8E1; border: 1px solid #F3DC8B; color: #5B4300; border-radius: var(--r-sm); padding: 10px 12px; font-weight: 600; font-size: .95rem; }
 
   /* Phones: the Google Play button first, and the computer row only sends the link to the PC. */
-  #send-btn, .on-phone { display: none; }
+  #send-btn { display: none; }
   html[data-device="android"] #row-and, html[data-device="ios"] #row-and { order: -1; }
   html[data-device="android"] #win-btn, html[data-device="ios"] #win-btn { display: none; }
   html[data-device="android"] #send-btn, html[data-device="ios"] #send-btn { display: inline-flex; }
-  html[data-device="android"] .on-phone, html[data-device="ios"] .on-phone { display: block; }
+  #row-links { display: none; }
+  #wa-links { font-size: 1rem; padding-inline: 14px; }
+  /* Right under the phone download button (#row-and is moved first on phones too). */
+  html[data-device="android"] #row-links, html[data-device="ios"] #row-links { display: flex; order: -1; }
 
   /* Real app screens in a Windows monitor and an Android phone (demo data). */
   .devices { position: relative; margin: 0 auto; width: 100%; max-width: 300px; padding-bottom: 12px; }
@@ -122,7 +127,6 @@
   .help-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 8px; }
   .help .num { color: #fff; font-weight: 700; font-size: 1.15rem; letter-spacing: .02em; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
   .help .num:hover { text-decoration: underline; }
-  .help .more { color: #fff; font-weight: 700; min-height: 44px; display: inline-flex; align-items: center; }
 
   /* The 25 video lessons (../js/lessons.js). Each opens on YouTube. Phone: one column. */
   .lessons { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
@@ -212,6 +216,7 @@
   <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-gdrive" viewBox="0 0 87.3 78"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></symbol>
+  <symbol id="i-gplay" viewBox="30 336.7 120.9 129.2"><path fill="#FFD400" d="M119.2 421.2c15.3-8.4 27-14.8 28-15.3 3.2-1.7 6.5-6.2 0-9.7-2.1-1.1-13.4-7.3-28-15.3l-20.1 20.2z"/><path fill="#FF3333" d="M99.1 401.1l-64.2 64.7c1.5.2 3.2-.2 5.2-1.3 4.2-2.3 48.8-26.7 79.1-43.3z"/><path fill="#48FF48" d="M99.1 401.1l20.1-20.2s-74.6-40.7-79.1-43.1c-1.7-1-3.6-1.3-5.3-1z"/><path fill="#3BCCFF" d="M99.1 401.1L34.8 336.8c-2.6.6-4.8 2.9-4.8 7.6v113.8c0 4.3 1.7 7.4 4.9 7.7z"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></symbol>
 </svg>
 
@@ -235,18 +240,16 @@
   <section class="hero" aria-labelledby="hero-title">
     <div class="wrap hero-in">
       <div>
-        <h1 id="hero-title"><span data-t="h1a">حانوتك كامل،</span> <span class="g" data-t="h1b">في بلاصة وحدة.</span></h1>
-        <p class="sub" data-t="heroSub">المبيعات، الكريدي، المخزون والأرباح.</p>
+        <h1 id="hero-title"><span data-t="h1a">دُكّاني:</span> <span class="g" data-t="h1b">برنامج تسيير المحلات الإحترافي</span></h1>
+        <ul class="pills"><li data-t="pill1">المبيعات</li><li data-t="pill2">الكريدي</li><li data-t="pill3">المخزون</li><li data-t="pill4">الأرباح</li><li data-t="pill5">يمشي بلا أنترنت</li></ul>
         <div class="trial">
           <span class="trial-badge"><span class="trial-num ltr">14</span><span class="trial-word" data-t="trialWord">يوم مجانا</span></span>
-          <span class="perks" data-t="perks">يخدم بلا أنترنت · بلا اشتراك شهري</span>
         </div>
 
         <div class="get" id="download">
           <p class="notice" id="phone-get-win" hidden data-t="phoneGetWin">هذا الرابط لتحميل نسخة الحاسوب. افتحه على حاسوبك، أو حمّل تطبيق الهاتف من Google Play.</p>
 
           <div class="get-row" id="row-win">
-            <p class="get-note on-phone" data-t="pcOnPhone">تحب تحطّو في الحاسوب؟</p>
             <a class="btn block" id="win-btn" href="https://github.com/dzstoredzd/doukkany-releases/releases/latest"><svg class="ic f" aria-hidden="true"><use href="#i-win"/></svg><span data-t="winBtn">تحميل برنامج الحاسوب</span></a>
             <button type="button" class="btn soft" id="send-btn"><svg class="ic" aria-hidden="true"><use href="#i-send"/></svg><span data-t="sendBtn">ابعث الرابط للحاسوب</span></button>
             <p class="status" id="status" role="status"></p>
@@ -254,8 +257,13 @@
           </div>
 
           <div class="get-row" id="row-and">
-            <a class="btn alt block" id="play-btn" href="https://play.google.com/store/apps/details?id=com.yousoft.doukkany"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg><span data-t="playBtn">تحميل تطبيق الهاتف</span></a>
+            <a class="btn alt block" id="play-btn" href="https://play.google.com/store/apps/details?id=com.yousoft.doukkany"><svg class="ic gplay" aria-hidden="true"><use href="#i-gplay"/></svg><span data-t="playBtn">تحميل تطبيق الهاتف</span></a>
             <p class="get-note" id="and-note" hidden></p>
+          </div>
+
+          <!-- Phones only: ask us on WhatsApp for all the links (our number, a ready message). -->
+          <div class="get-row" id="row-links">
+            <a class="btn wa block" id="wa-links" href="https://wa.me/213775452101" target="_blank" rel="noopener"><svg class="ic f" aria-hidden="true"><use href="#i-wa"/></svg><span data-t="linksBtn">ابعثولي كل الروابط المهمة في واتساب</span></a>
           </div>
         </div>
       </div>
@@ -277,12 +285,11 @@
   <section class="sec wrap" id="support" aria-labelledby="support-title">
     <div class="help">
       <h2 class="sec-title" id="support-title" data-t="supportTitle">تحتاج مساعدة ولا حاب تشري؟</h2>
-      <p data-t="supportText">تخلص مرة وحدة. كلّمنا ونعاونوك في التثبيت والتفعيل.</p>
+      <p data-t="supportText">تواصل معنا في الواتساب أو اتصل بنا</p>
       <div class="help-actions">
         <a class="btn wa" id="wa-btn" href="https://wa.me/213775452101" target="_blank" rel="noopener"><svg class="ic f" aria-hidden="true"><use href="#i-wa"/></svg><span data-t="waBtn">واتساب</span></a>
         <a class="num ltr" href="tel:+213775452101">0775 45 21 01</a>
       </div>
-      <a class="more" href="../start/" data-t="startLink">شوف الأسعار والعرض المناسب لحانوتك</a>
     </div>
   </section>
 
@@ -343,24 +350,24 @@
     ar: {
       title: 'تحميل دكّاني · Doukkany',
       skip: 'انتقل إلى التحميل', home: 'دكّاني: الصفحة الرئيسية',
-      h1a: 'حانوتك كامل،', h1b: 'في بلاصة وحدة.',
-      heroSub: 'المبيعات، الكريدي، المخزون والأرباح.',
-      trialWord: 'يوم مجانا', perks: 'يخدم بلا أنترنت · بلا اشتراك شهري',
+      h1a: 'دُكّاني:', h1b: 'برنامج تسيير المحلات الإحترافي',
+      pill1: 'المبيعات', pill2: 'الكريدي', pill3: 'المخزون', pill4: 'الأرباح', pill5: 'يمشي بلا أنترنت',
+      trialWord: 'يوم مجانا',
       altPc: 'شاشة البيع في دكّاني على حاسوب Windows', altPhone: 'شاشة البيع في دكّاني على هاتف Android',
       winBtn: 'تحميل برنامج الحاسوب',
       starting: 'سيبدأ التنزيل بعد لحظات…',
       playBtn: 'تحميل تطبيق الهاتف',
       iosReq: 'تطبيق الهاتف متوفر على Android فقط حاليًا.',
       phoneGetWin: 'هذا الرابط لتحميل نسخة الحاسوب. افتحه على حاسوبك، أو حمّل تطبيق الهاتف من Google Play.',
-      pcOnPhone: 'تحب تحطّو في الحاسوب؟', sendBtn: 'ابعث الرابط للحاسوب',
+      sendBtn: 'ابعث الرابط للحاسوب',
       sent: 'تم. افتح الرابط على الحاسوب والتحميل يبدأ وحده.',
       shareText: 'رابط تحميل دكّاني للحاسوب (Windows 10 وما بعده):',
       supportTitle: 'تحتاج مساعدة ولا حاب تشري؟',
-      supportText: 'تخلص مرة وحدة. كلّمنا ونعاونوك في التثبيت والتفعيل.',
+      supportText: 'تواصل معنا في الواتساب أو اتصل بنا',
       waBtn: 'واتساب',
       waMessage: 'السلام عليكم، عندي سؤال على دكّاني.',
       waBuy: 'اطلب دكّاني في واتساب', orCall: 'ولا عيّطلنا:', waBuyMessage: 'السلام عليكم، حاب نشري برنامج دكّاني.',
-      startLink: 'شوف الأسعار والعرض المناسب لحانوتك',
+      linksBtn: 'ابعثولي كل الروابط المهمة في واتساب', linksMessage: 'السلام عليكم، ابعثولي الروابط المهمة تاع دكّاني: برنامج الحاسوب، تطبيق الهاتف، الدروس والأسعار.',
       lessonsTitle: 'تعلّم دكّاني', lessonsSub: '25 فيديو قصير، دقيقة لكل واحد. ابدأ من الأول.',
       pricesTitle: 'أسعار دكّاني', pricesSub: 'رخصة مدى الحياة: تخلص مرة وحدة.',
       planPhone: 'هاتف برك',
@@ -372,24 +379,24 @@
     fr: {
       title: 'Télécharger Doukkany',
       skip: 'Aller au téléchargement', home: 'Doukkany : accueil',
-      h1a: 'Tout votre magasin,', h1b: 'au même endroit.',
-      heroSub: 'Ventes, crédit clients, stock et bénéfices.',
-      trialWord: 'jours gratuits', perks: 'Marche sans internet · Sans abonnement',
+      h1a: 'Doukkany :', h1b: 'le logiciel professionnel de gestion de magasin',
+      pill1: 'Ventes', pill2: 'Crédit clients', pill3: 'Stock', pill4: 'Bénéfices', pill5: 'Marche sans internet',
+      trialWord: 'jours gratuits',
       altPc: 'Écran de vente de Doukkany sur un PC Windows', altPhone: 'Écran de vente de Doukkany sur un téléphone Android',
       winBtn: 'Télécharger le logiciel PC',
       starting: 'Le téléchargement va commencer…',
       playBtn: 'Télécharger l’app mobile',
       iosReq: 'L’application mobile n’existe que sur Android pour l’instant.',
       phoneGetWin: 'Ce lien sert à télécharger la version PC. Ouvrez-le sur votre ordinateur, ou installez l’application mobile depuis Google Play.',
-      pcOnPhone: 'Vous le voulez sur votre PC ?', sendBtn: 'Envoyer le lien au PC',
+      sendBtn: 'Envoyer le lien au PC',
       sent: 'C’est fait. Ouvrez le lien sur le PC : le téléchargement démarre tout seul.',
       shareText: 'Lien de téléchargement de Doukkany pour PC (Windows 10 et plus) :',
       supportTitle: 'Besoin d’aide ou envie d’acheter ?',
-      supportText: 'Vous payez une seule fois. Contactez-nous : on vous aide à installer et à activer.',
+      supportText: 'Contactez-nous sur WhatsApp ou appelez-nous',
       waBtn: 'WhatsApp',
       waMessage: 'Bonjour, j’ai une question sur Doukkany.',
       waBuy: 'Commander sur WhatsApp', orCall: 'ou appelez-nous :', waBuyMessage: 'Bonjour, je veux acheter Doukkany.',
-      startLink: 'Voir les tarifs et la formule pour votre magasin',
+      linksBtn: 'Recevoir tous les liens sur WhatsApp', linksMessage: 'Bonjour, envoyez-moi les liens importants de Doukkany : logiciel PC, application mobile, leçons et tarifs.',
       lessonsTitle: 'Apprendre Doukkany', lessonsSub: '25 vidéos courtes, une minute chacune. Commencez par la première.',
       pricesTitle: 'Tarifs de Doukkany', pricesSub: 'Licence à vie : payée une seule fois.',
       planPhone: 'Téléphone seul',
@@ -401,24 +408,24 @@
     en: {
       title: 'Download Doukkany',
       skip: 'Skip to download', home: 'Doukkany: home',
-      h1a: 'Your whole shop,', h1b: 'in one place.',
-      heroSub: 'Sales, customer credit, stock and profit.',
-      trialWord: 'days free', perks: 'Works without internet · No subscription',
+      h1a: 'Doukkany:', h1b: 'the professional shop management software',
+      pill1: 'Sales', pill2: 'Customer credit', pill3: 'Stock', pill4: 'Profit', pill5: 'Works offline',
+      trialWord: 'days free',
       altPc: 'Doukkany sales screen on a Windows PC', altPhone: 'Doukkany sales screen on an Android phone',
       winBtn: 'Download the PC software',
       starting: 'Your download will start in a moment…',
       playBtn: 'Download the phone app',
       iosReq: 'The phone app is only on Android for now.',
       phoneGetWin: 'This link downloads the PC version. Open it on your computer, or get the phone app from Google Play.',
-      pcOnPhone: 'Want it on your PC?', sendBtn: 'Send the link to your PC',
+      sendBtn: 'Send the link to your PC',
       sent: 'Done. Open the link on your PC: the download starts by itself.',
       shareText: 'Doukkany download link for PC (Windows 10 and newer):',
       supportTitle: 'Need help, or ready to buy?',
-      supportText: 'Pay once. Contact us and we help you install and activate.',
+      supportText: 'Contact us on WhatsApp or call us',
       waBtn: 'WhatsApp',
       waMessage: 'Hello, I have a question about Doukkany.',
       waBuy: 'Order on WhatsApp', orCall: 'or call us:', waBuyMessage: 'Hello, I want to buy Doukkany.',
-      startLink: 'See the prices and the right offer for your shop',
+      linksBtn: 'Get all the links on WhatsApp', linksMessage: 'Hello, please send me the important Doukkany links: PC software, phone app, lessons and prices.',
       lessonsTitle: 'Learn Doukkany', lessonsSub: '25 short videos, one minute each. Start with the first one.',
       pricesTitle: 'Doukkany prices', pricesSub: 'Lifetime licence: pay once.',
       planPhone: 'Phone only',
@@ -501,6 +508,7 @@
     $('wa-btn').href = waUrl();
     $('wa-float').href = waUrl();
     $('wa-buy').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(t.waBuyMessage);
+    $('wa-links').href = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(t.linksMessage);
     if ($('status').textContent) $('status').textContent = t.starting;
     $('send-msg').textContent = '';
     renderLessons();
@@ -648,6 +656,9 @@
   });
   $('wa-buy').addEventListener('click', function () {
     track('whatsapp_support_clicked', { link_type: 'whatsapp', method: 'prices' });
+  });
+  $('wa-links').addEventListener('click', function () {
+    track('whatsapp_support_clicked', { link_type: 'whatsapp', method: 'links' });
   });
 
   setLang(pickLang());
