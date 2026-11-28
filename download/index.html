@@ -88,19 +88,12 @@
   .status { font-weight: 600; color: var(--green); font-size: .95rem; }
   .status:empty, .msg:empty { display: none; }
   .msg { font-size: .92rem; font-weight: 600; color: var(--green); }
-  .tip { font-size: .92rem; color: var(--muted); }
-  .tip summary { cursor: pointer; font-weight: 600; color: var(--ink); list-style: none; display: flex; align-items: center; gap: 6px; min-height: 32px; }
-  .tip summary::-webkit-details-marker { display: none; }
-  .tip summary .ic { color: #9A5A00; }
-  .tip p { margin-top: 4px; }
   .notice { background: #FFF8E1; border: 1px solid #F3DC8B; color: #5B4300; border-radius: var(--r-sm); padding: 10px 12px; font-weight: 600; font-size: .95rem; }
 
   /* Phones: the Google Play button first, and the computer row only sends the link to the PC. */
   #send-btn, .on-phone { display: none; }
   html[data-device="android"] #row-and, html[data-device="ios"] #row-and { order: -1; }
-  html[data-device="android"] #win-btn, html[data-device="ios"] #win-btn,
-  html[data-device="android"] #smartscreen, html[data-device="ios"] #smartscreen,
-  html[data-device="android"] .win-req, html[data-device="ios"] .win-req { display: none; }
+  html[data-device="android"] #win-btn, html[data-device="ios"] #win-btn { display: none; }
   html[data-device="android"] #send-btn, html[data-device="ios"] #send-btn { display: inline-flex; }
   html[data-device="android"] .on-phone, html[data-device="ios"] .on-phone { display: block; }
 
@@ -118,6 +111,7 @@
 
   /* ---- Sections ---- */
   .sec { padding-top: 36px; }
+  main { padding-bottom: 36px; }
   .sec-title { font-size: clamp(1.35rem, 4.4vw, 1.7rem); font-weight: 700; line-height: 1.3; }
   .sec-sub { color: var(--muted); margin-top: 2px; }
 
@@ -129,16 +123,38 @@
   .help .num:hover { text-decoration: underline; }
   .help .more { color: #fff; font-weight: 700; min-height: 44px; display: inline-flex; align-items: center; }
 
-  footer { margin-top: 36px; padding: 22px 0 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
-  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; }
-  footer nav { display: flex; gap: 6px 16px; flex-wrap: wrap; }
-  footer a { color: var(--muted); }
+  /* The 25 video lessons (../js/lessons.js). Each opens on YouTube. Phone: one column. */
+  .lessons { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+  .lesson { display: flex; align-items: center; gap: 12px; height: 100%; padding: 10px 12px; min-height: 64px; text-decoration: none; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); transition: border-color .15s; }
+  .lesson:hover { border-color: var(--logo); }
+  .ls-num { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--mint); color: var(--green); font-weight: 700; display: grid; place-items: center; font-size: .95rem; }
+  .ls-txt { flex: 1; min-width: 0; }
+  .ls-tt { display: block; font-weight: 700; line-height: 1.35; }
+  .ls-td { display: block; color: var(--muted); font-size: .85rem; font-weight: 600; }
+  .ls-go { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--green); color: #fff; display: grid; place-items: center; }
+  .ls-go .ic { width: 16px; height: 16px; margin-left: 2px; }
+
+  /* Prices (../js/offer.js): phone only, and one Windows PC with the phone app free. Lifetime licence. */
+  .plans { display: grid; gap: 12px; margin-top: 14px; }
+  .plan { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px; }
+  .plan.main { border: 2px solid var(--green); }
+  .plan-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .plan-head .ic { width: 26px; height: 26px; color: var(--green); }
+  .plan-name { font-size: 1.2rem; font-weight: 700; }
+  .plan-tag { background: var(--mint); color: var(--green); border-radius: 999px; padding: 2px 10px; font-size: .85rem; font-weight: 700; }
+  .plan-price { font-size: 2rem; font-weight: 700; line-height: 1.2; color: var(--ink); }
+  .plan-price small { font-size: 1.05rem; font-weight: 700; color: var(--muted); }
+  .plan-life { color: var(--green); font-weight: 700; font-size: .95rem; }
+  .plan-desc { color: var(--muted); }
+  .lic { margin-top: 12px; color: var(--muted); font-weight: 600; }
 
   /* ---- Larger screens ---- */
   @media (min-width: 600px) {
     :root { --pad: 24px; }
     .devices { max-width: 440px; }
     .help { padding: 26px 28px; }
+    .lessons { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .plans { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   }
   @media (min-width: 1024px) {
     .top-in { min-height: 68px; }
@@ -150,6 +166,7 @@
     .trial-num { font-size: 2.4rem; }
     .trial-word { font-size: 1.35rem; }
     .sec { padding-top: 48px; }
+    .lessons { grid-template-columns: repeat(3, 1fr); }
   }
   @media (max-width: 380px) {
     .langs button { padding: 6px 8px; min-width: 40px; font-size: .85rem; }
@@ -167,7 +184,8 @@
   <symbol id="i-wa" viewBox="0 0 32 32"><path d="M16 3C8.8 3 3 8.7 3 15.8c0 2.5.7 4.8 2 6.8L3 29l6.6-2c1.9 1 4.1 1.6 6.4 1.6 7.2 0 13-5.7 13-12.8S23.2 3 16 3zm0 23.3c-2.1 0-4-.6-5.7-1.6l-.4-.2-3.9 1.2 1.2-3.8-.3-.4c-1.1-1.7-1.8-3.6-1.8-5.7C5.1 10 10 5.2 16 5.2S26.9 10 26.9 15.8 22 26.3 16 26.3zm6-7.8c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.4-.5-2.6-1.6-1-.9-1.6-1.9-1.8-2.2-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.4 0-.6l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1.1-1.1 2.7s1.2 3.2 1.3 3.4c.2.2 2.3 3.6 5.7 5 2.8 1.1 3.4.9 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.2-.3-.3-.6-.4z"/></symbol>
   <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
-  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3l10 18H2zM12 10v5M12 18h.01"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15a1 1 0 0 0 1.5.9l12-7.5a1 1 0 0 0 0-1.8l-12-7.5A1 1 0 0 0 7 4.5z"/></symbol>
 </svg>
 
 <a class="skip" href="#download" data-t="skip">انتقل إلى التحميل</a>
@@ -204,13 +222,8 @@
             <p class="get-note on-phone" data-t="pcOnPhone">تحب تحطّو في الحاسوب؟</p>
             <a class="btn block" id="win-btn" href="https://github.com/dzstoredzd/doukkany-releases/releases/latest"><svg class="ic f" aria-hidden="true"><use href="#i-win"/></svg><span data-t="winBtn">تحميل للحاسوب</span></a>
             <button type="button" class="btn soft" id="send-btn"><svg class="ic" aria-hidden="true"><use href="#i-send"/></svg><span data-t="sendBtn">ابعث الرابط للحاسوب</span></button>
-            <p class="get-note win-req" data-t="winReq">Windows 10 وما بعده · 64 بت</p>
             <p class="status" id="status" role="status"></p>
             <p class="msg" id="send-msg" role="status"></p>
-            <details class="tip" id="smartscreen">
-              <summary><svg class="ic" aria-hidden="true"><use href="#i-warn"/></svg><span data-t="smartTitle">ظهرت رسالة حماية من Windows؟</span></summary>
-              <p data-t="smartBody">هذا يحدث مع البرامج الجديدة. اضغط «مزيد من المعلومات» (More info)، ثم «تشغيل على أي حال» (Run anyway).</p>
-            </details>
           </div>
 
           <div class="get-row" id="row-and">
@@ -245,20 +258,36 @@
       <a class="more" href="../start/" data-t="startLink">شوف الأسعار والعرض المناسب لحانوتك</a>
     </div>
   </section>
+
+  <section class="sec wrap" id="lessons-sec" aria-labelledby="lessons-title">
+    <h2 class="sec-title" id="lessons-title" data-t="lessonsTitle">تعلّم دكّاني</h2>
+    <p class="sec-sub" data-t="lessonsSub">25 فيديو قصير، دقيقة لكل واحد. ابدأ من الأول.</p>
+    <ol class="lessons" id="lessons"></ol>
+  </section>
+
+  <section class="sec wrap" id="prices" aria-labelledby="prices-title">
+    <h2 class="sec-title" id="prices-title" data-t="pricesTitle">أسعار دكّاني</h2>
+    <p class="sec-sub" data-t="pricesSub">رخصة مدى الحياة: تخلّص مرة وحدة، بلا اشتراك شهري.</p>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-head"><svg class="ic" aria-hidden="true"><use href="#i-phone"/></svg><h3 class="plan-name" data-t="planPhone">هاتف برك</h3></div>
+        <p class="plan-price"><bdi class="ltr" id="price-phone">9 000</bdi> <small data-t="da">دج</small></p>
+        <p class="plan-life" data-t="once">مرة وحدة · ليك مدى الحياة</p>
+        <p class="plan-desc" data-t="planPhoneDesc">هاتف ولا طابلات Android واحد، يخدم وحدو.</p>
+      </div>
+      <div class="plan main">
+        <div class="plan-head"><svg class="ic f" aria-hidden="true"><use href="#i-win"/></svg><h3 class="plan-name" data-t="planPc">حاسوب Windows</h3><span class="plan-tag" data-t="planTag">الهاتف مجاني معاه</span></div>
+        <p class="plan-price"><bdi class="ltr" id="price-pc">12 000</bdi> <small data-t="da">دج</small></p>
+        <p class="plan-life" data-t="once">مرة وحدة · ليك مدى الحياة</p>
+        <p class="plan-desc" data-t="planPcDesc">حاسوب Windows واحد + تطبيق الهاتف مجانا، مربوط بيه.</p>
+      </div>
+    </div>
+    <p class="lic" data-t="licLine">الرخصة ليك: تخلّص مرة وحدة، بلا اشتراك شهري، والتحديثات مجانية مدى الحياة.</p>
+  </section>
 </main>
 
-<footer id="footer">
-  <div class="wrap">
-    <span>© Doukkany</span>
-    <nav aria-label="Legal">
-      <a href="../start/#prices" data-t="pricesLink">الأسعار</a>
-      <a href="../learn/" data-t="learnLink">دروس الفيديو</a>
-      <a href="../privacy.html" data-t="privacyLink">سياسة الخصوصية</a>
-      <a href="../terms.html" data-t="terms">شروط الاستخدام</a>
-    </nav>
-  </div>
-</footer>
-
+<script src="../js/offer.js?v=4"></script>
+<script src="../js/lessons.js?v=1"></script>
 <script src="../js/tracking.js?v=5"></script>
 <script>
 (function () {
@@ -271,10 +300,8 @@
       heroSub: 'المبيعات، الكريدي، المخزون والأرباح.',
       trialWord: 'يوم مجانا', perks: 'يخدم بلا أنترنت · بلا اشتراك شهري',
       altPc: 'شاشة البيع في دكّاني على حاسوب Windows', altPhone: 'شاشة البيع في دكّاني على هاتف Android',
-      winBtn: 'تحميل للحاسوب', winReq: 'Windows 10 وما بعده · 64 بت',
+      winBtn: 'تحميل للحاسوب',
       starting: 'سيبدأ التنزيل بعد لحظات…',
-      smartTitle: 'ظهرت رسالة حماية من Windows؟',
-      smartBody: 'هذا يحدث مع البرامج الجديدة. اضغط «مزيد من المعلومات» (More info)، ثم «تشغيل على أي حال» (Run anyway).',
       playAlt: 'احصل عليه من Google Play', andReq: 'للهاتف Android',
       iosReq: 'تطبيق الهاتف متوفر على Android فقط حاليًا.',
       phoneGetWin: 'هذا الرابط لتحميل نسخة الحاسوب. افتحه على حاسوبك، أو حمّل تطبيق الهاتف من Google Play.',
@@ -285,8 +312,13 @@
       supportText: 'تخلص مرة وحدة، بلا اشتراك شهري. كلّمنا ونعاونوك في التثبيت والتفعيل.',
       waBtn: 'واتساب',
       waMessage: 'السلام عليكم، عندي سؤال على دكّاني.',
-      startLink: 'شوف الأسعار والعرض المناسب لحانوتك', pricesLink: 'الأسعار',
-      learnLink: 'دروس الفيديو', privacyLink: 'سياسة الخصوصية', terms: 'شروط الاستخدام'
+      startLink: 'شوف الأسعار والعرض المناسب لحانوتك',
+      lessonsTitle: 'تعلّم دكّاني', lessonsSub: '25 فيديو قصير، دقيقة لكل واحد. ابدأ من الأول.',
+      pricesTitle: 'أسعار دكّاني', pricesSub: 'رخصة مدى الحياة: تخلّص مرة وحدة، بلا اشتراك شهري.',
+      planPhone: 'هاتف برك', planPhoneDesc: 'هاتف ولا طابلات Android واحد، يخدم وحدو.',
+      planPc: 'حاسوب Windows', planPcDesc: 'حاسوب Windows واحد + تطبيق الهاتف مجانا، مربوط بيه.',
+      planTag: 'الهاتف مجاني معاه', once: 'مرة وحدة · ليك مدى الحياة', da: 'دج',
+      licLine: 'الرخصة ليك: تخلّص مرة وحدة، بلا اشتراك شهري، والتحديثات مجانية مدى الحياة.'
     },
     fr: {
       title: 'Télécharger Doukkany',
@@ -295,10 +327,8 @@
       heroSub: 'Ventes, crédit clients, stock et bénéfices.',
       trialWord: 'jours gratuits', perks: 'Marche sans internet · Sans abonnement',
       altPc: 'Écran de vente de Doukkany sur un PC Windows', altPhone: 'Écran de vente de Doukkany sur un téléphone Android',
-      winBtn: 'Télécharger pour PC', winReq: 'Windows 10 et plus · 64 bits',
+      winBtn: 'Télécharger pour PC',
       starting: 'Le téléchargement va commencer…',
-      smartTitle: 'Windows affiche un avertissement ?',
-      smartBody: 'Cela arrive avec les nouveaux logiciels. Cliquez sur « Informations complémentaires », puis sur « Exécuter quand même ».',
       playAlt: 'Disponible sur Google Play', andReq: 'Pour téléphone Android',
       iosReq: 'L’application mobile n’existe que sur Android pour l’instant.',
       phoneGetWin: 'Ce lien sert à télécharger la version PC. Ouvrez-le sur votre ordinateur, ou installez l’application mobile depuis Google Play.',
@@ -309,8 +339,13 @@
       supportText: 'Vous payez une seule fois, sans abonnement. Contactez-nous : on vous aide à installer et à activer.',
       waBtn: 'WhatsApp',
       waMessage: 'Bonjour, j’ai une question sur Doukkany.',
-      startLink: 'Voir les tarifs et la formule pour votre magasin', pricesLink: 'Tarifs',
-      learnLink: 'Vidéos de formation', privacyLink: 'Confidentialité', terms: 'Conditions d’utilisation'
+      startLink: 'Voir les tarifs et la formule pour votre magasin',
+      lessonsTitle: 'Apprendre Doukkany', lessonsSub: '25 vidéos courtes, une minute chacune. Commencez par la première.',
+      pricesTitle: 'Tarifs de Doukkany', pricesSub: 'Licence à vie : payée une seule fois, sans abonnement mensuel.',
+      planPhone: 'Téléphone seul', planPhoneDesc: 'Un téléphone ou une tablette Android, qui travaille seul.',
+      planPc: 'PC Windows', planPcDesc: 'Un PC Windows + l’application téléphone offerte, reliée à lui.',
+      planTag: 'Téléphone offert', once: 'Une seule fois · à vie', da: 'DA',
+      licLine: 'La licence est à vous : payée une seule fois, sans abonnement, mises à jour gratuites à vie.'
     },
     en: {
       title: 'Download Doukkany',
@@ -319,10 +354,8 @@
       heroSub: 'Sales, customer credit, stock and profit.',
       trialWord: 'days free', perks: 'Works without internet · No subscription',
       altPc: 'Doukkany sales screen on a Windows PC', altPhone: 'Doukkany sales screen on an Android phone',
-      winBtn: 'Download for PC', winReq: 'Windows 10 and newer · 64-bit',
+      winBtn: 'Download for PC',
       starting: 'Your download will start in a moment…',
-      smartTitle: 'Windows shows a warning?',
-      smartBody: 'This happens with new software. Click “More info”, then “Run anyway”.',
       playAlt: 'Get it on Google Play', andReq: 'For Android phones',
       iosReq: 'The phone app is only on Android for now.',
       phoneGetWin: 'This link downloads the PC version. Open it on your computer, or get the phone app from Google Play.',
@@ -333,8 +366,13 @@
       supportText: 'Pay once, no subscription. Contact us and we help you install and activate.',
       waBtn: 'WhatsApp',
       waMessage: 'Hello, I have a question about Doukkany.',
-      startLink: 'See the prices and the right offer for your shop', pricesLink: 'Prices',
-      learnLink: 'Video lessons', privacyLink: 'Privacy', terms: 'Terms'
+      startLink: 'See the prices and the right offer for your shop',
+      lessonsTitle: 'Learn Doukkany', lessonsSub: '25 short videos, one minute each. Start with the first one.',
+      pricesTitle: 'Doukkany prices', pricesSub: 'Lifetime licence: pay once, no monthly subscription.',
+      planPhone: 'Phone only', planPhoneDesc: 'One Android phone or tablet, working alone.',
+      planPc: 'Windows PC', planPcDesc: 'One Windows PC + the phone app free, linked to it.',
+      planTag: 'Phone app free', once: 'Once · yours for life', da: 'DZD',
+      licLine: 'The licence is yours: paid once, no monthly subscription, free updates for life.'
     }
   };
 
@@ -410,8 +448,53 @@
     $('wa-btn').href = waUrl();
     if ($('status').textContent) $('status').textContent = t.starting;
     $('send-msg').textContent = '';
+    renderLessons();
     try { localStorage.setItem('doukkany-lang', lang); } catch (e) {}
   }
+
+  // ---- Prices: from ../js/offer.js, the only place the site keeps them. ----
+  // If it did not load, the numbers written in the HTML stay.
+  (function () {
+    var O = window.DK_OFFER;
+    if (!O || !O.plans) return;
+    if (O.plans.phone) $('price-phone').textContent = O.format(O.plans.phone.price);
+    if (O.plans.pc) $('price-pc').textContent = O.format(O.plans.pc.price);
+  })();
+
+  // ---- Video lessons: the same 25 as the learn page (../js/lessons.js). ----
+  var LESSONS = window.DK_LESSONS || { playlistId: '', videos: [] };
+  function mmss(sec) { return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
+  function lessonUrl(i) { return 'https://www.youtube.com/watch?v=' + LESSONS.videos[i][0] + '&list=' + LESSONS.playlistId + '&index=' + (i + 1); }
+  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  function playIcon() {
+    var s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    s.setAttribute('class', 'ic f'); s.setAttribute('aria-hidden', 'true');
+    var u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#i-play'); s.appendChild(u);
+    return s;
+  }
+  function renderLessons() {
+    var list = $('lessons'); list.textContent = '';
+    if (!LESSONS.videos.length) { $('lessons-sec').hidden = true; return; }
+    var col = { ar: 1, fr: 2, en: 3 }[lang];
+    LESSONS.videos.forEach(function (v, i) {
+      var li = el('li'), a = el('a', 'lesson');
+      a.href = lessonUrl(i); a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('data-v', i);
+      a.appendChild(el('span', 'ls-num', String(i + 1)));
+      var tx = el('span', 'ls-txt');
+      tx.appendChild(el('span', 'ls-tt', v[col]));
+      var td = el('span', 'ls-td'), b = el('bdi', null, mmss(v[4])); b.dir = 'ltr'; td.appendChild(b); tx.appendChild(td);
+      a.appendChild(tx);
+      var go = el('span', 'ls-go'); go.appendChild(playIcon()); a.appendChild(go);
+      li.appendChild(a); list.appendChild(li);
+    });
+  }
+  // Same event as the learn page.
+  $('lessons').addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[data-v]');
+    if (!a) return;
+    var i = +a.getAttribute('data-v');
+    track('tutorial_clicked', { tutorial_id: LESSONS.videos[i][0], tutorial_category: LESSONS.videos[i][5], tutorial_position: i + 1 });
+  });
 
   document.querySelectorAll('.langs button').forEach(function (b) {
     b.addEventListener('click', function () {
@@ -446,8 +529,6 @@
   var latestPromise = fromFeed().catch(fromApi).then(function (found) {
     latest = found;
     $('win-btn').href = found.url;
-    // Only a build the feed calls signed hides the Windows warning help.
-    $('smartscreen').hidden = found.signed === true;
     return found;
   }).catch(function () { return null; });
 
