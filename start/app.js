@@ -78,8 +78,8 @@
 
   // ---------------------------------------------------------------------------------
   // Analytics (owner brief §21). One place: track(). Our own anonymous counter (counter.js,
-  // every visitor, no cookie) and, after the consent bar's OK, Google Tag Manager
-  // (js/tracking.js). A failed send never stops the page.
+  // every visitor, no cookie) and Google Tag Manager (js/tracking.js; no consent bar since
+  // 2026-11-28). A failed send never stops the page.
   // ---------------------------------------------------------------------------------
   var COUNTER_LIVE = location.hostname === 'yousoft.site';
   var ownCounter = (function () {
@@ -1483,19 +1483,6 @@
     });
   });
 
-  // ---- Keep the phone's bottom buttons above the consent bar while it is open ----
-  function watchConsent() {
-    var root = document.documentElement;
-    function measure() {
-      var b = document.querySelector('.dk-consent');
-      var h = b && b.getClientRects().length ? b.getBoundingClientRect().height : 0;
-      root.style.setProperty('--consent-h', Math.round(h) + 'px');
-    }
-    measure();
-    if ('MutationObserver' in window) new MutationObserver(measure).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'style', 'class'] });
-    window.addEventListener('resize', measure);
-  }
-
   // ---------------------------------------------------------------------------------
   // Start
   // ---------------------------------------------------------------------------------
@@ -1515,5 +1502,4 @@
   history.replaceState({ dk: 0 }, '', location.pathname + location.search + '#' + first);
   track('funnel_viewed', { funnel_step: first });
   render(first, false);
-  watchConsent();
 })();

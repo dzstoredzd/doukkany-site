@@ -1,15 +1,17 @@
 /*
- * Doukkany website tracking: consent banner, campaign memory and one place for events.
+ * Doukkany website tracking: campaign memory and one place for events.
  *
  * Rules (see DOUKKANY-MARKETING/TRACKING_SETUP.md in the app repo):
- * - Nothing leaves the browser before the visitor accepts. Google Tag Manager is the only
- *   third-party script this file loads, and only after "OK". (Visitors who chose the old
- *   "Statistics only" button keep that choice: analytics on, ads off.)
- * - GA4 and the Meta Pixel live inside the GTM container, never here. If Microsoft Clarity
- *   is added later: add it to the banner text and privacy.html, and raise consentVersion.
+ * - No consent banner any more (owner, 2026-11-28): Google Tag Manager loads on every visit,
+ *   so the Meta Pixel sees every ad click (Landing page views). privacy.html says what is
+ *   measured. A choice saved by the old banner is still kept: "No" stays off, and the old
+ *   "Statistics only" stays analytics on, ads off.
+ * - Google Tag Manager is the only third-party script this file loads. GA4 and the Meta Pixel
+ *   live inside the GTM container, never here. If Microsoft Clarity is added later: add it
+ *   to privacy.html.
  * - Events never carry an email, a phone number or a name: dkTrack() keeps only the
  *   parameters listed in PARAMS and drops values that look like an email or a phone.
- * - With an empty gtmId nothing is loaded and no banner is shown.
+ * - With an empty gtmId nothing is loaded.
  * - If this file fails to load, the pages keep working (they call window.dkTrack only if
  *   it exists).
  */
@@ -25,9 +27,10 @@
     // Hosts that count as the real website. Any other host is development traffic:
     // GTM loads there only with ?dk_debug=1, and every event is marked internal.
     productionHosts: ['yousoft.site'],
-    // Raise this number when the banner text or the tools change: everyone is asked again.
+    // Version of the choices saved by the old banner (removed 2026-11-28). Only choices with
+    // this version are read. Do not change it: that would forget an old "No".
     consentVersion: 1,
-    // How long a campaign link is remembered on this device after "Accept" (days).
+    // How long a campaign link is remembered on this device (days).
     campaignDays: 90
   };
 
@@ -72,7 +75,8 @@
   var trackingPossible = !!CONFIG.gtmId && (isProduction || debug);
 
   // ---------------------------------------------------------------------------------
-  // Consent Mode v2 defaults: everything denied until the visitor chooses.
+  // Consent Mode v2 defaults: denied for a moment, then updated (below, before GTM loads) to
+  // granted, or to an old saved choice.
   // ---------------------------------------------------------------------------------
   w.dataLayer = w.dataLayer || [];
   function gtag() { w.dataLayer.push(arguments); }
@@ -161,7 +165,7 @@
     }
     var fromSession = readJson(session, CAMPAIGN_KEY);
     if (fromSession) return fromSession;
-    return null; // the saved one (after "Accept") is read once consent is known
+    return null; // the saved one is read once consent is known (applyConsent)
   })();
 
   var arrivedVia = (function () {
@@ -209,8 +213,9 @@
   //   first touch = the first ad/campaign link seen on this device (never overwritten),
   //   last touch  = the latest one.
   // A touch is a page address with utm_*, placement or fbclid. Kept for this tab
-  // (sessionStorage) for everyone, on the device (localStorage, 90 days) only after "OK".
-  // fbclid (Meta's click id) is kept apart and only ever leaves the browser with ads consent.
+  // (sessionStorage) for everyone, on the device (localStorage, 90 days) unless the visitor
+  // said "No" on the old banner. fbclid (Meta's click id) is kept apart and only ever leaves
+  // the browser with ads consent (everyone except an old "No" or "Statistics only").
   // ---------------------------------------------------------------------------------
   var FIRST_KEY = 'dk-touch-first', LAST_KEY = 'dk-touch-last', FBCLID_KEY = 'dk-fbclid';
   var TOUCH_KEYS = UTM.concat(['placement']);
@@ -337,7 +342,8 @@
   // The answers come from the events themselves (activity_selected, device_selected,
   // pricing_viewed), so every page that loads this file (/start/, /download/, /windows/)
   // counts the same way. Every download click is still sent as its own event.
-  // Kept for this tab for everyone; on the device (30 days) only after "OK".
+  // Kept for this tab for everyone; on the device (30 days) unless the visitor said "No"
+  // on the old banner.
   // ---------------------------------------------------------------------------------
   var QD_KEY = 'dk-qd', QD_DAYS = 30;
   var qd = readJson(session, QD_KEY) || {};
@@ -480,8 +486,7 @@
         activity: qd.a !== 'link' ? qd.a : undefined, method: qd.a === 'link' ? 'shared_link' : 'same_device',
         journey: out.journey, funnel_version: out.funnel_version
       });
-      // Once per visitor. Before any consent answer GTM has not loaded and replays the
-      // event with consent "denied" (nothing sent), so the flag waits for an answer.
+      // Once per visitor. consentNow is always set at load (granted, or an old saved choice).
       if (consentNow) { qd.f = Date.now(); saveQd(); }
       track('funnel_completed', { method: 'qualified_download', platform: out.platform, journey: out.journey, funnel_version: out.funnel_version });
     }
@@ -492,7 +497,7 @@
   // ---------------------------------------------------------------------------------
   var CONSENT_KEY = 'dk-consent';
   var gtmLoaded = false;
-  var consentNow = null; // { analytics, ads } once the visitor answered (now or before)
+  var consentNow = null; // { analytics, ads }: set once at load, never null after that
 
   function readConsent() {
     var c = readJson(local, CONSENT_KEY);
@@ -507,7 +512,7 @@
       return;
     }
     gtmLoaded = true;
-    // Google's official snippet, loaded after consent instead of in <head>.
+    // Google's official snippet, loaded from here (after the consent update) instead of in <head>.
     w.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
     var s = d.createElement('script');
     s.async = true;
@@ -520,25 +525,7 @@
     d.head.appendChild(s);
   }
 
-  // Doukkany's own analytics cookies. _fbp/_fbc are left alone: they sit on the whole
-  // yousoft.site domain and are shared with other pages there.
-  function clearAnalyticsCookies() {
-    var names = d.cookie.split(';').map(function (c) { return c.split('=')[0].trim(); })
-      .filter(function (n) { return /^(_ga|_ga_.+|_gid|_clck|_clsk)$/.test(n); });
-    var paths = ['/', location.pathname.replace(/[^\/]*$/, ''), '/doukkany-site/'];
-    var host = location.hostname;
-    var domains = ['', host, '.' + host, '.' + host.split('.').slice(-2).join('.')];
-    names.forEach(function (n) {
-      paths.forEach(function (p) {
-        domains.forEach(function (dom) {
-          d.cookie = n + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=' + p +
-            (dom ? '; domain=' + dom : '');
-        });
-      });
-    });
-  }
-
-  function applyConsent(c, fromChoice) {
+  function applyConsent(c) {
     var a = c.analytics ? 'granted' : 'denied';
     var ad = c.ads ? 'granted' : 'denied';
     gtag('consent', 'update', {
@@ -553,142 +540,12 @@
     rememberTouches(consentNow);
     rememberQd(consentNow);
     if (c.analytics || c.ads) loadGtm();
-    else if (fromChoice) clearAnalyticsCookies();
   }
 
-  function saveConsent(analytics, ads) {
-    local.set(CONSENT_KEY, JSON.stringify({
-      v: CONFIG.consentVersion, analytics: analytics, ads: ads, at: new Date().toISOString()
-    }));
-    applyConsent({ analytics: analytics, ads: ads }, true);
-    hideBanner();
-  }
-
-  // ---------------------------------------------------------------------------------
-  // Banner: one short sentence and two equal buttons (standard Arabic, French, English;
-  // follows the page language). The details are on privacy.html.
-  // ---------------------------------------------------------------------------------
-  var TEXT = {
-    ar: {
-      text: 'نستعمل أدوات Google وFacebook لقياس الزيارات والإعلانات.',
-      accept: 'موافق',
-      refuse: 'لا',
-      more: 'التفاصيل'
-    },
-    fr: {
-      text: 'Nous utilisons des outils Google et Facebook pour mesurer les visites et les publicités.',
-      accept: 'D’accord',
-      refuse: 'Non',
-      more: 'Détails'
-    },
-    en: {
-      text: 'We use Google and Facebook tools to measure visits and ads.',
-      accept: 'OK',
-      refuse: 'No',
-      more: 'Details'
-    }
-  };
-
-  // Site root, from this file's own address (works from / and from /download/).
-  var siteRoot = (function () {
-    var src = d.currentScript && d.currentScript.src;
-    return src ? src.replace(/js\/tracking\.js(\?.*)?$/, '') : '';
-  })();
-
-  var banner = null;
-
-  function lang() {
-    var l = (d.documentElement.lang || 'ar').slice(0, 2);
-    return TEXT[l] ? l : 'ar';
-  }
-
-  function injectStyle() {
-    if (d.getElementById('dk-consent-style')) return;
-    var st = d.createElement('style');
-    st.id = 'dk-consent-style';
-    st.textContent =
-      '.dk-consent{position:fixed;left:0;right:0;bottom:0;z-index:1000;padding:0 10px 10px;pointer-events:none}' +
-      '.dk-consent-box{pointer-events:auto;max-width:640px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:#fff;color:#1d2421;border:1px solid #dfe5e2;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.14);padding:10px 12px;font:inherit;font-size:.9rem;line-height:1.5}' +
-      '.dk-consent-box p{margin:0;flex:1 1 240px}' +
-      '.dk-consent-box a{color:#1f8a4c;white-space:nowrap}' +
-      '.dk-consent-row{display:flex;gap:8px;flex:0 0 auto}' +
-      '.dk-consent-row button{font:inherit;font-weight:600;min-height:44px;min-width:88px;padding:6px 16px;border-radius:12px;cursor:pointer;border:2px solid #1f8a4c;background:#1f8a4c;color:#fff}' +
-      '@media (max-width:480px){.dk-consent-row{flex:1 1 100%}.dk-consent-row button{flex:1 1 0}}';
-    d.head.appendChild(st);
-  }
-
-  function renderBanner() {
-    if (!banner) return;
-    var t = TEXT[lang()];
-    banner.querySelector('[data-k="text"]').textContent = t.text + ' ';
-    var more = banner.querySelector('[data-k="more"]');
-    more.textContent = t.more;
-    more.href = siteRoot + 'privacy.html#website-' + lang();
-    banner.querySelector('[data-k="accept"]').textContent = t.accept;
-    banner.querySelector('[data-k="refuse"]').textContent = t.refuse;
-    banner.setAttribute('aria-label', t.more);
-    padBody();
-  }
-
-  function padBody() {
-    if (!banner) return;
-    d.body.style.paddingBottom = (banner.offsetHeight + 8) + 'px';
-  }
-
-  function showBanner() {
-    if (!trackingPossible || !d.body) return;
-    if (banner) { renderBanner(); return; }
-    injectStyle();
-    banner = d.createElement('div');
-    banner.className = 'dk-consent';
-    banner.setAttribute('role', 'region');
-    banner.innerHTML =
-      '<div class="dk-consent-box">' +
-      '<p><span data-k="text"></span><a data-k="more" href="#"></a></p>' +
-      '<div class="dk-consent-row">' +
-      '<button type="button" data-k="accept"></button>' +
-      '<button type="button" data-k="refuse"></button>' +
-      '</div></div>';
-    banner.querySelector('[data-k="accept"]').addEventListener('click', function () { saveConsent(true, true); });
-    banner.querySelector('[data-k="refuse"]').addEventListener('click', function () { saveConsent(false, false); });
-    d.body.appendChild(banner);
-    renderBanner();
-  }
-
-  function hideBanner() {
-    if (!banner) return;
-    banner.parentNode.removeChild(banner);
-    banner = null;
-    d.body.style.paddingBottom = '';
-  }
-
-  // Links that reopen the choice: <a href="#" data-dk-consent-open>. Hidden when no
-  // tracking can run (no GTM id yet), together with their [data-dk-consent-wrap].
-  function wireOpenLinks() {
-    var links = d.querySelectorAll('[data-dk-consent-open]');
-    Array.prototype.forEach.call(links, function (el) {
-      var box = (el.closest && el.closest('[data-dk-consent-wrap]')) || el;
-      if (!trackingPossible) { box.hidden = true; return; }
-      box.hidden = false;
-      el.addEventListener('click', function (e) { e.preventDefault(); showBanner(); });
-    });
-  }
-
-  // A choice made on an earlier visit applies right away (before the page's own script
-  // runs), so the saved campaign is already known when the page builds its links.
-  var savedConsent = readConsent();
-  if (savedConsent) applyConsent(savedConsent, false);
-
-  function start() {
-    wireOpenLinks();
-    if (!savedConsent) showBanner();
-    // The download page changes language without reloading.
-    if (w.MutationObserver) {
-      new MutationObserver(function () { if (banner) renderBanner(); })
-        .observe(d.documentElement, { attributes: true, attributeFilter: ['lang'] });
-    }
-    w.addEventListener('resize', padBody);
-  }
+  // No banner: every visitor counts as "OK", except an old saved choice (kept as it was).
+  // Applied right away (before the page's own script runs), so the saved campaign is
+  // already known when the page builds its links.
+  applyConsent(readConsent() || { analytics: true, ads: true });
 
   // ---------------------------------------------------------------------------------
   // Public API
@@ -699,7 +556,8 @@
     campaign: function () { return campaign; },
     campaignQuery: campaignQuery,
     playReferrer: playReferrer,
-    openConsent: showBanner,
+    // The consent banner was removed (2026-11-28); kept so an old page calling it does not break.
+    openConsent: function () {},
     newEventId: newEventId,
     // For the order request (start/app.js → site-order): consent, first/last touch, Meta ids.
     attribution: attribution,
@@ -709,7 +567,4 @@
     },
     qualified: qualified
   };
-
-  if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', start);
-  else start();
 })();

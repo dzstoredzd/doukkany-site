@@ -1,4 +1,5 @@
-// js/tracking.js in a fake browser: event names, QualifiedDownload, attribution, consent.
+// js/tracking.js in a fake browser: event names, QualifiedDownload, attribution, consent
+// (no banner since 2026-11-28; an old saved choice is still kept).
 // Run: node --test tests/*.test.js
 'use strict';
 const test = require('node:test');
@@ -110,15 +111,46 @@ test('direct download without the questions: a plain download click only', () =>
   assert.deepEqual(names(w), ['windows_download_clicked']);
 });
 
-test('before a consent answer the "once" flag is not used up (nothing could be sent)', () => {
+test('no banner: without a saved choice GTM loads at once with ads and analytics granted', () => {
+  const local = storage();
+  const w = load('https://yousoft.site/doukkany-site/start/?utm_source=fb&fbclid=IwAR2abcDEF_ghij-KLmn0123456789', { local });
+  assert.deepEqual(w.__loaded, ['https://www.googletagmanager.com/gtm.js?id=GTM-K5D2KFV3']);
+  const update = w.dataLayer.find(x => x && x[0] === 'consent' && x[1] === 'update');
+  assert.equal(update[2].ad_storage, 'granted');
+  assert.equal(update[2].analytics_storage, 'granted');
+  // The GTM triggers read dk_consent_ads / dk_consent_analytics; both are granted before gtm.js.
+  const iConsent = w.dataLayer.findIndex(x => x && x.event === 'dk_consent');
+  const iGtm = w.dataLayer.findIndex(x => x && x.event === 'gtm.js');
+  assert.ok(iConsent !== -1 && iConsent < iGtm);
+  assert.equal(w.dataLayer[iConsent].dk_consent_ads, 'granted');
+  assert.equal(w.dataLayer[iConsent].dk_consent_analytics, 'granted');
+  assert.deepEqual({ ...w.dkTracking.consent() }, { ads: 'granted', analytics: 'granted' });
+  assert.equal(local.getItem('dk-consent'), null, 'no choice is written for the visitor');
+  assert.ok(local.getItem('dk-fbclid'), 'the click id is kept on the device');
+  w.dkTracking.openConsent(); // old pages may still call it: does nothing, never throws
+});
+
+test('an old "No" from the removed banner stays off: no GTM, no Meta ids, nothing kept', () => {
+  const local = storage({ 'dk-consent': CONSENT_NO });
+  const w = load('https://yousoft.site/doukkany-site/start/?fbclid=IwAR2abcDEF_ghij-KLmn0123456789', { local });
+  assert.equal(w.__loaded, undefined);
+  assert.deepEqual({ ...w.dkTracking.consent() }, { ads: 'denied', analytics: 'denied' });
+  assert.equal(local.getItem('dk-fbclid'), null);
+  // The old "Statistics only": GTM loads (GA4), ads stay denied.
+  const stats = load('https://yousoft.site/doukkany-site/start/', { local: storage({ 'dk-consent': JSON.stringify({ v: 1, analytics: true, ads: false }) }) });
+  assert.equal(stats.__loaded.length, 1);
+  assert.deepEqual({ ...stats.dkTracking.consent() }, { ads: 'denied', analytics: 'granted' });
+});
+
+test('without a saved choice the "once" flag is used and kept on the device', () => {
   const local = storage();
   const session = storage();
   const w = load('http://localhost/doukkany-site/start/', { local, session });
   ['activity_selected', 'device_selected', 'pricing_viewed'].forEach(n => w.dkTrack(n, { activity: 'grocery', platform: 'pc' }));
   w.dkTrack('windows_download_clicked', { platform: 'windows' });
   w.dkTrack('windows_download_clicked', { platform: 'windows' });
-  assert.equal(names(w).filter(x => x === 'qualified_download').length, 2);
-  assert.equal(local.getItem('dk-qd'), null, 'nothing kept on the device without consent');
+  assert.equal(names(w).filter(x => x === 'qualified_download').length, 1);
+  assert.ok(JSON.parse(local.getItem('dk-qd')).f, 'counted once, remembered on the device');
 });
 
 test('a handed-out link carries dk_q=1 only while qualified and not yet counted; the PC visit counts it', () => {
@@ -173,10 +205,10 @@ test('attribution: first and last touch kept apart; Meta ids only with ads conse
   assert.equal(a3.last_touch.utm_source, 'facebook', 'campaign words stay for our own order records');
   assert.equal(lno.getItem('dk-touch-first'), null);
   assert.equal(lno.getItem('dk-fbclid'), null);
-  // No answer yet.
+  // No saved choice (no banner any more): counts as "OK".
   const w4 = load('http://localhost/doukkany-site/start/?fbclid=' + fbclid);
-  assert.equal(w4.dkTracking.attribution().consent_ads, 'unset');
-  assert.equal(w4.dkTracking.attribution().fbc, null);
+  assert.equal(w4.dkTracking.attribution().consent_ads, 'granted');
+  assert.match(w4.dkTracking.attribution().fbc, new RegExp('^fb\\.1\\.\\d{13}\\.' + fbclid + '$'));
 });
 
 test('Play referrer: campaign words always; dk_ads=1 + real fbclid only with ads consent', () => {
@@ -195,8 +227,9 @@ test('Play referrer: campaign words always; dk_ads=1 + real fbclid only with ads
   const no = load(url, { local: storage({ 'dk-consent': CONSENT_NO }) });
   assert.ok(!/(^|&)dk_ads=1|fbclid=/.test(no.dkTracking.playReferrer()));
   assert.match(no.dkTracking.playReferrer(), /utm_content=W01/);
-  const unset = load(url);
-  assert.ok(!/(^|&)dk_ads=1|fbclid=/.test(unset.dkTracking.playReferrer()));
+  const noChoice = load(url); // no saved choice: counts as "OK"
+  assert.match(noChoice.dkTracking.playReferrer(), /dk_ads=1/);
+  assert.match(noChoice.dkTracking.playReferrer(), new RegExp('fbclid=' + fbclid));
   // Ids must be digits.
   const bad = load('http://localhost/doukkany-site/start/?dk_ad=abc&utm_id=12');
   assert.equal(bad.dkTracking.attribution().last_touch, null);
