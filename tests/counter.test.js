@@ -86,3 +86,29 @@ test('every detail the counter sends is one the server accepts (same list both s
   }
   for (const s of F.STEPS) assert.ok(listOf('funnel_step').includes(`'${s}'`), 'server funnel_step list misses ' + s);
 });
+
+// /download/ (2026-11-28) uses the same counter. Every event name and every fixed value it
+// sends must be one the server keeps, or the Admin page would silently miss it.
+test('/download/: every event and fixed value it sends is one the server keeps', { skip: !fs.existsSync(SERVER) && 'app repo not next to this one' }, () => {
+  const server = fs.readFileSync(SERVER, 'utf8');
+  const listOf = key => (server.match(new RegExp(key + ": oneOf\\(\\[([^\\]]*)\\]")) || [, ''])[1];
+  const page = fs.readFileSync(path.join(__dirname, '../download/index.html'), 'utf8');
+  assert.match(page, /<script src="\.\.\/start\/counter\.js\?v=\d+"><\/script>/, 'the page loads the counter');
+  assert.match(page, /page: 'download'/, 'every event says its page');
+  assert.ok(listOf('page').includes("'download'") && listOf('page').includes("'start'"));
+  const names = new Set([...page.matchAll(/track\('([a-z_]+)'/g)].map(m => m[1]).concat(['page_viewed']));
+  assert.ok(names.size >= 7);
+  for (const name of names) assert.ok(server.includes(`'${name}'`), 'server does not accept event ' + name);
+  for (const [key, re] of [['method', /method: '([a-z_]+)'/g], ['link_type', /link_type: '([a-z_]+)'/g],
+    ['download_trigger', /(?:trackWindows|startDownload)\('([a-z_]+)'/g],['platform', /platform: '([a-z_]+)'/g]]) {
+    const values = new Set([...page.matchAll(re)].map(m => m[1]));
+    assert.ok(values.size > 0, 'no ' + key + ' found');
+    for (const v of values) assert.ok(listOf(key).includes(`'${v}'`), `server ${key} list misses ${v}`);
+  }
+});
+
+test('/start/ says its page too', () => {
+  const app = fs.readFileSync(path.join(__dirname, '../start/app.js'), 'utf8');
+  assert.match(app, /var b = \{ page: 'start',/);
+  assert.ok(C.KEYS.includes('page'));
+});

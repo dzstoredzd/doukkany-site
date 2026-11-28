@@ -1,6 +1,8 @@
-/* Doukkany /start/: our own anonymous counter (owner, 2026-11-26: "Every visitor, anonymous",
- * "Only /start/ funnel"). Sends the funnel events to the Doukkany server (Supabase function
- * site-events) for the Admin "Website" page. Used by start/app.js and tests/counter.test.js.
+/* Doukkany website: our own anonymous counter (owner, 2026-11-26: "Every visitor, anonymous";
+ * since 2026-11-28 also on /download/, DECISIONS "Website counter on /download/"). Sends the
+ * page's events to the Doukkany server (Supabase function site-events) for the Admin "Website"
+ * page. Every event says its page ('page': start or download). Used by start/app.js,
+ * download/index.html and tests/counter.test.js.
  *
  * What it sends: a random visit id that lives only in this page's memory (a reload = a new
  * visit; nothing is saved on the device, no cookie), the event name and fixed choices (screen,
@@ -21,7 +23,9 @@
     // Funnel v2 (2026-11-27): version and journey, payment choice, WhatsApp purpose, FAQ and
     // video ids, the checkout field that blocked, the Windows answer, the referring site's host.
     'funnel_version', 'journey', 'pay', 'purpose', 'faq_id', 'video_kind', 'field', 'field_count',
-    'windows', 'referrer'];
+    'windows', 'referrer',
+    // Website pages (2026-11-28): which page sent the event ('start' or 'download').
+    'page'];
   var AD = { utm_source: 'ad_source', utm_medium: 'ad_medium', utm_campaign: 'ad_campaign', utm_content: 'ad_content' };
 
   // Same rule as the server: short, no markup, nothing like an email or a phone number.

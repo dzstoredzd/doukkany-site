@@ -91,7 +91,7 @@
     var c = COUNTER.createCounter({
       on: COUNTER_LIVE || debug, internal: internal,
       base: function () {
-        var b = { page_language: lang, device: DEVICE, funnel_version: state.fv };
+        var b = { page: 'start', page_language: lang, device: DEVICE, funnel_version: state.fv };
         if (journey) b.journey = journey;
         if (REFERRER) b.referrer = REFERRER;
         Object.keys(ad).forEach(function (k) { b[k] = ad[k]; });

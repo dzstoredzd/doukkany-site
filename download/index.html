@@ -334,6 +334,7 @@
 
 <script src="../js/offer.js?v=4"></script>
 <script src="../js/lessons.js?v=1"></script>
+<script src="../start/counter.js?v=3"></script>
 <script src="../js/tracking.js?v=5"></script>
 <script>
 (function () {
@@ -443,7 +444,48 @@
 
   // ---- Tracking (../js/tracking.js). The page works the same if it did not load. ----
   var tracking = window.dkTracking || null;
-  function track(name, p) { try { if (tracking) tracking.track(name, p); } catch (e) {} }
+  // Every event goes to Google Tag Manager (tracking.js) AND to our own anonymous counter
+  // (../start/counter.js, the same one as /start/; DECISIONS "Website counter on /download/").
+  function track(name, p) {
+    try { if (tracking) tracking.track(name, p); } catch (e) {}
+    try { if (ownCounter) ownCounter.count(name, p); } catch (e) {}
+  }
+
+  // ---- Our own counter: every visitor, anonymous (a random visit id kept in memory only,
+  // no cookie), fixed choices only, never a name, phone or email. Only on the real site;
+  // ?dk_debug=1 elsewhere keeps what would be sent in window.__dkCounterSent. ----
+  var COUNTER = window.DK_COUNTER || null;
+  var COUNTER_LIVE = location.hostname === 'yousoft.site';
+  // The site that sent the visitor: its host name only.
+  var REFERRER = (function () {
+    try {
+      var h = document.referrer ? new URL(document.referrer).hostname.toLowerCase() : '';
+      return h && h !== location.hostname && /^[a-z0-9.-]{1,100}$/.test(h) ? h : '';
+    } catch (e) { return ''; }
+  })();
+  var ownCounter = (function () {
+    if (!COUNTER) return null;
+    var debug = !COUNTER_LIVE && new URLSearchParams(location.search).get('dk_debug') === '1';
+    var internal = false;
+    try { internal = localStorage.getItem('dk_internal') === '1'; } catch (e) {}
+    var ad = COUNTER.campaignFrom(location.search);
+    var c = COUNTER.createCounter({
+      on: COUNTER_LIVE || debug, internal: internal,
+      base: function () {
+        var b = { page: 'download', page_language: lang, device: DEVICE };
+        if (REFERRER) b.referrer = REFERRER;
+        Object.keys(ad).forEach(function (k) { b[k] = ad[k]; });
+        return b;
+      },
+      post: COUNTER_LIVE ? COUNTER.browserPost : function (url, body) {
+        (window.__dkCounterSent = window.__dkCounterSent || []).push(JSON.parse(body));
+      }
+    });
+    function leave() { c.flush(true); }
+    window.addEventListener('pagehide', leave);
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') leave(); });
+    return c;
+  })();
 
   // Adds this visit's campaign (utm_*) to a link we hand out, so the visit it leads to
   // (often on another device) keeps the same ad. 'via' says how the link was handed out.
@@ -654,6 +696,8 @@
   });
 
   setLang(pickLang());
+  // One per page load, for our counter only (Google counts page views on its own).
+  try { if (ownCounter) ownCounter.count('page_viewed', {}); } catch (e) {}
 
   // A shared link like .../download/?get=windows starts the newest installer download on a
   // computer. On a phone it only explains that the link is for the computer.
